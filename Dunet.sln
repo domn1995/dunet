@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dunet.Test", "test\Dunet.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet", "src\Dunet\Dunet.csproj", "{6842384B-93A4-4665-A2B2-A2ED633850F3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Cli", "samples\Dunet.Cli\Dunet.Cli.csproj", "{549F5456-F6D2-40E4-B49C-18B1A9924A93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6842384B-93A4-4665-A2B2-A2ED633850F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6842384B-93A4-4665-A2B2-A2ED633850F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6842384B-93A4-4665-A2B2-A2ED633850F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
