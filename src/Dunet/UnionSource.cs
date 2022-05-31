@@ -39,7 +39,6 @@ public record {recordToGenerate.Name}(");
 ) : {interfaceName}
 {{");
 
-
         for (int i = 0; i < interfaceMethodsCount; ++i)
         {
             var interfaceMethod = recordToGenerate.Methods[i];

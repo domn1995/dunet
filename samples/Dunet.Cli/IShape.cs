@@ -1,4 +1,4 @@
-﻿namespace Dunet.Cli;
+﻿namespace Dunet.Shapes;
 
 [Union]
 public interface IShape
