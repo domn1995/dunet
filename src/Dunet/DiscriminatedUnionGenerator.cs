@@ -109,10 +109,15 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
             }),
         };
 
+        var interfaceDeclaration = interfaces.First();
+        var semanticModel = compilation.GetSemanticModel(interfaceDeclaration.SyntaxTree);
+        var interfaceSymbol = semanticModel.GetDeclaredSymbol(interfaceDeclaration);
+        var @namespace = interfaceSymbol?.ContainingNamespace.ToString() ?? "";
+
         return new()
         {
             new RecordToGenerate(
-                Namespace: "Dunet.Cli",
+                Namespace: @namespace,
                 Name: "Rectangle",
                 Interface: "IShape",
                 Properties: new()
@@ -123,7 +128,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                 Methods: interfaceMethods
             ),
             new RecordToGenerate(
-                Namespace: "Dunet.Cli",
+                Namespace: @namespace,
                 Name: "Triangle",
                 Interface: "IShape",
                 Properties: new()
@@ -134,7 +139,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                 Methods: interfaceMethods
             ),
             new RecordToGenerate(
-                Namespace: "Dunet.Cli",
+                Namespace: @namespace,
                 Name: "Circle",
                 Interface: "IShape",
                 Properties: new()
