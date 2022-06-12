@@ -14,20 +14,20 @@ namespace Shapes;
 [Union]
 public interface IShape
 {
-	// 3. Define the union members as interface methods.
-	IShape Circle(double radius);
-	IShape Rectangle(double length, double width);
-	IShape Triangle(double @base, double height);
+    // 3. Define the union members as interface methods.
+    IShape Circle(double radius);
+    IShape Rectangle(double length, double width);
+    IShape Triangle(double @base, double height);
 }
 
 // 4. Use the union members.
 var shape = new Rectangle(3, 4);
 var area = shape switch
 {
-	Circle c => 3.14 * c.Radius * c.Radius,
-	Rectangle r => c.Length * c.Width,
-	Triangle t => t.Base * t.Height / 2,
-	_ => 0d,
+    Circle c => 3.14 * c.Radius * c.Radius,
+    Rectangle r => c.Length * c.Width,
+    Triangle t => t.Base * t.Height / 2,
+    _ => 0d,
 };
 ```
 
