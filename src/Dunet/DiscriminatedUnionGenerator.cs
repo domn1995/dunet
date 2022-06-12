@@ -108,55 +108,55 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
         CancellationToken cancellationToken
     )
     {
-        var interfaceMethods = new List<Method>()
+        var interfaceMethods = new List<Method>();
+        foreach (var iface in interfaces)
         {
-            new Method("Circle", new() { new Parameter("double", "radius"), }),
-            new Method(
-                "Rectangle",
-                new() { new Parameter("double", "length"), new Parameter("double", "width"), }
-            ),
-            new Method(
-                "Triangle",
-                new() { new Parameter("double", "@base"), new Parameter("double", "height"), }
-            ),
-        };
+            var methodDeclarations = iface.SyntaxTree
+                .GetRoot()
+                .DescendantNodes()
+                .Where(node => node.IsKind(SyntaxKind.MethodDeclaration))
+                .OfType<MethodDeclarationSyntax>()
+                .ToList();
+
+            foreach (var methodDeclaration in methodDeclarations)
+            {
+                var methodName = methodDeclaration.Identifier.ToString();
+                var methodParams = methodDeclaration.ParameterList.Parameters;
+                var parameters = new List<Parameter>();
+                foreach (var methodParam in methodParams)
+                {
+                    var name = methodParam.Identifier.ToString();
+                    var parameter = new Parameter(Type: methodParam.Type!.ToString(), Name: name);
+                    parameters.Add(parameter);
+                }
+                var method = new Method(methodName, parameters);
+                interfaceMethods.Add(method);
+            }
+        }
 
         var interfaceDeclaration = interfaces.First();
         var semanticModel = compilation.GetSemanticModel(interfaceDeclaration.SyntaxTree);
         var interfaceSymbol = semanticModel.GetDeclaredSymbol(interfaceDeclaration);
         var @namespace = interfaceSymbol?.ContainingNamespace.ToString() ?? "";
 
-        return new()
+        var recordsToGenerate = new List<RecordToGenerate>();
+
+        foreach (var interfaceMethod in interfaceMethods)
         {
-            new RecordToGenerate(
+            var name = interfaceMethod.Name;
+            var recordProperties = interfaceMethod.Parameters
+                .Select(param => new Parameter(Type: param.Type, Name: param.Name.ToPropertyCase()))
+                .ToList();
+            var recordToGenerate = new RecordToGenerate(
                 Namespace: @namespace,
-                Name: "Rectangle",
+                Name: name,
                 Interface: "IShape",
-                Properties: new()
-                {
-                    new Parameter("double", "Length"),
-                    new Parameter("double", "Width"),
-                },
+                Properties: new(recordProperties),
                 Methods: interfaceMethods
-            ),
-            new RecordToGenerate(
-                Namespace: @namespace,
-                Name: "Triangle",
-                Interface: "IShape",
-                Properties: new()
-                {
-                    new Parameter("double", "Base"),
-                    new Parameter("double", "Height"),
-                },
-                Methods: interfaceMethods
-            ),
-            new RecordToGenerate(
-                Namespace: @namespace,
-                Name: "Circle",
-                Interface: "IShape",
-                Properties: new() { new Parameter("double", "Radius"), },
-                Methods: interfaceMethods
-            ),
-        };
+            );
+            recordsToGenerate.Add(recordToGenerate);
+        }
+
+        return recordsToGenerate;
     }
 }
