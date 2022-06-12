@@ -13,4 +13,4 @@ record struct RecordToGenerate(
 
 record Parameter(string Type, string Name);
 
-record Method(string Name, List<Parameter> Parameters);
+record Method(string ReturnType, string Name, List<Parameter> Parameters);

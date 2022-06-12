@@ -50,10 +50,11 @@ public record {recordToGenerate.Name}("
         {
             var interfaceMethod = recordToGenerate.Methods[i];
             var parametersCount = recordToGenerate.Methods[i].Parameters.Count;
+            var methodReturnType = interfaceMethod.ReturnType;
             var methodName = interfaceMethod.Name;
             builder.Append(
                 $@"
-    {interfaceName} {interfaceName}.{methodName}("
+    {methodReturnType} {interfaceName}.{methodName}("
             );
             for (int j = 0; j < parametersCount; ++j)
             {

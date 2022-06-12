@@ -3,7 +3,7 @@
 [Union]
 public interface IShape
 {
-    IShape Circle(double radius);
-    IShape Rectangle(double length, double width);
-    IShape Triangle(double @base, double height);
+    void Circle(double radius);
+    void Rectangle(double length, double width);
+    void Triangle(double @base, double height);
 }

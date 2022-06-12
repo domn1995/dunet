@@ -120,6 +120,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 
             foreach (var methodDeclaration in methodDeclarations)
             {
+                var methodReturnType = methodDeclaration.ReturnType.ToString();
                 var methodName = methodDeclaration.Identifier.ToString();
                 var methodParams = methodDeclaration.ParameterList.Parameters;
                 var parameters = new List<Parameter>();
@@ -129,7 +130,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                     var parameter = new Parameter(Type: methodParam.Type!.ToString(), Name: name);
                     parameters.Add(parameter);
                 }
-                var method = new Method(methodName, parameters);
+                var method = new Method(methodReturnType, methodName, parameters);
                 interfaceMethods.Add(method);
             }
         }
