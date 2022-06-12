@@ -11,7 +11,8 @@ public class DiscriminatedUnionGeneratorTests
     public void Compiles()
     {
         // Arrange.
-        var source = @"
+        var source =
+            @"
 namespace Dunet.Cli;
 
 [Union]
@@ -34,7 +35,8 @@ public interface IShape
     {
         // Arrange.
         const string expectedNamespace = "Test.Namespace";
-        var source = @$"
+        var source =
+            @$"
 using Dunet;
 
 namespace {expectedNamespace};
@@ -56,17 +58,27 @@ public interface IShape
     }
 
     private static Compilation Compile(string source) =>
-        CSharpCompilation.Create("compilation",
+        CSharpCompilation.Create(
+            "compilation",
             new[] { CSharpSyntaxTree.ParseText(source) },
-            new[] { MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location) },
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            new[]
+            {
+                MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location)
+            },
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+        );
 
     private static (GeneratorResult, CompilationResult) RunGenerator(string source)
     {
         var compilation = Compile(source);
         var generator = new DiscriminatedUnionGenerator();
-        var driver = CSharpGeneratorDriver.Create(generator)
-            .RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var generationDiagnostics);
+        var driver = CSharpGeneratorDriver
+            .Create(generator)
+            .RunGeneratorsAndUpdateCompilation(
+                compilation,
+                out var outputCompilation,
+                out var generationDiagnostics
+            );
         var generationOutput = driver.GetRunResult();
         var compilationDiagnostics = outputCompilation.GetDiagnostics();
         var generatorResult = new GeneratorResult(generationOutput, generationDiagnostics);

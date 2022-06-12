@@ -12,21 +12,27 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-            "UnionAttribute.g.cs",
-            SourceText.From(UnionSource.Attribute, Encoding.UTF8))
+        context.RegisterPostInitializationOutput(
+            ctx =>
+                ctx.AddSource(
+                    "UnionAttribute.g.cs",
+                    SourceText.From(UnionSource.Attribute, Encoding.UTF8)
+                )
         );
 
         var interfaceDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (node, _) => IsInterface(node),
-                transform: static (ctx, _) => GetGenerationTarget(ctx))
+                transform: static (ctx, _) => GetGenerationTarget(ctx)
+            )
             .Where(static m => m is not null);
 
         var compilation = context.CompilationProvider.Combine(interfaceDeclarations.Collect());
 
-        context.RegisterSourceOutput(compilation,
-            static (spc, source) => Execute(source.Left, source.Right!, spc));
+        context.RegisterSourceOutput(
+            compilation,
+            static (spc, source) => Execute(source.Left, source.Right!, spc)
+        );
     }
 
     private static bool IsInterface(SyntaxNode node) =>
@@ -41,7 +47,9 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
         {
             foreach (var attribute in attributeList.Attributes)
             {
-                var interfaceSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol?.ContainingType;
+                var interfaceSymbol = context.SemanticModel
+                    .GetSymbolInfo(attribute)
+                    .Symbol?.ContainingType;
 
                 if (interfaceSymbol is null)
                 {
@@ -63,7 +71,8 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
     private static void Execute(
         Compilation compilation,
         ImmutableArray<InterfaceDeclarationSyntax> interfaces,
-        SourceProductionContext context)
+        SourceProductionContext context
+    )
     {
         if (interfaces.IsDefaultOrEmpty)
         {
@@ -72,7 +81,11 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 
         var distinctInterfaces = interfaces.Distinct();
 
-        var recordsToGenerate = GetRecordsToGenerate(compilation, distinctInterfaces, context.CancellationToken);
+        var recordsToGenerate = GetRecordsToGenerate(
+            compilation,
+            distinctInterfaces,
+            context.CancellationToken
+        );
 
         if (recordsToGenerate.Count <= 0)
         {
@@ -82,31 +95,30 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
         foreach (var recordToGenerate in recordsToGenerate)
         {
             var result = UnionSource.GenerateRecord(recordToGenerate);
-            context.AddSource($"{recordToGenerate.Name}.g.cs", SourceText.From(result, Encoding.UTF8));
+            context.AddSource(
+                $"{recordToGenerate.Name}.g.cs",
+                SourceText.From(result, Encoding.UTF8)
+            );
         }
     }
 
     private static List<RecordToGenerate> GetRecordsToGenerate(
         Compilation compilation,
         IEnumerable<InterfaceDeclarationSyntax> interfaces,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var interfaceMethods = new List<Method>()
         {
-            new Method("Circle", new()
-            {
-                new Parameter("double", "radius"),
-            }),
-            new Method("Rectangle", new()
-            {
-                new Parameter("double", "length"),
-                new Parameter("double", "width"),
-            }),
-            new Method("Triangle", new()
-            {
-                new Parameter("double", "@base"),
-                new Parameter("double", "height"),
-            }),
+            new Method("Circle", new() { new Parameter("double", "radius"), }),
+            new Method(
+                "Rectangle",
+                new() { new Parameter("double", "length"), new Parameter("double", "width"), }
+            ),
+            new Method(
+                "Triangle",
+                new() { new Parameter("double", "@base"), new Parameter("double", "height"), }
+            ),
         };
 
         var interfaceDeclaration = interfaces.First();
@@ -142,10 +154,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                 Namespace: @namespace,
                 Name: "Circle",
                 Interface: "IShape",
-                Properties: new()
-                {
-                    new Parameter("double", "Radius"),
-                },
+                Properties: new() { new Parameter("double", "Radius"), },
                 Methods: interfaceMethods
             ),
         };
