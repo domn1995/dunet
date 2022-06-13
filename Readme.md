@@ -25,13 +25,14 @@ var shape = new Rectangle(3, 4);
 var area = shape switch
 {
     Circle c => 3.14 * c.Radius * c.Radius,
-    Rectangle r => c.Length * c.Width,
+    Rectangle r => r.Length * r.Width,
     Triangle t => t.Base * t.Height / 2,
     _ => 0d,
 };
+
+Console.WriteLine(area); // "12"
 ```
 
 ## Install
 
 - [NuGet](https://www.nuget.org/packages/Dunet/): `dotnet add package dunet`
-
