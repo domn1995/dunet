@@ -1,4 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>10.0</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Label="PackageInfo">
+		<IsPublishable>True</IsPublishable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Authors>domn1995</Authors>
+		<Company />
+		<Description>A simple source generator for discriminated unions in C#.</Description>
+		<PackageProjectUrl>https://github.com/domn1995/dunet</PackageProjectUrl>
+		<PackageReadmeFile>Readme.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/domn1995/dunet</RepositoryUrl>
+		<PackageTags>source; generator; discriminated; union; functional; tagged;</PackageTags>
+		<AssemblyVersion>0.1.1</AssemblyVersion>
+		<FileVersion>0.1.1</FileVersion>
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -25,6 +44,16 @@
         <Version>0.1.2</Version>
         <NeutralLanguage>en</NeutralLanguage>
     </PropertyGroup>
+		<PackageReleaseNotes>
+			0.1.1 - Support any number of interfaces.
+			0.1.0 - Initial release.
+		</PackageReleaseNotes>
+		<RepositoryType>git</RepositoryType>
+		<PackageIcon>favicon.png</PackageIcon>
+		<SignAssembly>False</SignAssembly>
+		<Version>0.1.1</Version>
+		<NeutralLanguage>en</NeutralLanguage>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="../../Readme.md" Pack="true" PackagePath="" Visible="false" />
@@ -32,13 +61,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
-    </ItemGroup>
-
-
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
+	</ItemGroup>
 
 </Project>
