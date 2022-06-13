@@ -13,15 +13,16 @@
         <PackageReadmeFile>Readme.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/domn1995/dunet</RepositoryUrl>
         <PackageTags>source; generator; discriminated; union; functional; tagged;</PackageTags>
-        <AssemblyVersion>0.1.1</AssemblyVersion>
-        <FileVersion>0.1.1</FileVersion>
+        <AssemblyVersion>0.1.2</AssemblyVersion>
+        <FileVersion>0.1.2</FileVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>0.1.1 - Support any number of interfaces.
+        <PackageReleaseNotes>0.1.2 - Simplify generated source.
+0.1.1 - Support any number of interfaces.
 0.1.0 - Initial release.</PackageReleaseNotes>
         <RepositoryType>git</RepositoryType>
         <PackageIcon>favicon.png</PackageIcon>
         <SignAssembly>False</SignAssembly>
-        <Version>0.1.1</Version>
+        <Version>0.1.2</Version>
         <NeutralLanguage>en</NeutralLanguage>
     </PropertyGroup>
 
