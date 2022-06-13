@@ -108,11 +108,11 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
         CancellationToken cancellationToken
     )
     {
-        var interfaceMethods = new List<Method>();
+        var recordsToGenerate = new List<RecordToGenerate>();
         foreach (var iface in interfaces)
         {
-            var methodDeclarations = iface.SyntaxTree
-                .GetRoot()
+            var interfaceMethods = new List<Method>();
+            var methodDeclarations = iface
                 .DescendantNodes()
                 .Where(node => node.IsKind(SyntaxKind.MethodDeclaration))
                 .OfType<MethodDeclarationSyntax>()
@@ -133,29 +133,32 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                 var method = new Method(methodReturnType, methodName, parameters);
                 interfaceMethods.Add(method);
             }
-        }
 
-        var interfaceDeclaration = interfaces.First();
-        var semanticModel = compilation.GetSemanticModel(interfaceDeclaration.SyntaxTree);
-        var interfaceSymbol = semanticModel.GetDeclaredSymbol(interfaceDeclaration);
-        var @namespace = interfaceSymbol?.ContainingNamespace.ToString() ?? "";
+            var semanticModel = compilation.GetSemanticModel(iface.SyntaxTree);
+            var interfaceSymbol = semanticModel.GetDeclaredSymbol(iface);
+            if (interfaceSymbol is null)
+            {
+                continue;
+            }
+            var @namespace = interfaceSymbol.ContainingNamespace.ToString() ?? "";
 
-        var recordsToGenerate = new List<RecordToGenerate>();
-
-        foreach (var interfaceMethod in interfaceMethods)
-        {
-            var name = interfaceMethod.Name;
-            var recordProperties = interfaceMethod.Parameters
-                .Select(param => new Parameter(Type: param.Type, Name: param.Name.ToPropertyCase()))
-                .ToList();
-            var recordToGenerate = new RecordToGenerate(
-                Namespace: @namespace,
-                Name: name,
-                Interface: "IShape",
-                Properties: new(recordProperties),
-                Methods: interfaceMethods
-            );
-            recordsToGenerate.Add(recordToGenerate);
+            foreach (var interfaceMethod in interfaceMethods)
+            {
+                var name = interfaceMethod.Name;
+                var recordProperties = interfaceMethod.Parameters
+                    .Select(
+                        param => new Parameter(Type: param.Type, Name: param.Name.ToPropertyCase())
+                    )
+                    .ToList();
+                var recordToGenerate = new RecordToGenerate(
+                    Namespace: @namespace,
+                    Name: name,
+                    Interface: interfaceSymbol.Name,
+                    Properties: new(recordProperties),
+                    Methods: interfaceMethods
+                );
+                recordsToGenerate.Add(recordToGenerate);
+            }
         }
 
         return recordsToGenerate;

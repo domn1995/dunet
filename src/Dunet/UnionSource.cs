@@ -61,11 +61,11 @@ public record {recordToGenerate.Name}("
                 var parameterType = interfaceMethod.Parameters[j].Type;
                 var parameterName = interfaceMethod.Parameters[j].Name;
                 builder.Append(
-                    $"{parameterType} {parameterName}{(j != parametersCount - 1 ? ", " : ")")}"
+                    $"{parameterType} {parameterName}{(j != parametersCount - 1 ? ", " : "")}"
                 );
             }
 
-            builder.AppendLine(" => throw new System.InvalidOperationException();");
+            builder.AppendLine(") => throw new System.InvalidOperationException();");
         }
 
         builder.Append(
