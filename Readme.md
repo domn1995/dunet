@@ -33,5 +33,5 @@ var area = shape switch
 
 ## Install
 
-- [NuGet](https://placeholder.com): `dotnet add package dunet`
+- [NuGet](https://www.nuget.org/packages/Dunet/): `dotnet add package dunet`
 
