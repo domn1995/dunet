@@ -24,27 +24,17 @@ public class UnionAttribute : System.Attribute
         var interfaceName = recordToGenerate.Interface;
         var builder = new StringBuilder();
 
-        builder.Append(
-            @$"
-namespace {recordToGenerate.Namespace};
-
-public record {recordToGenerate.Name}("
-        );
+        builder.AppendLine($"namespace {recordToGenerate.Namespace};");
+        builder.Append($"public record {recordToGenerate.Name}(");
 
         for (int i = 0; i < propertiesCount; ++i)
         {
             var (type, name) = recordToGenerate.Properties[i];
-            builder.Append(
-                @$"
-    {type} {name}{(i != propertiesCount - 1 ? "," : "")}"
-            );
+            builder.Append($"{type} {name}{(i != propertiesCount - 1 ? "," : "")}");
         }
 
-        builder.Append(
-            $@"
-) : {interfaceName}
-{{"
-        );
+        builder.AppendLine($@") : {interfaceName}");
+        builder.AppendLine("{");
 
         for (int i = 0; i < interfaceMethodsCount; ++i)
         {
@@ -52,10 +42,8 @@ public record {recordToGenerate.Name}("
             var parametersCount = recordToGenerate.Methods[i].Parameters.Count;
             var methodReturnType = interfaceMethod.ReturnType;
             var methodName = interfaceMethod.Name;
-            builder.Append(
-                $@"
-    {methodReturnType} {interfaceName}.{methodName}("
-            );
+            builder.Append($"    {methodReturnType} {interfaceName}.{methodName}(");
+
             for (int j = 0; j < parametersCount; ++j)
             {
                 var parameterType = interfaceMethod.Parameters[j].Type;
@@ -68,10 +56,7 @@ public record {recordToGenerate.Name}("
             builder.AppendLine(") => throw new System.InvalidOperationException();");
         }
 
-        builder.Append(
-            @"
-}"
-        );
+        builder.Append("}");
 
         return builder.ToString();
     }
