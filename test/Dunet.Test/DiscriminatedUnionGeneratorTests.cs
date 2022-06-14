@@ -71,6 +71,52 @@ public interface IChoice
         Assert.Empty(compilation.Diagnostics);
     }
 
+    [Fact]
+    public void CorrectOutput()
+    {
+        // Arrange.
+        var source =
+            @"
+using Dunet;
+using System;
+
+namespace CorrectOutput;
+
+[Union]
+interface IShape
+{
+    IShape Circle(double radius);
+    IShape Rectangle(double length, double width);
+    IShape Triangle(double @base, double height);
+}
+
+public static class TestClass
+{
+    private static readonly IShape shape = new Rectangle(3, 4);
+    public static double GetArea() => shape switch
+    {
+        Rectangle rect => rect.Length * rect.Width,
+        Circle circle => 2.0 * Math.PI * circle.Radius,
+        Triangle triangle => 1.0 / 2.0 * triangle.Base * triangle.Height,
+        _ => 0d,
+    };
+}";
+        // Act.
+        var (generation, compilation) = RunGenerator(source);
+        var ms = new MemoryStream();
+        var emit = compilation.Output.Emit(ms);
+        var generatedAssembly = Assembly.Load(ms.ToArray());
+        var testClass = generatedAssembly.ExportedTypes.Single(type => type.Name is "TestClass");
+        var testMethod = testClass.GetMethod("GetArea", BindingFlags.Public | BindingFlags.Static);
+
+        var result = testMethod?.Invoke(null, null);
+
+        // Assert.
+        Assert.Equal(result, 12d);
+        Assert.Empty(generation.Diagnostics);
+        Assert.Empty(compilation.Diagnostics);
+    }
+
     private static Compilation Compile(string source) =>
         CSharpCompilation.Create(
             "compilation",
