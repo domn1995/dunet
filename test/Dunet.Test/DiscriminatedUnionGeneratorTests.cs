@@ -72,7 +72,7 @@ public interface IChoice
     }
 
     [Fact]
-    public void CorrectOutput()
+    public void CanUseUnionTypesWithSwitchExpression()
     {
         // Arrange.
         var source =
@@ -80,7 +80,7 @@ public interface IChoice
 using Dunet;
 using System;
 
-namespace CorrectOutput;
+namespace CanUseUnionTypesWithSwitchExpression;
 
 [Union]
 interface IShape
@@ -102,19 +102,22 @@ public static class TestClass
     };
 }";
         // Act.
-        var (generation, compilation) = RunGenerator(source);
-        var ms = new MemoryStream();
-        var emit = compilation.Output.Emit(ms);
-        var generatedAssembly = Assembly.Load(ms.ToArray());
-        var testClass = generatedAssembly.ExportedTypes.Single(type => type.Name is "TestClass");
+        var assembly = CompileToAssembly(source);
+        var testClass = assembly.ExportedTypes.Single(type => type.Name is "TestClass");
         var testMethod = testClass.GetMethod("GetArea", BindingFlags.Public | BindingFlags.Static);
 
         var result = testMethod?.Invoke(null, null);
 
         // Assert.
-        Assert.Equal(result, 12d);
-        Assert.Empty(generation.Diagnostics);
-        Assert.Empty(compilation.Diagnostics);
+        result.Should().Be(12d);
+    }
+
+    private static Assembly CompileToAssembly(string source)
+    {
+        var (_, compilation) = RunGenerator(source);
+        var ms = new MemoryStream();
+        compilation.Output.Emit(ms);
+        return Assembly.Load(ms.ToArray());
     }
 
     private static Compilation Compile(string source) =>
