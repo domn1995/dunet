@@ -1,9 +1,7 @@
-name: .NET Build
+name: Build and Publish Main Branch
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 jobs:
   build:
