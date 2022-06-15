@@ -140,7 +140,10 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
             {
                 continue;
             }
-            var @namespace = interfaceSymbol.ContainingNamespace.ToString() ?? "";
+            var containingNamespace = interfaceSymbol.ContainingNamespace.ToString();
+            var @namespace = containingNamespace is "<global namespace>"
+                ? null
+                : containingNamespace;
 
             foreach (var interfaceMethod in interfaceMethods)
             {
