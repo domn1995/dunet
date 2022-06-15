@@ -1,6 +1,6 @@
 ﻿namespace Dunet;
 
-record struct RecordToGenerate(
+record RecordToGenerate(
     string? Namespace,
     string Name,
     string Interface,

@@ -63,4 +63,56 @@ public class UnionAttribute : System.Attribute
 
         return builder.ToString();
     }
+
+    public static string GenerateMatchMethod(MatchMethodToGenerate methodToGenerate)
+    {
+        var builder = new StringBuilder();
+
+        builder.AppendLine("using System;");
+
+        if (methodToGenerate.Namespace is not null)
+        {
+            builder.AppendLine($"namespace {methodToGenerate.Namespace};");
+        }
+
+        var accessibility = methodToGenerate.Accessibility.ToKeyword();
+        builder.AppendLine(
+            $"{accessibility} static class {methodToGenerate.Interface}DiscriminatedUnionExtensions"
+        );
+        builder.AppendLine("{");
+
+        builder.AppendLine("    public static TResult Match<TResult>(");
+        builder.AppendLine($"        this {methodToGenerate.Interface} type, ");
+
+        var parameters = methodToGenerate.Parameters;
+        for (int i = 0; i < parameters.Count; ++i)
+        {
+            var parameter = parameters[i];
+            builder.AppendLine(
+                $"        Func<{parameter.Type}, TResult> {parameter.Name}{(i != parameters.Count - 1 ? ", " : "")}"
+            );
+        }
+
+        builder.AppendLine("    )");
+        builder.Append("    {");
+
+        for (int i = 0; i < parameters.Count; ++i)
+        {
+            var parameter = parameters[i];
+            builder.Append(
+                @$"
+        if (type is {parameter.Type} t{i})
+        {{
+            return {parameter.Name}(t{i});
+        }}
+"
+            );
+        }
+
+        builder.AppendLine("        throw new InvalidOperationException();");
+        builder.AppendLine("    }");
+        builder.AppendLine("}");
+
+        return builder.ToString();
+    }
 }
