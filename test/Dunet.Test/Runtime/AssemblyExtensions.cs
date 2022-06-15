@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Dunet.Test;
+namespace Dunet.Test.Runtime;
 
 public static class AssemblyExtensions
 {

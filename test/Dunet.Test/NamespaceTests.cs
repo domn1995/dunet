@@ -1,3 +1,6 @@
+using Dunet.Test.Compiler;
+using Dunet.Test.Runtime;
+
 namespace Dunet.Test;
 
 public class NamespaceTests
@@ -29,32 +32,19 @@ namespace Test;
 
 public static class Program
 {
-    private static readonly IShape shape = new Rectangle(3, 4);
-
     public static void Main()
     {
-        GetArea();
+        IShape circle = new Circle(3.14);
+        IShape rectangle = new Rectangle(1.5, 3.5);
+        IShape triangle = new Triangle(2.0, 3.0);
     }
-
-    public static double GetArea() => shape switch
-    {
-        Rectangle rect => rect.Length * rect.Width,
-        Circle circle => 2.0 * Math.PI * circle.Radius,
-        Triangle triangle => 1.0 / 2.0 * triangle.Base * triangle.Height,
-        _ => 0d,
-    };
 }";
         // Act.
-        var (assembly, compilationDiagnostics, generationDiagnostics) = Compile.ToAssembly(
-            iShapeCs,
-            programCs
-        );
-        var result = assembly.ExecuteStaticMethod<double>("GetArea");
+        var result = Compile.ToAssembly(iShapeCs, programCs);
 
         // Assert.
-        compilationDiagnostics.Should().BeEmpty();
-        generationDiagnostics.Should().BeEmpty();
-        result.Should().Be(12d);
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
     }
 
     [Fact]
@@ -62,7 +52,6 @@ public static class Program
     {
         var programCs =
             @"
-using System;
 using Dunet;
 
 namespace Test;
@@ -77,30 +66,44 @@ interface IShape
 
 public static class Program
 {
-    private static readonly IShape shape = new Rectangle(3, 4);
-
     public static void Main()
     {
-        GetArea();
+        IShape circle = new Circle(3.14);
+        IShape rectangle = new Rectangle(1.5, 3.5);
+        IShape triangle = new Triangle(2.0, 3.0);
     }
-
-    public static double GetArea() => shape switch
-    {
-        Rectangle rect => rect.Length * rect.Width,
-        Circle circle => 2.0 * Math.PI * circle.Radius,
-        Triangle triangle => 1.0 / 2.0 * triangle.Base * triangle.Height,
-        _ => 0d,
-    };
 }";
         // Act.
-        var (assembly, compilationDiagnostics, generationDiagnostics) = Compile.ToAssembly(
-            programCs
-        );
-        var result = assembly.ExecuteStaticMethod<double>("GetArea");
+        var result = Compile.ToAssembly(programCs);
 
         // Assert.
-        compilationDiagnostics.Should().BeEmpty();
-        generationDiagnostics.Should().BeEmpty();
-        result.Should().Be(12d);
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CanUseUnionTypesInTopLevelPrograms()
+    {
+        var programCs =
+            @"
+using Dunet;
+
+IShape circle = new Circle(3.14);
+IShape rectangle = new Rectangle(1.5, 3.5);
+IShape triangle = new Triangle(2.0, 3.0);
+
+[Union]
+interface IShape
+{
+    IShape Circle(double radius);
+    IShape Rectangle(double length, double width);
+    IShape Triangle(double @base, double height);
+}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
     }
 }

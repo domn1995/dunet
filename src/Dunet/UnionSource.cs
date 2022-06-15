@@ -24,7 +24,10 @@ public class UnionAttribute : System.Attribute
         var interfaceName = recordToGenerate.Interface;
         var builder = new StringBuilder();
 
-        builder.AppendLine($"namespace {recordToGenerate.Namespace};");
+        if (recordToGenerate.Namespace is not null)
+        {
+            builder.AppendLine($"namespace {recordToGenerate.Namespace};");
+        }
         builder.Append($"public record {recordToGenerate.Name}(");
 
         for (int i = 0; i < propertiesCount; ++i)

@@ -3,19 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Immutable;
 using System.Reflection;
 
-namespace Dunet.Test;
-
-public record CompilationResult(
-    Assembly Assembly,
-    ImmutableArray<Diagnostic> CompilationDiagnostics,
-    ImmutableArray<Diagnostic> GenerationDiagnostics
-);
-
-public record GenerationResult(
-    Compilation Compilation,
-    ImmutableArray<Diagnostic> CompilationDiagnostics,
-    ImmutableArray<Diagnostic> GenerationDiagnostics
-);
+namespace Dunet.Test.Compiler;
 
 public class Compile
 {
