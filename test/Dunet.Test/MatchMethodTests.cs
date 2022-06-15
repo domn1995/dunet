@@ -1,26 +1,25 @@
 ﻿using Dunet.Test.Compiler;
+using Dunet.Test.Runtime;
 
 namespace Dunet.Test;
 
-public class SwitchExpressionTests
+public class MatchMethodTests
 {
     [Fact]
-    public void CanUseUnionTypesInSwitchExpression()
+    public void CanUseUnionTypesInDedicatedMatchMethod()
     {
         // Arrange.
         var source =
             @"
 using Dunet;
 
-IShape circle = new Circle(3.14);
+IShape shape = new Rectangle(3, 4);
 
-var area = circle switch
-{
-    Rectangle r => r.Length * r.Width,
-    Circle c => 3.14 * c.Radius * c.Radius,
-    Triangle t => t.Base * t.Height / 2,
-    _ => 0d,
-};
+var area = shape.Match(
+    circle => 3.14 * circle.Radius * circle.Radius,
+    rectangle => rectangle.Length * rectangle.Width,
+    triangle => triangle.Base * triangle.Height / 2
+);
 
 [Union]
 interface IShape

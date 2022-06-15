@@ -81,7 +81,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 
         var distinctInterfaces = interfaces.Distinct();
 
-        var recordsToGenerate = GetRecordsToGenerate(
+        var (recordsToGenerate, matchMethodsToGenerate) = GetCodeToGenerate(
             compilation,
             distinctInterfaces,
             context.CancellationToken
@@ -100,15 +100,25 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                 SourceText.From(result, Encoding.UTF8)
             );
         }
+
+        foreach (var matchMethodToGenerate in matchMethodsToGenerate)
+        {
+            var result = UnionSource.GenerateMatchMethod(matchMethodToGenerate);
+            context.AddSource(
+                $"{matchMethodToGenerate.Interface}DiscriminatedUnionExtensions.g.cs",
+                SourceText.From(result, Encoding.UTF8)
+            );
+        }
     }
 
-    private static List<RecordToGenerate> GetRecordsToGenerate(
+    private static CodeToGenerate GetCodeToGenerate(
         Compilation compilation,
         IEnumerable<InterfaceDeclarationSyntax> interfaces,
         CancellationToken cancellationToken
     )
     {
         var recordsToGenerate = new List<RecordToGenerate>();
+        var matchMethodsToGenerate = new List<MatchMethodToGenerate>();
         foreach (var iface in interfaces)
         {
             var interfaceMethods = new List<Method>();
@@ -136,14 +146,17 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 
             var semanticModel = compilation.GetSemanticModel(iface.SyntaxTree);
             var interfaceSymbol = semanticModel.GetDeclaredSymbol(iface);
+
             if (interfaceSymbol is null)
             {
                 continue;
             }
+
             var containingNamespace = interfaceSymbol.ContainingNamespace.ToString();
             var @namespace = containingNamespace is "<global namespace>"
                 ? null
                 : containingNamespace;
+            var matchMethodParameters = new List<MatchMethodParameter>();
 
             foreach (var interfaceMethod in interfaceMethods)
             {
@@ -161,9 +174,23 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                     Methods: interfaceMethods
                 );
                 recordsToGenerate.Add(recordToGenerate);
+
+                var matchMethodParameter = new MatchMethodParameter(Type: recordToGenerate.Name);
+                matchMethodParameters.Add(matchMethodParameter);
             }
+
+            var matchMethodToGenerate = new MatchMethodToGenerate(
+                Accessibility: interfaceSymbol.DeclaredAccessibility,
+                Namespace: @namespace,
+                Interface: interfaceSymbol.Name,
+                Parameters: matchMethodParameters
+            );
+
+            matchMethodsToGenerate.Add(matchMethodToGenerate);
         }
 
-        return recordsToGenerate;
+        return new(Records: recordsToGenerate, Methods: matchMethodsToGenerate);
     }
 }
+
+record CodeToGenerate(List<RecordToGenerate> Records, List<MatchMethodToGenerate> Methods);
