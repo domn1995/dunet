@@ -4,10 +4,11 @@ namespace Dunet.Test;
 
 public static class AssemblyExtensions
 {
-    public static T Execute<T>(this Assembly assembly, string typeName, string methodName)
+    public static T ExecuteStaticMethod<T>(this Assembly assembly, string methodName)
     {
-        var type = assembly.ExportedTypes.Single(exportedType => exportedType.Name == typeName);
-        var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+        var method = assembly.DefinedTypes
+            .SelectMany(type => type.DeclaredMethods)
+            .Single(method => method.Name.Contains(methodName));
         return (T)method?.Invoke(null, null)!;
     }
 }

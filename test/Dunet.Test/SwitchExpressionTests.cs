@@ -3,7 +3,7 @@
 public class SwitchExpressionTests
 {
     [Fact]
-    public void CanUseUnionTypesWithSwitchExpression()
+    public void CanUseUnionTypesInSwitchExpression()
     {
         // Arrange.
         var source =
@@ -34,7 +34,7 @@ public static class TestClass
 }";
         // Act.
         var (assembly, compilationDiagnostics, generationDiagnostics) = Compile.ToAssembly(source);
-        var result = assembly.Execute<double>("TestClass", "GetArea");
+        var result = assembly.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
         compilationDiagnostics.Should().BeEmpty();
