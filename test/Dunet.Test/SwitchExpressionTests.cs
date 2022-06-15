@@ -1,4 +1,7 @@
-﻿namespace Dunet.Test;
+﻿using Dunet.Test.Compiler;
+using Dunet.Test.Runtime;
+
+namespace Dunet.Test;
 
 public class SwitchExpressionTests
 {
@@ -9,9 +12,8 @@ public class SwitchExpressionTests
         var source =
             @"
 using Dunet;
-using System;
 
-namespace CanUseUnionTypesWithSwitchExpression;
+namespace Test;
 
 [Union]
 interface IShape
@@ -21,14 +23,20 @@ interface IShape
     IShape Triangle(double @base, double height);
 }
 
-public static class TestClass
+public static class Program
 {
     private static readonly IShape shape = new Rectangle(3, 4);
+
+    public static void Main()
+    {
+        GetArea();
+    }
+
     public static double GetArea() => shape switch
     {
         Rectangle rect => rect.Length * rect.Width,
-        Circle circle => 2.0 * Math.PI * circle.Radius,
-        Triangle triangle => 1.0 / 2.0 * triangle.Base * triangle.Height,
+        Circle circle => 3.14 * circle.Radius * circle.Radius,
+        Triangle triangle => triangle.Base * triangle.Height / 2,
         _ => 0d,
     };
 }";
