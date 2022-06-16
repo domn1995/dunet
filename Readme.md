@@ -46,13 +46,13 @@ using Dunet;
 interface IChoice
 {
     void Yes();
-    void No(string Reason);
+    void No(string reason);
 }
 
 IChoice choice = new No("I don't wanna.");
 var response = choice.Match(
     yes => "Yes!!!",
-    no => $"No, because {no.reason}
+    no => $"No, because {no.Reason}"
 );
 
 System.Console.WriteLine(response); // "No, because I don't wanna."
