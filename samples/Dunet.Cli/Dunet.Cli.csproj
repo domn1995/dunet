@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Dunet\Dunet.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+      <PackageReference Include="Dunet" Version="0.2.2" />
     </ItemGroup>
 
 </Project>
