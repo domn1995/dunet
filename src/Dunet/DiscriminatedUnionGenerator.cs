@@ -114,36 +114,14 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
     private static CodeToGenerate GetCodeToGenerate(
         Compilation compilation,
         IEnumerable<InterfaceDeclarationSyntax> interfaces,
-        CancellationToken cancellationToken
+        CancellationToken _
     )
     {
         var recordsToGenerate = new List<RecordToGenerate>();
         var matchMethodsToGenerate = new List<MatchMethodToGenerate>();
+
         foreach (var iface in interfaces)
         {
-            var interfaceMethods = new List<Method>();
-            var methodDeclarations = iface
-                .DescendantNodes()
-                .Where(node => node.IsKind(SyntaxKind.MethodDeclaration))
-                .OfType<MethodDeclarationSyntax>()
-                .ToList();
-
-            foreach (var methodDeclaration in methodDeclarations)
-            {
-                var methodReturnType = methodDeclaration.ReturnType.ToString();
-                var methodName = methodDeclaration.Identifier.ToString();
-                var methodParams = methodDeclaration.ParameterList.Parameters;
-                var parameters = new List<Parameter>();
-                foreach (var methodParam in methodParams)
-                {
-                    var name = methodParam.Identifier.ToString();
-                    var parameter = new Parameter(Type: methodParam.Type!.ToString(), Name: name);
-                    parameters.Add(parameter);
-                }
-                var method = new Method(methodReturnType, methodName, parameters);
-                interfaceMethods.Add(method);
-            }
-
             var semanticModel = compilation.GetSemanticModel(iface.SyntaxTree);
             var interfaceSymbol = semanticModel.GetDeclaredSymbol(iface);
 
@@ -152,23 +130,19 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
                 continue;
             }
 
-            var containingNamespace = interfaceSymbol.ContainingNamespace.ToString();
-            var @namespace = containingNamespace is "<global namespace>"
-                ? null
-                : containingNamespace;
+            var interfaceMethods = GetInterfaceMethods(iface).ToList();
+
+            var @namespace = interfaceSymbol.GetNamespace();
             var matchMethodParameters = new List<MatchMethodParameter>();
 
             foreach (var interfaceMethod in interfaceMethods)
             {
-                var name = interfaceMethod.Name;
                 var recordProperties = interfaceMethod.Parameters
-                    .Select(
-                        param => new Parameter(Type: param.Type, Name: param.Name.ToPropertyCase())
-                    )
+                    .Select(param => new Parameter(param.Type, param.Name.ToPropertyCase()))
                     .ToList();
                 var recordToGenerate = new RecordToGenerate(
                     Namespace: @namespace,
-                    Name: name,
+                    Name: interfaceMethod.Name,
                     Interface: interfaceSymbol.Name,
                     Properties: new(recordProperties),
                     Methods: interfaceMethods
@@ -190,6 +164,23 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
         }
 
         return new(Records: recordsToGenerate, Methods: matchMethodsToGenerate);
+    }
+
+    private static IEnumerable<Method> GetInterfaceMethods(
+        InterfaceDeclarationSyntax interfaceDeclaration
+    )
+    {
+        foreach (var methodDeclaration in interfaceDeclaration.GetMethodDeclarations())
+        {
+            var methodParams = methodDeclaration.ParameterList.Parameters;
+            var parameters = methodParams.Select(
+                param => new Parameter(param.Type!.ToString(), param.Identifier.ToString())
+            );
+            var methodReturnType = methodDeclaration.ReturnType.ToString();
+            var methodName = methodDeclaration.Identifier.ToString();
+            var method = new Method(methodReturnType, methodName, parameters.ToList());
+            yield return method;
+        }
     }
 }
 
