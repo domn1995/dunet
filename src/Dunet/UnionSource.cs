@@ -24,9 +24,15 @@ public class UnionAttribute : System.Attribute
         var interfaceName = recordToGenerate.Interface;
         var builder = new StringBuilder();
 
+        foreach (var import in recordToGenerate.Imports)
+        {
+            builder.AppendLine(import);
+        }
+
         if (recordToGenerate.Namespace is not null)
         {
             builder.AppendLine($"namespace {recordToGenerate.Namespace};");
+            builder.AppendLine();
         }
         builder.Append($"public record {recordToGenerate.Name}(");
 
@@ -36,7 +42,7 @@ public class UnionAttribute : System.Attribute
             builder.Append($"{type} {name}{(i != propertiesCount - 1 ? "," : "")}");
         }
 
-        builder.AppendLine($@") : {interfaceName}");
+        builder.AppendLine($") : {interfaceName}");
         builder.AppendLine("{");
 
         for (int i = 0; i < interfaceMethodsCount; ++i)
@@ -69,6 +75,11 @@ public class UnionAttribute : System.Attribute
         var builder = new StringBuilder();
 
         builder.AppendLine("using System;");
+
+        foreach (var import in methodToGenerate.Imports)
+        {
+            builder.AppendLine(import);
+        }
 
         if (methodToGenerate.Namespace is not null)
         {
