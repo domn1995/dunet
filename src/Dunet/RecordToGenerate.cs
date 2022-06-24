@@ -1,6 +1,7 @@
 ﻿namespace Dunet;
 
 record RecordToGenerate(
+    List<string> Imports,
     string? Namespace,
     string Name,
     string Interface,

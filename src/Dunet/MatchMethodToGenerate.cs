@@ -3,6 +3,7 @@
 namespace Dunet;
 
 record MatchMethodToGenerate(
+    List<string> Imports,
     Accessibility Accessibility,
     string? Namespace,
     string Interface,

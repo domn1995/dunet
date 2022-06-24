@@ -124,6 +124,11 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
         {
             var semanticModel = compilation.GetSemanticModel(iface.SyntaxTree);
             var interfaceSymbol = semanticModel.GetDeclaredSymbol(iface);
+            var imports = iface
+                .GetImports()
+                .Where(static import => !import.IsImporting("Dunet"))
+                .Select(static import => import.ToString())
+                .ToList();
 
             if (interfaceSymbol is null)
             {
@@ -138,9 +143,10 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
             foreach (var interfaceMethod in interfaceMethods)
             {
                 var recordProperties = interfaceMethod.Parameters
-                    .Select(param => new Parameter(param.Type, param.Name.ToPropertyCase()))
+                    .Select(static param => new Parameter(param.Type, param.Name.ToPropertyCase()))
                     .ToList();
                 var recordToGenerate = new RecordToGenerate(
+                    Imports: imports,
                     Namespace: @namespace,
                     Name: interfaceMethod.Name,
                     Interface: interfaceSymbol.Name,
@@ -154,6 +160,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
             }
 
             var matchMethodToGenerate = new MatchMethodToGenerate(
+                Imports: imports,
                 Accessibility: interfaceSymbol.DeclaredAccessibility,
                 Namespace: @namespace,
                 Interface: interfaceSymbol.Name,
@@ -174,7 +181,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
         {
             var methodParams = methodDeclaration.ParameterList.Parameters;
             var parameters = methodParams.Select(
-                param => new Parameter(param.Type!.ToString(), param.Identifier.ToString())
+                static param => new Parameter(param.Type!.ToString(), param.Identifier.ToString())
             );
             var methodReturnType = methodDeclaration.ReturnType.ToString();
             var methodName = methodDeclaration.Identifier.ToString();
