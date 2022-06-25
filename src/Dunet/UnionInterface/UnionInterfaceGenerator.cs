@@ -17,7 +17,7 @@ public class UnionInterfaceGenerator : IIncrementalGenerator
             ctx =>
                 ctx.AddSource(
                     "UnionAttribute.g.cs",
-                    SourceText.From(UnionInterfaceSource.Attribute, Encoding.UTF8)
+                    SourceText.From(UnionAttributeSource.Attribute, Encoding.UTF8)
                 )
         );
 
@@ -55,7 +55,7 @@ public class UnionInterfaceGenerator : IIncrementalGenerator
 
                 var fullAttributeName = attributeSymbol.ToDisplayString();
 
-                if (fullAttributeName is UnionInterfaceSource.FullAttributeName)
+                if (fullAttributeName is UnionAttributeSource.FullAttributeName)
                 {
                     return interfaceDeclaration;
                 }
