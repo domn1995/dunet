@@ -79,16 +79,16 @@ public class UnionAttribute : System.Attribute
         builder.AppendLine("    public static TResult Match<TResult>(");
         builder.AppendLine($"        this {methodToGenerate.Interface} type, ");
 
-        var matchMethodParams = methodToGenerate.Parameters.Select(
+        var parameters = methodToGenerate.Parameters.Select(
             param => $"        Func<{param.Type}, TResult> {param.Name}"
         );
 
-        builder.AppendLine(string.Join(",\n", matchMethodParams));
+        builder.AppendLine(string.Join(",\n", parameters));
 
         builder.AppendLine("    )");
         builder.Append("    {");
 
-        var matchMethodIfChecks = methodToGenerate.Parameters.Select(
+        var typeChecks = methodToGenerate.Parameters.Select(
             param =>
                 @$"
         if (type is {param.Type} t{param.Type})
@@ -98,7 +98,7 @@ public class UnionAttribute : System.Attribute
 "
         );
 
-        builder.AppendLine(string.Join("", matchMethodIfChecks));
+        builder.AppendLine(string.Join("", typeChecks));
 
         builder.AppendLine("        throw new InvalidOperationException();");
         builder.AppendLine("    }");
