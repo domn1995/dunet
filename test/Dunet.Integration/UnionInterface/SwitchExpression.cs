@@ -1,6 +1,6 @@
-using Dunet.Integration.Unions;
+using Dunet.Integration.UnionInterface.Unions;
 
-namespace Dunet.Integration;
+namespace Dunet.Integration.UnionInterface;
 
 public class SwitchExpression
 {

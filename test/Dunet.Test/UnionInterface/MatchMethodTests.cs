@@ -1,9 +1,9 @@
 ﻿using Dunet.Test.Compiler;
 using Dunet.Test.Runtime;
 
-namespace Dunet.Test;
+namespace Dunet.Test.UnionInterface;
 
-public class MatchMethodTests
+public class MatchMethodTests : UnionInterfaceTests
 {
     [Fact]
     public void CanUseUnionTypesInDedicatedMatchMethod()

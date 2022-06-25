@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace Dunet;
+namespace Dunet.UnionInterface;
 
-internal static class UnionSource
+internal static class UnionInterfaceSource
 {
     public const string AttributeNamespace = "Dunet";
     public const string AttributeName = "UnionAttribute";

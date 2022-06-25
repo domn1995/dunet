@@ -1,4 +1,4 @@
-﻿using Dunet.Integration.Unions;
+﻿using Dunet.Integration.UnionInterface.Unions;
 
 namespace Dunet.Integration;
 

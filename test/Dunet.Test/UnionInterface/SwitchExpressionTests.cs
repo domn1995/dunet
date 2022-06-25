@@ -1,9 +1,8 @@
-﻿using Dunet.Test.Compiler;
-using Dunet.Test.Runtime;
+﻿using Dunet.Test.Runtime;
 
-namespace Dunet.Test;
+namespace Dunet.Test.UnionInterface;
 
-public class SwitchExpressionTests
+public class SwitchExpressionTests : UnionInterfaceTests
 {
     [Fact]
     public void CanUseUnionTypesInSwitchExpression()
