@@ -10,10 +10,12 @@ internal static class UnionInterfaceSource
 
     public const string Attribute =
         @"
+using System;
+
 namespace Dunet;
 
-[System.AttributeUsage(System.AttributeTargets.Interface)]
-public class UnionAttribute : System.Attribute
+[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class)]
+public sealed class UnionAttribute : Attribute
 {
 }";
 
