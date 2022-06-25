@@ -23,7 +23,7 @@ public class UnionInterfaceGenerator : IIncrementalGenerator
 
         var interfaceDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
-                predicate: static (node, _) => IsInterface(node),
+                predicate: static (node, _) => node.IsDecoratedInterface(),
                 transform: static (ctx, _) => GetGenerationTarget(ctx)
             )
             .Where(static m => m is not null);
@@ -36,10 +36,6 @@ public class UnionInterfaceGenerator : IIncrementalGenerator
         );
     }
 
-    private static bool IsInterface(SyntaxNode node) =>
-        node is InterfaceDeclarationSyntax interfaceDeclaration
-        && interfaceDeclaration.AttributeLists.Count > 0;
-
     private static InterfaceDeclarationSyntax? GetGenerationTarget(GeneratorSyntaxContext context)
     {
         var interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
@@ -48,18 +44,18 @@ public class UnionInterfaceGenerator : IIncrementalGenerator
         {
             foreach (var attribute in attributeList.Attributes)
             {
-                var interfaceSymbol = context.SemanticModel
+                var attributeSymbol = context.SemanticModel
                     .GetSymbolInfo(attribute)
                     .Symbol?.ContainingType;
 
-                if (interfaceSymbol is null)
+                if (attributeSymbol is null)
                 {
                     continue;
                 }
 
-                var fullInterfaceName = interfaceSymbol.ToDisplayString();
+                var fullAttributeName = attributeSymbol.ToDisplayString();
 
-                if (fullInterfaceName is UnionInterfaceSource.FullAttributeName)
+                if (fullAttributeName is UnionInterfaceSource.FullAttributeName)
                 {
                     return interfaceDeclaration;
                 }
