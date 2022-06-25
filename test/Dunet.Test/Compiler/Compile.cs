@@ -6,9 +6,11 @@ namespace Dunet.Test.Compiler;
 
 public class Compile
 {
-    private static readonly DiscriminatedUnionGenerator generator = new();
+    private readonly IIncrementalGenerator generator;
 
-    public static CompilationResult ToAssembly(params string[] sources)
+    public Compile(IIncrementalGenerator generator) => this.generator = generator;
+
+    public CompilationResult ToAssembly(params string[] sources)
     {
         var baseCompilation = CreateCompilation(sources);
         var (outputCompilation, compilationDiagnostics, generationDiagnostics) = RunGenerator(
@@ -24,7 +26,7 @@ public class Compile
         );
     }
 
-    private static Compilation CreateCompilation(params string[] sources) =>
+    private Compilation CreateCompilation(params string[] sources) =>
         CSharpCompilation.Create(
             "compilation",
             sources.Select(source => CSharpSyntaxTree.ParseText(source)),
@@ -35,7 +37,7 @@ public class Compile
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
 
-    private static GenerationResult RunGenerator(Compilation compilation)
+    private GenerationResult RunGenerator(Compilation compilation)
     {
         CSharpGeneratorDriver
             .Create(generator)

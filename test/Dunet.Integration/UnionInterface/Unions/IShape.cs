@@ -1,6 +1,4 @@
-﻿using Dunet;
-
-namespace Dunet.Integration.Unions;
+﻿namespace Dunet.Integration.UnionInterface.Unions;
 
 [Union]
 interface IShape

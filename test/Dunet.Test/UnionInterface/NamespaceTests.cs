@@ -1,8 +1,6 @@
-using Dunet.Test.Compiler;
+namespace Dunet.Test.UnionInterface;
 
-namespace Dunet.Test;
-
-public class NamespaceTests
+public class NamespaceTests : UnionInterfaceTests
 {
     [Fact]
     public void CanReferenceUnionTypesFromSeparateNamespace()

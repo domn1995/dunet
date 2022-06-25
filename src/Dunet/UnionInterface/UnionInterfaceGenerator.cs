@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Dunet.UnionInterface;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -8,7 +9,7 @@ using System.Text;
 namespace Dunet;
 
 [Generator]
-public class DiscriminatedUnionGenerator : IIncrementalGenerator
+public class UnionInterfaceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -16,7 +17,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
             ctx =>
                 ctx.AddSource(
                     "UnionAttribute.g.cs",
-                    SourceText.From(UnionSource.Attribute, Encoding.UTF8)
+                    SourceText.From(UnionInterfaceSource.Attribute, Encoding.UTF8)
                 )
         );
 
@@ -58,7 +59,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 
                 var fullInterfaceName = interfaceSymbol.ToDisplayString();
 
-                if (fullInterfaceName is UnionSource.FullAttributeName)
+                if (fullInterfaceName is UnionInterfaceSource.FullAttributeName)
                 {
                     return interfaceDeclaration;
                 }
@@ -94,7 +95,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 
         foreach (var recordToGenerate in recordsToGenerate)
         {
-            var result = UnionSource.GenerateRecord(recordToGenerate);
+            var result = UnionInterfaceSource.GenerateRecord(recordToGenerate);
             context.AddSource(
                 $"{recordToGenerate.Name}.g.cs",
                 SourceText.From(result, Encoding.UTF8)
@@ -103,7 +104,7 @@ public class DiscriminatedUnionGenerator : IIncrementalGenerator
 
         foreach (var matchMethodToGenerate in matchMethodsToGenerate)
         {
-            var result = UnionSource.GenerateMatchMethod(matchMethodToGenerate);
+            var result = UnionInterfaceSource.GenerateMatchMethod(matchMethodToGenerate);
             context.AddSource(
                 $"{matchMethodToGenerate.Interface}DiscriminatedUnionExtensions.g.cs",
                 SourceText.From(result, Encoding.UTF8)

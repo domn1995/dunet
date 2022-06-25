@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Dunet;
+namespace Dunet.UnionInterface;
 
 record MatchMethodToGenerate(
     List<string> Imports,

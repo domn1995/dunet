@@ -1,8 +1,6 @@
-﻿using Dunet.Test.Compiler;
+﻿namespace Dunet.Test.UnionInterface;
 
-namespace Dunet.Test;
-
-public class UnionGenerationTests
+public class GenerationTests : UnionInterfaceTests
 {
     [Fact]
     public void UnionTypeMayHaveNoMembers()
