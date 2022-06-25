@@ -7,10 +7,7 @@ record RecordToGenerate(
     string Interface,
     List<Parameter> Properties,
     List<Method> Methods
-)
-{
-    public string FullyQualifiedName => Namespace is null ? Name : $"{Namespace}.{Name}";
-}
+);
 
 record Parameter(string Type, string Name)
 {

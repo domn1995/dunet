@@ -4,19 +4,6 @@ namespace Dunet.UnionInterface;
 
 internal static class UnionInterfaceSource
 {
-    public const string AttributeNamespace = "Dunet";
-    public const string AttributeName = "UnionAttribute";
-    public const string FullAttributeName = $"{AttributeNamespace}.{AttributeName}";
-
-    public const string Attribute =
-        @"
-namespace Dunet;
-
-[System.AttributeUsage(System.AttributeTargets.Interface)]
-public class UnionAttribute : System.Attribute
-{
-}";
-
     public static string GenerateRecord(RecordToGenerate recordToGenerate)
     {
         var properties = recordToGenerate.Properties.Select(static prop => prop.ToString());

@@ -26,7 +26,7 @@ public class Compile
         );
     }
 
-    private Compilation CreateCompilation(params string[] sources) =>
+    private static Compilation CreateCompilation(params string[] sources) =>
         CSharpCompilation.Create(
             "compilation",
             sources.Select(source => CSharpSyntaxTree.ParseText(source)),

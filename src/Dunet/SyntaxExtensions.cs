@@ -30,6 +30,10 @@ public static class SyntaxExtensions
             _ => Enumerable.Empty<UsingDirectiveSyntax>(),
         };
 
+    public static bool IsDecoratedInterface(this SyntaxNode node) =>
+        node is InterfaceDeclarationSyntax interfaceDeclaration
+        && interfaceDeclaration.AttributeLists.Count > 0;
+
     public static bool IsImporting(this UsingDirectiveSyntax import, string name) =>
         import.Name.ToString() == name;
 }
