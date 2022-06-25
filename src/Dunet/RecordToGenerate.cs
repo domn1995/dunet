@@ -12,6 +12,9 @@ record RecordToGenerate(
     public string FullyQualifiedName => Namespace is null ? Name : $"{Namespace}.{Name}";
 }
 
-record Parameter(string Type, string Name);
+record Parameter(string Type, string Name)
+{
+    public override string ToString() => $"{Type} {Name}";
+}
 
 record Method(string ReturnType, string Name, List<Parameter> Parameters);

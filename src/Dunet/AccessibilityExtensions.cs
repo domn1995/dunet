@@ -4,7 +4,7 @@ namespace Dunet;
 
 internal static class AccessibilityExtensions
 {
-    private static readonly Dictionary<Accessibility, string> accessibilityToKeywordMap =
+    private static readonly Dictionary<Accessibility, string> accessibilityKeywords =
         new()
         {
             [Accessibility.Public] = "public",
@@ -17,5 +17,5 @@ internal static class AccessibilityExtensions
         };
 
     public static string ToKeyword(this Accessibility accessibility) =>
-        accessibilityToKeywordMap[accessibility];
+        accessibilityKeywords[accessibility];
 }

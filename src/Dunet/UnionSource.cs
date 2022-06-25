@@ -19,8 +19,7 @@ public class UnionAttribute : System.Attribute
 
     public static string GenerateRecord(RecordToGenerate recordToGenerate)
     {
-        var propertiesCount = recordToGenerate.Properties.Count;
-        var interfaceMethodsCount = recordToGenerate.Methods.Count;
+        var properties = recordToGenerate.Properties.Select(static prop => prop.ToString());
         var interfaceName = recordToGenerate.Interface;
         var builder = new StringBuilder();
 
@@ -34,34 +33,19 @@ public class UnionAttribute : System.Attribute
             builder.AppendLine($"namespace {recordToGenerate.Namespace};");
             builder.AppendLine();
         }
+
         builder.Append($"public record {recordToGenerate.Name}(");
-
-        for (int i = 0; i < propertiesCount; ++i)
-        {
-            var (type, name) = recordToGenerate.Properties[i];
-            builder.Append($"{type} {name}{(i != propertiesCount - 1 ? "," : "")}");
-        }
-
+        builder.Append(string.Join(", ", properties));
         builder.AppendLine($") : {interfaceName}");
         builder.AppendLine("{");
 
-        for (int i = 0; i < interfaceMethodsCount; ++i)
+        foreach (var interfaceMethod in recordToGenerate.Methods)
         {
-            var interfaceMethod = recordToGenerate.Methods[i];
-            var parametersCount = recordToGenerate.Methods[i].Parameters.Count;
+            var parameters = interfaceMethod.Parameters.Select(static param => param.ToString());
             var methodReturnType = interfaceMethod.ReturnType;
             var methodName = interfaceMethod.Name;
             builder.Append($"    {methodReturnType} {interfaceName}.{methodName}(");
-
-            for (int j = 0; j < parametersCount; ++j)
-            {
-                var parameterType = interfaceMethod.Parameters[j].Type;
-                var parameterName = interfaceMethod.Parameters[j].Name;
-                builder.Append(
-                    $"{parameterType} {parameterName}{(j != parametersCount - 1 ? ", " : "")}"
-                );
-            }
-
+            builder.Append(string.Join(", ", parameters));
             builder.AppendLine(") => throw new System.InvalidOperationException();");
         }
 
@@ -95,30 +79,26 @@ public class UnionAttribute : System.Attribute
         builder.AppendLine("    public static TResult Match<TResult>(");
         builder.AppendLine($"        this {methodToGenerate.Interface} type, ");
 
-        var parameters = methodToGenerate.Parameters;
-        for (int i = 0; i < parameters.Count; ++i)
-        {
-            var parameter = parameters[i];
-            builder.AppendLine(
-                $"        Func<{parameter.Type}, TResult> {parameter.Name}{(i != parameters.Count - 1 ? ", " : "")}"
-            );
-        }
+        var matchMethodParams = methodToGenerate.Parameters.Select(
+            param => $"        Func<{param.Type}, TResult> {param.Name}"
+        );
+
+        builder.AppendLine(string.Join(",\n", matchMethodParams));
 
         builder.AppendLine("    )");
         builder.Append("    {");
 
-        for (int i = 0; i < parameters.Count; ++i)
-        {
-            var parameter = parameters[i];
-            builder.Append(
+        var matchMethodIfChecks = methodToGenerate.Parameters.Select(
+            param =>
                 @$"
-        if (type is {parameter.Type} t{i})
+        if (type is {param.Type} t{param.Type})
         {{
-            return {parameter.Name}(t{i});
+            return {param.Name}(t{param.Type});
         }}
 "
-            );
-        }
+        );
+
+        builder.AppendLine(string.Join("", matchMethodIfChecks));
 
         builder.AppendLine("        throw new InvalidOperationException();");
         builder.AppendLine("    }");
