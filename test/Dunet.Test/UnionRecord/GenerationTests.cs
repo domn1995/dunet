@@ -14,7 +14,7 @@ QueryState success = new QueryState.Success();
 QueryState error = new QueryState.Error();
 
 [Union]
-public partial record QueryState
+partial record QueryState
 {
     partial record Loading();
     partial record Success();
@@ -41,7 +41,7 @@ var success = new QueryState.Success();
 var error = new QueryState.Error();
 
 [Union]
-public partial record QueryState
+partial record QueryState
 {
     partial record Loading();
     partial record Success();
@@ -66,7 +66,7 @@ using Dunet;
 var single = new Single.OnlyMember();
 
 [Union]
-public partial record Single
+partial record Single
 {
     partial record OnlyMember();
 }";
@@ -89,7 +89,7 @@ using Dunet;
 var dummy = 1;
 
 [Union]
-public partial record Empty;";
+partial record Empty;";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -110,7 +110,7 @@ var success = new Result.Success(Guid.NewGuid());
 var failure = new Result.Failure(new Exception(""Boom!""));
 
 [Union]
-public partial record Result
+partial record Result
 {
     partial record Success(Guid Id);
     partial record Failure(Exception Error);
@@ -142,7 +142,7 @@ using System;
 namespace Results;
 
 [Union]
-public partial record Result
+partial record Result
 {
     partial record Success(Data Value);
     partial record Failure(Exception Error);
