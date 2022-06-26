@@ -13,14 +13,6 @@ public class UnionRecordGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(
-            ctx =>
-                ctx.AddSource(
-                    "UnionAttribute.g.cs",
-                    SourceText.From(UnionAttributeSource.Attribute, Encoding.UTF8)
-                )
-        );
-
         var recordDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (node, _) => node.IsDecoratedRecord(),
