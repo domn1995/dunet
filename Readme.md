@@ -12,48 +12,58 @@
 // 1. Import the namespace.
 using Dunet;
 
-// 2. Add the `Union` attribute to an interface.
+// 2. Add the `Union` attribute to a partial record.
 [Union]
-interface IShape
+partial record Shape
 {
-    // 3. Define the union members as interface methods.
-    IShape Circle(double radius);
-    IShape Rectangle(double length, double width);
-    IShape Triangle(double @base, double height);
+    // 3. Define the union members as inner partial records.
+    partial record Circle(double Radius);
+    partial record Rectangle(double Length, double Width);
+    partial record Triangle(double Base, double Height);
 }
 
 // 4. Use the union members.
-IShape shape = new Rectangle(3, 4);
-var area = shape switch
-{
-    Circle c => 3.14 * c.Radius * c.Radius,
-    Rectangle r => r.Length * r.Width,
-    Triangle t => t.Base * t.Height / 2,
-    _ => 0d,
-};
-
-System.Console.WriteLine(area); // "12"
+var shape = new Shape.Rectangle(3, 4);
+var area = shape.Match(
+    circle => 3.14 * circle.Radius * circle.Radius,
+    rectangle => rectangle.Length * rectangle.Width,
+    triangle => triangle.Base * triangle.Height / 2
+);
+Console.WriteLine(area); // "12"
 ```
 
-## Dedicated Match Method
+## Generics Support
 
-Dunet will also generate a dedicated `Match()` extension method for the union type:
+Use generics for more advanced union types. For example, an option monad:
 
 ```cs
+// 1. Import the namespace.
 using Dunet;
 
+// 2. Add the `Union` attribute to a partial record.
+// 3. Add one or more type arguments to the union record.
 [Union]
-interface IChoice
+partial record Option<T>
 {
-    void Yes();
-    void No(string reason);
+    partial record Some(T Value);
+    partial record None();
 }
 
-IChoice choice = new No("I don't wanna.");
-var response = choice.Match(
-    yes => "Yes!!!",
-    no => $"No, because {no.Reason}"
-);
+// 4. Use the union members.
+static Option<int> ParseInt(string? value) =>
+    int.TryParse(value, out var number)
+        ? Option<int>.Some(number)
+        : Option<int>.None();
 
-System.Console.WriteLine(response); // "No, because I don't wanna."
+static string GetOutput(Option<int> number) =>
+    number.Match(
+        some => some.Value.ToString(),
+        none => "Invalid input!"
+    );
+
+var input = ParseInt(Console.ReadLine()); // User inputs "not a number".
+Console.WriteLine(GetOutput(input)); // "Invalid input!"
+
+input = ParseInt(Console.ReadLine()); // User inputs "12345".
+Console.WriteLine(GetOutput(input)); // "12345".
 ```
