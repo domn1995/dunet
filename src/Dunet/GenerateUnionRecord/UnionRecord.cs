@@ -19,4 +19,7 @@ internal record TypeParameter(string Name)
     public sealed override string ToString() => Name;
 }
 
-internal record RecordProperty(string Type, string Name);
+internal record RecordProperty(string Type, string Name)
+{
+    public sealed override string ToString() => $"{Type} {Name}";
+}
