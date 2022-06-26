@@ -1,4 +1,4 @@
-﻿namespace Dunet.GenerateUnionInterface;
+﻿namespace Dunet;
 
 internal static class IdentifierExtensions
 {
@@ -28,9 +28,12 @@ internal static class IdentifierExtensions
 
         var isFirstCharacterLowercased = char.IsLower(identifier[0]);
 
+        // From here on we append "@" to the identifier name to prevent collisions with keywords.
+        // For example if `identifier` was "New", we'd get a collision when we lowered it to "new".
+        // Thus, we want "@new" instead. For simplicity and futureproofing, we don't append only on known keywords.
         if (isFirstCharacterLowercased)
         {
-            return identifier;
+            return $"@{identifier}";
         }
 
         var lowercasedFirstCharacter = char.ToLower(identifier[0]).ToString();
@@ -40,6 +43,6 @@ internal static class IdentifierExtensions
             return lowercasedFirstCharacter;
         }
 
-        return $"{lowercasedFirstCharacter}{identifier.Substring(1)}";
+        return $"@{lowercasedFirstCharacter}{identifier.Substring(1)}";
     }
 }
