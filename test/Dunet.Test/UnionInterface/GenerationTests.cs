@@ -5,6 +5,7 @@ public class GenerationTests : UnionInterfaceTests
     [Fact]
     public void UnionTypeMayHaveNoMembers()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -31,6 +32,7 @@ interface IQueryState
     [Fact]
     public void UnionMayContainSingleType()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -53,6 +55,7 @@ interface ISingle
     [Fact]
     public void UnionMayBeEmpty()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -62,6 +65,7 @@ var dummy = 1;
 
 [Union]
 interface IEmpty { }";
+
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -73,6 +77,7 @@ interface IEmpty { }";
     [Fact]
     public void UnionTypeMayHaveComplexMembers()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -98,13 +103,13 @@ interface IResult
     [Fact]
     public void UnionTypeMayHaveComplexMembersFromOtherNamespace()
     {
+        // Arrange.
         var dataCs =
             @"
 namespace ComplexTypes;
 
 public record Data(string Value);
 ";
-
         var iResultCs =
             @"
 using Dunet;
@@ -119,7 +124,6 @@ public interface IResult
     void Success(Data value);
     void Failure(Exception error);
 }";
-
         var programCs =
             @"
 using System;

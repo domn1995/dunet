@@ -5,6 +5,7 @@ public class GenerationTests : UnionRecordTests
     [Fact]
     public void UnionMembersExtendUnionType()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -32,6 +33,7 @@ partial record QueryState
     [Fact]
     public void UnionTypeMayHaveNoMembers()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -59,6 +61,7 @@ partial record QueryState
     [Fact]
     public void UnionMayContainSingleType()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -81,6 +84,7 @@ partial record Single
     [Fact]
     public void UnionMayBeEmpty()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -101,6 +105,7 @@ partial record Empty;";
     [Fact]
     public void UnionTypeMayHaveComplexMembers()
     {
+        // Arrange.
         var programCs =
             @"
 using Dunet;
@@ -126,6 +131,7 @@ partial record Result
     [Fact]
     public void UnionTypeMayHaveComplexMembersFromOtherNamespace()
     {
+        // Arrange.
         var dataCs =
             @"
 namespace ComplexTypes;
