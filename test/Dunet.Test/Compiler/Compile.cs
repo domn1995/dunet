@@ -20,9 +20,20 @@ public class Compile
         var (outputCompilation, compilationDiagnostics, generationDiagnostics) = RunGenerator(
             baseCompilation
         );
+
         using var ms = new MemoryStream();
-        outputCompilation.Emit(ms);
-        var assembly = Assembly.Load(ms.ToArray());
+        Assembly? assembly = null;
+
+        try
+        {
+            outputCompilation.Emit(ms);
+            assembly = Assembly.Load(ms.ToArray());
+        }
+        catch
+        {
+            // Do nothing since we want to inspect the diagnostics when compilation fails.
+        }
+
         return new(
             Assembly: assembly,
             CompilationDiagnostics: compilationDiagnostics,

@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Dunet.Test.Compiler;
 
 public record CompilationResult(
-    Assembly Assembly,
+    Assembly? Assembly,
     ImmutableArray<Diagnostic> CompilationDiagnostics,
     ImmutableArray<Diagnostic> GenerationDiagnostics
 )
@@ -19,4 +19,6 @@ public record CompilationResult(
         GenerationDiagnostics
             .Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
             .ToImmutableArray();
+
+    public bool Success => Assembly is not null;
 }

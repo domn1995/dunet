@@ -45,10 +45,12 @@ partial record Option
     partial record None();
 }";
         // Act.
-        var compile = () => Compile.ToAssembly(programCs);
+        var result = Compile.ToAssembly(programCs);
+        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.
-        compile.Should().Throw<BadImageFormatException>();
+        result.Assembly.Should().BeNull();
+        result.CompilationErrors.Should().NotBeEmpty();
     }
 
     [Theory]
@@ -93,7 +95,7 @@ partial record Option<T>
 
         // Act.
         var result = Compile.ToAssembly(programCs);
-        var actualArea = result.Assembly.ExecuteStaticMethod<string>("GetActualArea");
+        var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetActualArea");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
@@ -129,11 +131,42 @@ partial record Result<TFailure, TSuccess>
 }}";
         // Act.
         var result = Compile.ToAssembly(programCs);
-        var actualMessage = result.Assembly.ExecuteStaticMethod<string>("GetActualMessage");
+        var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);
+    }
+
+    [Fact]
+    public void SupportsGenericTypeArgumentConstraints()
+    {
+        var programCs =
+            @$"
+using System;
+using Dunet;
+
+var result = new Result<string, string>.Success(""Can't do this."");
+
+[Union]
+partial record Result<TFailure, TSuccess> where TFailure : Exception
+{{
+    partial record Success(TSuccess Value);
+    partial record Failure(TFailure Error);
+}}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+
+        // Assert.
+        result.Assembly.Should().BeNull();
+        errorMessages
+            .Should()
+            .ContainSingle(
+                "The type 'string' cannot be used as type parameter 'TFailure' in the "
+                    + "generic type or method 'Result<TFailure, TSuccess>'.There is no "
+                    + "implicit reference conversion from 'string' to 'System.Exception'."
+            );
     }
 }

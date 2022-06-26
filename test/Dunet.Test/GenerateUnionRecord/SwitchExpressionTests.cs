@@ -69,7 +69,7 @@ partial record Shape
 }}";
         // Act.
         var result = Compile.ToAssembly(source);
-        var actualArea = result.Assembly.ExecuteStaticMethod<double>("GetActualArea");
+        var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetActualArea");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
