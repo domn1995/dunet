@@ -15,7 +15,7 @@ internal static class UnionRecordSource
 
         if (record.Namespace is not null)
         {
-            builder.AppendLine($"namespace {record.Namespace}");
+            builder.AppendLine($"namespace {record.Namespace};");
         }
 
         builder.AppendLine($"abstract partial record {record.Name}");
