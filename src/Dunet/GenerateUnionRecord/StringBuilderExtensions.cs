@@ -20,16 +20,4 @@ internal static class StringBuilderExtensions
         builder.Append(typeParamList);
         builder.Append(">");
     }
-
-    public static void AppendRecordProperties(
-        this StringBuilder builder,
-        IReadOnlyList<RecordProperty> properties
-    )
-    {
-        var propertyList = string.Join(", ", properties.Select(p => p.ToString()));
-
-        builder.Append("(");
-        builder.Append(propertyList);
-        builder.Append(")");
-    }
 }
