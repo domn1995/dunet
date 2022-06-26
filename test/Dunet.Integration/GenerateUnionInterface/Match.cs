@@ -1,6 +1,6 @@
-﻿using Dunet.Integration.UnionInterface.Unions;
+﻿using Dunet.Integration.GenerateUnionInterface.Unions;
 
-namespace Dunet.Integration;
+namespace Dunet.Integration.GenerateUnionInterface;
 
 public class Match
 {

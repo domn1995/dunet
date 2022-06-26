@@ -1,4 +1,4 @@
-﻿namespace Dunet.Integration.UnionRecord.Unions;
+﻿namespace Dunet.Integration.GenerateUnionRecord.Unions;
 
 [Union]
 public partial record NumberType

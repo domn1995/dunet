@@ -1,4 +1,4 @@
-﻿namespace Dunet.Integration.UnionInterface.Unions;
+﻿namespace Dunet.Integration.GenerateUnionInterface.Unions;
 
 [Union]
 interface INumberType
