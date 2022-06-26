@@ -65,7 +65,7 @@ partial record Option
             @$"
 using Dunet;
 
-static string GetOutputValue() => Divide() switch
+static string GetActualArea() => Divide() switch
 {{
     Option.Some<double> some => some.Value.ToString(),
     Option.None none => ""Error: division by zero."",
@@ -94,7 +94,7 @@ partial record Option
 
         // Act.
         var result = Compile.ToAssembly(programCs);
-        var actualArea = result.Assembly.ExecuteStaticMethod<string>("GetOutput");
+        var actualArea = result.Assembly.ExecuteStaticMethod<string>("GetActualArea");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();

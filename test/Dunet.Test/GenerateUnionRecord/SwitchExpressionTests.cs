@@ -48,7 +48,7 @@ partial record Shape
             @$"
 using Dunet;
 
-static double GetArea()
+static double GetActualArea()
 {{
     {shapeDeclaration}
     return shape switch
@@ -69,7 +69,7 @@ partial record Shape
 }}";
         // Act.
         var result = Compile.ToAssembly(source);
-        var actualArea = result.Assembly.ExecuteStaticMethod<double>("GetArea");
+        var actualArea = result.Assembly.ExecuteStaticMethod<double>("GetActualArea");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
