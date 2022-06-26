@@ -1,4 +1,4 @@
-﻿using Dunet.UnionInterface;
+﻿using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -6,21 +6,13 @@ using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Text;
 
-namespace Dunet;
+namespace Dunet.GenerateUnionInterface;
 
 [Generator]
 public class UnionInterfaceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(
-            ctx =>
-                ctx.AddSource(
-                    "UnionAttribute.g.cs",
-                    SourceText.From(UnionAttributeSource.Attribute, Encoding.UTF8)
-                )
-        );
-
         var interfaceDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (node, _) => node.IsDecoratedInterface(),

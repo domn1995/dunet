@@ -1,4 +1,4 @@
-﻿using Dunet.UnionInterface;
+﻿using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -6,21 +6,13 @@ using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Text;
 
-namespace Dunet.UnionRecord;
+namespace Dunet.GenerateUnionRecord;
 
 [Generator]
 public class UnionRecordGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(
-            ctx =>
-                ctx.AddSource(
-                    "UnionAttribute.g.cs",
-                    SourceText.From(UnionAttributeSource.Attribute, Encoding.UTF8)
-                )
-        );
-
         var recordDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (node, _) => node.IsDecoratedRecord(),

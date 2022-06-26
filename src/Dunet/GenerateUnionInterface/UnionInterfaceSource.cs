@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Dunet.UnionInterface;
+namespace Dunet.GenerateUnionInterface;
 
 internal static class UnionInterfaceSource
 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Dunet.UnionAttributeGeneration;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;
 
@@ -6,6 +7,9 @@ namespace Dunet.Test.Compiler;
 
 public class Compile
 {
+    private static readonly IIncrementalGenerator unionAttributeGenerator =
+        new UnionAttributeGenerator();
+
     private readonly IIncrementalGenerator generator;
 
     public Compile(IIncrementalGenerator generator) => this.generator = generator;
@@ -40,7 +44,7 @@ public class Compile
     private GenerationResult RunGenerator(Compilation compilation)
     {
         CSharpGeneratorDriver
-            .Create(generator)
+            .Create(generator, unionAttributeGenerator)
             .RunGeneratorsAndUpdateCompilation(
                 compilation,
                 out var outputCompilation,

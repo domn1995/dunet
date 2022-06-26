@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Dunet;
 
-public static class SyntaxExtensions
+internal static class SyntaxExtensions
 {
     public static IEnumerable<MethodDeclarationSyntax> GetMethodDeclarations(
         this TypeDeclarationSyntax typeDeclaration
