@@ -1,7 +1,7 @@
 ﻿using Dunet.Test.Compiler;
 using Dunet.Test.Runtime;
 
-namespace Dunet.Test.UnionInterface;
+namespace Dunet.Test.GenerateUnionInterface;
 
 public class MatchMethodTests : UnionInterfaceTests
 {

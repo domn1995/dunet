@@ -1,4 +1,4 @@
-namespace Dunet.Test.UnionInterface;
+namespace Dunet.Test.GenerateUnionInterface;
 
 public class NamespaceTests : UnionInterfaceTests
 {

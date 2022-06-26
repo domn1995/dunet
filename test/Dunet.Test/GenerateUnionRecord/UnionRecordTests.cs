@@ -1,7 +1,7 @@
 ﻿using Dunet.Test.Compiler;
 using Dunet.GenerateUnionRecord;
 
-namespace Dunet.Test.UnionRecord;
+namespace Dunet.Test.GenerateUnionRecord;
 
 public abstract class UnionRecordTests
 {

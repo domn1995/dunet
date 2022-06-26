@@ -1,6 +1,6 @@
 ﻿using Dunet.Test.Runtime;
 
-namespace Dunet.Test.UnionRecord;
+namespace Dunet.Test.GenerateUnionRecord;
 
 public class SwitchExpressionTests : UnionRecordTests
 {

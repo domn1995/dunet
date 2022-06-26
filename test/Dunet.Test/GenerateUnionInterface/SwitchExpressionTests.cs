@@ -1,6 +1,6 @@
 ﻿using Dunet.Test.Runtime;
 
-namespace Dunet.Test.UnionInterface;
+namespace Dunet.Test.GenerateUnionInterface;
 
 public class SwitchExpressionTests : UnionInterfaceTests
 {
