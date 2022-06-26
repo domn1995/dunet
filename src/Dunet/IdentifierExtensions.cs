@@ -30,7 +30,7 @@ internal static class IdentifierExtensions
 
         // From here on we append "@" to the identifier name to prevent collisions with keywords.
         // For example if `identifier` was "New", we'd get a collision when we lowered it to "new".
-        // Thus, we want "@new" instead.
+        // Thus, we want "@new" instead. For simplicity and futureproofing, we don't append only on known keywords.
         if (isFirstCharacterLowercased)
         {
             return $"@{identifier}";

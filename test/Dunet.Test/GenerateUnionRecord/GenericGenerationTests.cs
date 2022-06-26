@@ -29,7 +29,7 @@ partial record Option<T>
     }
 
     [Fact]
-    public void UnionMemberMayHaveGenericParameter()
+    public void UnionMemberMayNotHaveGenericParameter()
     {
         var programCs =
             @"
@@ -45,11 +45,10 @@ partial record Option
     partial record None();
 }";
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var compile = () => Compile.ToAssembly(programCs);
 
         // Assert.
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        compile.Should().Throw<BadImageFormatException>();
     }
 
     [Theory]
@@ -67,28 +66,28 @@ using Dunet;
 
 static string GetActualArea() => Divide() switch
 {{
-    Option.Some<double> some => some.Value.ToString(),
-    Option.None none => ""Error: division by zero."",
+    Option<double>.Some some => some.Value.ToString(),
+    Option<double>.None none => ""Error: division by zero."",
     _ => throw new System.InvalidOperationException(),
 }};
 
-static Option Divide()
+static Option<double> Divide()
 {{
     var dividend = {dividend};
     var divisor = {divisor};
 
     if (divisor is 0)
     {{
-        return new Option.None();
+        return new Option<double>.None();
     }}
 
-    return new Option.Some<double>((double)dividend / divisor);
+    return new Option<double>.Some((double)dividend / divisor);
 }}
 
 [Union]
-partial record Option
+partial record Option<T>
 {{
-    partial record Some<T>(T Value);
+    partial record Some(T Value);
     partial record None();
 }}";
 
@@ -100,5 +99,41 @@ partial record Option
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedOutput);
+    }
+
+    [Theory]
+    [InlineData("Success(\"Successful!\")", "Successful!")]
+    [InlineData("Failure(new Exception(\"Failure!\"))", "Failure!")]
+    public void CanReturnImplementationsOfGenericUnionWithMultipleTypeParameters(
+        string resultRecord,
+        string expectedMessage
+    )
+    {
+        var programCs =
+            @$"
+using System;
+using Dunet;
+
+static Result<Exception, string> DoWork() => new Result<Exception, string>.{resultRecord};
+
+static string GetActualMessage() => DoWork().Match(
+    success => success.Value,
+    failure => failure.Error.Message
+);
+
+[Union]
+partial record Result<TFailure, TSuccess>
+{{
+    partial record Success(TSuccess Value);
+    partial record Failure(TFailure Error);
+}}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+        var actualMessage = result.Assembly.ExecuteStaticMethod<string>("GetActualMessage");
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+        actualMessage.Should().Be(expectedMessage);
     }
 }
