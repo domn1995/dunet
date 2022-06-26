@@ -1,7 +1,35 @@
-﻿namespace Dunet.Test.UnionInterface;
+﻿namespace Dunet.Test.UnionRecord;
 
-public class GenerationTests : UnionInterfaceTests
+public class GenerationTests : UnionRecordTests
 {
+    [Fact]
+    public void UnionMembersExtendUnionType()
+    {
+        // Arrange.
+        var programCs =
+            @"
+using Dunet;
+
+QueryState loading = new QueryState.Loading();
+QueryState success = new QueryState.Success();
+QueryState error = new QueryState.Error();
+
+[Union]
+partial record QueryState
+{
+    partial record Loading();
+    partial record Success();
+    partial record Error();
+}";
+
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
+
     [Fact]
     public void UnionTypeMayHaveNoMembers()
     {
@@ -10,17 +38,18 @@ public class GenerationTests : UnionInterfaceTests
             @"
 using Dunet;
 
-IQueryState loading = new Loading();
-IQueryState success = new Success();
-IQueryState error = new Error();
+var loading = new QueryState.Loading();
+var success = new QueryState.Success();
+var error = new QueryState.Error();
 
 [Union]
-interface IQueryState
+partial record QueryState
 {
-    IQueryState Loading();
-    IQueryState Success();
-    IQueryState Error();
+    partial record Loading();
+    partial record Success();
+    partial record Error();
 }";
+
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -37,12 +66,12 @@ interface IQueryState
             @"
 using Dunet;
 
-ISingle single = new Single();
+var single = new Single.OnlyMember();
 
 [Union]
-interface ISingle
+partial record Single
 {
-    ISingle Single();
+    partial record OnlyMember();
 }";
         // Act.
         var result = Compile.ToAssembly(programCs);
@@ -60,12 +89,11 @@ interface ISingle
             @"
 using Dunet;
 
-// Must have something for top level program to execute.
+// Must have something for top level program to compile.
 var dummy = 1;
 
 [Union]
-interface IEmpty { }";
-
+partial record Empty;";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -83,14 +111,14 @@ interface IEmpty { }";
 using Dunet;
 using System;
 
-// Must have something for top level program to execute.
-var dummy = 1;
+var success = new Result.Success(Guid.NewGuid());
+var failure = new Result.Failure(new Exception(""Boom!""));
 
 [Union]
-interface IResult
+partial record Result
 {
-    void Success(Guid id);
-    void Failure(Exception error);
+    partial record Success(Guid Id);
+    partial record Failure(Exception Error);
 }";
         // Act.
         var result = Compile.ToAssembly(programCs);
@@ -110,6 +138,7 @@ namespace ComplexTypes;
 
 public record Data(string Value);
 ";
+
         var iResultCs =
             @"
 using Dunet;
@@ -119,11 +148,12 @@ using System;
 namespace Results;
 
 [Union]
-public interface IResult
+partial record Result
 {
-    void Success(Data value);
-    void Failure(Exception error);
+    partial record Success(Data Value);
+    partial record Failure(Exception Error);
 }";
+
         var programCs =
             @"
 using System;
@@ -131,8 +161,8 @@ using ComplexTypes;
 using Results;
 
 // Must have something for top level program to execute.
-var success = new Success(new Data(""foo""));
-var failure = new Failure(new Exception(""foo""));
+var success = new Result.Success(new Data(""foo""));
+var failure = new Result.Failure(new Exception(""bar""));
 ";
         // Act.
         var result = Compile.ToAssembly(dataCs, iResultCs, programCs);

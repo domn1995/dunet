@@ -34,6 +34,10 @@ public static class SyntaxExtensions
         node is InterfaceDeclarationSyntax interfaceDeclaration
         && interfaceDeclaration.AttributeLists.Count > 0;
 
+    public static bool IsDecoratedRecord(this SyntaxNode node) =>
+        node is RecordDeclarationSyntax recordDeclaration
+        && recordDeclaration.AttributeLists.Count > 0;
+
     public static bool IsImporting(this UsingDirectiveSyntax import, string name) =>
         import.Name.ToString() == name;
 }
