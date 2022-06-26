@@ -1,4 +1,4 @@
-﻿namespace Dunet;
+﻿namespace Dunet.GenerateUnionInterface;
 
 internal static class IdentifierExtensions
 {

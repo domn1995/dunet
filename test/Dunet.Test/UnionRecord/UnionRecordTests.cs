@@ -1,5 +1,5 @@
 ﻿using Dunet.Test.Compiler;
-using Dunet.UnionRecord;
+using Dunet.GenerateUnionRecord;
 
 namespace Dunet.Test.UnionRecord;
 

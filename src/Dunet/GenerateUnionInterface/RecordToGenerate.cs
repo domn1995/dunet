@@ -1,4 +1,4 @@
-﻿namespace Dunet;
+﻿namespace Dunet.GenerateUnionInterface;
 
 record RecordToGenerate(
     List<string> Imports,

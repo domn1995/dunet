@@ -1,4 +1,4 @@
-﻿namespace Dunet.UnionRecord;
+﻿namespace Dunet.GenerateUnionRecord;
 
 internal record UnionRecord(
     List<string> Imports,

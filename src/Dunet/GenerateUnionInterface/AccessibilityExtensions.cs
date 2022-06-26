@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Dunet;
+namespace Dunet.GenerateUnionInterface;
 
 internal static class AccessibilityExtensions
 {

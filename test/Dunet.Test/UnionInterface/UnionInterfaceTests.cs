@@ -1,4 +1,5 @@
-﻿using Dunet.Test.Compiler;
+﻿using Dunet.GenerateUnionInterface;
+using Dunet.Test.Compiler;
 
 namespace Dunet.Test.UnionInterface;
 

@@ -1,4 +1,4 @@
-﻿namespace Dunet;
+﻿namespace Dunet.UnionAttributeGeneration;
 
 internal class UnionAttributeSource
 {
