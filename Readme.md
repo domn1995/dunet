@@ -74,3 +74,4 @@ Console.WriteLine(GetOutput(input)); // "12345".
 - [Serialization/Deserialization](./samples/Serialization/Program.cs)
 - [Option Monad](./samples/OptionMonad/Program.cs)
 - [Web Client](./samples/PokemonClient/PokeClient.cs)
+- [Recursive Expressions](./samples/ExpressionCalculator/Program.cs)
