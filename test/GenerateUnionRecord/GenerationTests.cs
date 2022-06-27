@@ -11,8 +11,11 @@ public class GenerationTests : UnionRecordTests
 using Dunet;
 
 QueryState loading = new QueryState.Loading();
+QueryState loadingFactory = QueryState.NewLoading();
 QueryState success = new QueryState.Success();
+QueryState successFactory = QueryState.NewSuccess();
 QueryState error = new QueryState.Error();
+QueryState errorFactory = QueryState.NewError();
 
 [Union]
 partial record QueryState
@@ -169,6 +172,33 @@ var failure = new Result.Failure(new Exception(""bar""));
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void FactoryMethodGenerationCanBeDisabled()
+    {
+        // Arrange.
+        var programCs =
+            @"
+using Dunet;
+
+QueryState loading = QueryState.NewLoading();
+
+[Union(GenerateFactoryMethods = false)]
+partial record QueryState
+{
+    partial record Loading();
+    partial record Success();
+    partial record Error();
+}";
+
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().HaveCount(1);
+        result.CompilationErrors[0].Id.Should().Be("CS0117"); // error CS0117: 'QueryState' does not contain a definition for 'NewLoading'
         result.GenerationDiagnostics.Should().BeEmpty();
     }
 }

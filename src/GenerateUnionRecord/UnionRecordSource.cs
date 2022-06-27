@@ -25,6 +25,29 @@ internal static class UnionRecordSource
         builder.AppendLine($"    private {record.Name}() {{}}");
         builder.AppendLine();
 
+        if (record.Options.GenerateFactoryMethods)
+        {
+            foreach (var member in record.Members)
+            {
+                var parameterList = string.Join(", ",
+                    member.Properties.Select(p => $"{p.Type} {p.Name.ToMethodParameterCase()}"));
+                builder.Append($"    public static {record.Name}");
+                builder.AppendTypeParams(record.TypeParameters);
+                builder.Append(
+                    $" {record.Options.FactoryMethodPrefix}{member.Name}{record.Options.FactoryMethodSuffix}");
+                builder.AppendTypeParams(member.TypeParameters);
+                builder.AppendLine($"({parameterList}) =>");
+
+                var constructorArgList =
+                    string.Join(", ", member.Properties.Select(p => p.Name.ToMethodParameterCase()));
+                builder.Append($"        new {member.Name}");
+                builder.AppendTypeParams(member.TypeParameters);
+                builder.AppendLine($"({constructorArgList});");
+            }
+
+            builder.AppendLine();
+        }
+
         builder.AppendLine("    public abstract TMatchOutput Match<TMatchOutput>(");
         for (int i = 0; i < record.Members.Count; ++i)
         {

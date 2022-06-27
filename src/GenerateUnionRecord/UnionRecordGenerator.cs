@@ -8,6 +8,8 @@ using System.Text;
 
 namespace Dunet.GenerateUnionRecord;
 
+record GenerationTarget(RecordDeclarationSyntax RecordDeclaration, UnionAttributeOptions Options);
+
 [Generator]
 public class UnionRecordGenerator : IIncrementalGenerator
 {
@@ -28,7 +30,7 @@ public class UnionRecordGenerator : IIncrementalGenerator
         );
     }
 
-    private static RecordDeclarationSyntax? GetGenerationTarget(GeneratorSyntaxContext context)
+    private static GenerationTarget? GetGenerationTarget(GeneratorSyntaxContext context)
     {
         var recordDeclaration = (RecordDeclarationSyntax)context.Node;
 
@@ -49,7 +51,12 @@ public class UnionRecordGenerator : IIncrementalGenerator
 
                 if (fullAttributeName is UnionAttributeSource.FullAttributeName)
                 {
-                    return recordDeclaration;
+                    var options =
+                        attribute.ArgumentList?.Arguments.Aggregate(UnionAttributeOptions.Default,
+                            (options, arg) => options.WithAttributeArgument(context, arg))
+                        ?? UnionAttributeOptions.Default;
+
+                    return new GenerationTarget(recordDeclaration, options);
                 }
             }
         }
@@ -59,20 +66,18 @@ public class UnionRecordGenerator : IIncrementalGenerator
 
     private static void Execute(
         Compilation compilation,
-        ImmutableArray<RecordDeclarationSyntax> recordDeclarations,
+        ImmutableArray<GenerationTarget> targets,
         SourceProductionContext context
     )
     {
-        if (recordDeclarations.IsDefaultOrEmpty)
+        if (targets.IsDefaultOrEmpty)
         {
             return;
         }
 
-        var distinctRecords = recordDeclarations.Distinct();
-
         var unionRecords = GetCodeToGenerate(
             compilation,
-            distinctRecords,
+            targets,
             context.CancellationToken
         );
 
@@ -90,31 +95,31 @@ public class UnionRecordGenerator : IIncrementalGenerator
 
     private static List<UnionRecord> GetCodeToGenerate(
         Compilation compilation,
-        IEnumerable<RecordDeclarationSyntax> recordDeclarations,
+        IEnumerable<GenerationTarget> targets,
         CancellationToken _
     )
     {
         var unionRecords = new List<UnionRecord>();
 
-        foreach (var recordDeclaration in recordDeclarations)
+        foreach (var target in targets)
         {
-            var semanticModel = compilation.GetSemanticModel(recordDeclaration.SyntaxTree);
-            var recordSymbol = semanticModel.GetDeclaredSymbol(recordDeclaration);
+            var semanticModel = compilation.GetSemanticModel(target.RecordDeclaration.SyntaxTree);
+            var recordSymbol = semanticModel.GetDeclaredSymbol(target.RecordDeclaration);
 
             if (recordSymbol is null)
             {
                 continue;
             }
 
-            var imports = recordDeclaration
+            var imports = target.RecordDeclaration
                 .GetImports()
                 .Where(static import => !import.IsImporting("Dunet"))
                 .Select(static import => import.ToString());
             var @namespace = recordSymbol.GetNamespace();
-            var unionRecordTypeParameters = recordDeclaration.TypeParameterList?.Parameters.Select(
+            var unionRecordTypeParameters = target.RecordDeclaration.TypeParameterList?.Parameters.Select(
                 static typeParam => new TypeParameter(typeParam.Identifier.ToString())
             );
-            var unionRecordMemberDeclarations = recordDeclaration
+            var unionRecordMemberDeclarations = target.RecordDeclaration
                 .DescendantNodes()
                 .Where(static node => node.IsKind(SyntaxKind.RecordDeclaration))
                 .OfType<RecordDeclarationSyntax>();
@@ -147,7 +152,8 @@ public class UnionRecordGenerator : IIncrementalGenerator
                 Namespace: @namespace,
                 Name: recordSymbol.Name,
                 TypeParameters: unionRecordTypeParameters?.ToList() ?? new(),
-                Members: unionRecordMembers
+                Members: unionRecordMembers,
+                Options: target.Options 
             );
 
             unionRecords.Add(record);

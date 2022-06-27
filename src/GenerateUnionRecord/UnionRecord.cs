@@ -1,11 +1,14 @@
-﻿namespace Dunet.GenerateUnionRecord;
+﻿using Dunet.UnionAttributeGeneration;
+
+namespace Dunet.GenerateUnionRecord;
 
 internal record UnionRecord(
     List<string> Imports,
     string? Namespace,
     string Name,
     List<TypeParameter> TypeParameters,
-    List<UnionRecordMember> Members
+    List<UnionRecordMember> Members,
+    UnionAttributeOptions Options
 );
 
 internal record UnionRecordMember(
