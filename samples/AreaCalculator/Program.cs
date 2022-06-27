@@ -1,5 +1,4 @@
 ﻿using Dunet;
-
 using static Shape;
 
 var circle = new Circle(10);
