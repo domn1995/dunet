@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Test", "test\Dunet.Test\Dunet.Test.csproj", "{0A43DD4D-D4FE-49FF-88B5-14FD946EF6DC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet", "src\Dunet\Dunet.csproj", "{6842384B-93A4-4665-A2B2-A2ED633850F3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Cli", "samples\Dunet.Cli\Dunet.Cli.csproj", "{549F5456-F6D2-40E4-B49C-18B1A9924A93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dunet.Integration", "test\Dunet.Integration\Dunet.Integration.csproj", "{9179FC77-D79F-4B6F-A0B4-599F16DFCBEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet", "src\Dunet.csproj", "{13C0B629-4C48-4C73-AECB-06A476871C5B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Test", "test\Dunet.Test.csproj", "{573E6767-C044-415B-9AD3-A1734B0DD684}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Integration", "integration\Dunet.Integration.csproj", "{5A567AA2-AB76-4D41-B8EA-49202760CFBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,22 +17,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0A43DD4D-D4FE-49FF-88B5-14FD946EF6DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A43DD4D-D4FE-49FF-88B5-14FD946EF6DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A43DD4D-D4FE-49FF-88B5-14FD946EF6DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A43DD4D-D4FE-49FF-88B5-14FD946EF6DC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6842384B-93A4-4665-A2B2-A2ED633850F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6842384B-93A4-4665-A2B2-A2ED633850F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6842384B-93A4-4665-A2B2-A2ED633850F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6842384B-93A4-4665-A2B2-A2ED633850F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9179FC77-D79F-4B6F-A0B4-599F16DFCBEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9179FC77-D79F-4B6F-A0B4-599F16DFCBEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9179FC77-D79F-4B6F-A0B4-599F16DFCBEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9179FC77-D79F-4B6F-A0B4-599F16DFCBEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13C0B629-4C48-4C73-AECB-06A476871C5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C0B629-4C48-4C73-AECB-06A476871C5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13C0B629-4C48-4C73-AECB-06A476871C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13C0B629-4C48-4C73-AECB-06A476871C5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{573E6767-C044-415B-9AD3-A1734B0DD684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{573E6767-C044-415B-9AD3-A1734B0DD684}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{573E6767-C044-415B-9AD3-A1734B0DD684}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{573E6767-C044-415B-9AD3-A1734B0DD684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A567AA2-AB76-4D41-B8EA-49202760CFBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A567AA2-AB76-4D41-B8EA-49202760CFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A567AA2-AB76-4D41-B8EA-49202760CFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A567AA2-AB76-4D41-B8EA-49202760CFBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
