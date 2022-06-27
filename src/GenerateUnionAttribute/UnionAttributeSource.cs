@@ -11,6 +11,6 @@ internal class UnionAttributeSource
 
 namespace Dunet;
 
-[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class UnionAttribute : Attribute {}";
 }
