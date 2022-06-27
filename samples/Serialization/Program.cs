@@ -19,6 +19,7 @@ foreach (var shape in deserializedShapes!)
     Console.WriteLine(shape);
 }
 
+// Serialization/deserialization can be eanbled with `JsonDerivedType` attribute from .NET 7.
 [Union]
 [JsonDerivedType(typeof(Circle), typeDiscriminator: nameof(Circle))]
 [JsonDerivedType(typeof(Rectangle), typeDiscriminator: nameof(Rectangle))]
