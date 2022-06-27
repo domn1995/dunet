@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Cli", "samples\Dunet.Cli\Dunet.Cli.csproj", "{549F5456-F6D2-40E4-B49C-18B1A9924A93}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet", "src\Dunet.csproj", "{13C0B629-4C48-4C73-AECB-06A476871C5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Test", "test\Dunet.Test.csproj", "{573E6767-C044-415B-9AD3-A1734B0DD684}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Integration", "integration\Dunet.Integration.csproj", "{5A567AA2-AB76-4D41-B8EA-49202760CFBB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{7A773F5B-F0CA-444E-BD3D-C954653DF638}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AreaCalculator", "samples\AreaCalculator\AreaCalculator.csproj", "{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{549F5456-F6D2-40E4-B49C-18B1A9924A93}.Release|Any CPU.Build.0 = Release|Any CPU
 		{13C0B629-4C48-4C73-AECB-06A476871C5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{13C0B629-4C48-4C73-AECB-06A476871C5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13C0B629-4C48-4C73-AECB-06A476871C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,9 +31,16 @@ Global
 		{5A567AA2-AB76-4D41-B8EA-49202760CFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A567AA2-AB76-4D41-B8EA-49202760CFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A567AA2-AB76-4D41-B8EA-49202760CFBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {587D0652-52E0-4A29-84A8-DE4C64FE1F02}
