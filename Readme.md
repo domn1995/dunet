@@ -67,3 +67,9 @@ Console.WriteLine(GetOutput(input)); // "Invalid input!"
 input = ParseInt(Console.ReadLine()); // User inputs "12345".
 Console.WriteLine(GetOutput(input)); // "12345".
 ```
+
+## Samples
+
+- [Area Calculator](./samples/AreaCalculator/Program.cs)
+- [Serialization/Deserialization](./samples/Serialization/Program.cs)
+- [Option Monad](./samples/OptionMonad/Program.cs)
