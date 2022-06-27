@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Integration", "integr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{7A773F5B-F0CA-444E-BD3D-C954653DF638}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AreaCalculator", "samples\AreaCalculator\AreaCalculator.csproj", "{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AreaCalculator", "samples\AreaCalculator\AreaCalculator.csproj", "{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serialization", "samples\Serialization\Serialization.csproj", "{449F99AC-CF73-42C5-983D-0415CF501E03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization", "samples\Serialization\Serialization.csproj", "{449F99AC-CF73-42C5-983D-0415CF501E03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptionMonad", "samples\OptionMonad\OptionMonad.csproj", "{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{449F99AC-CF73-42C5-983D-0415CF501E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{449F99AC-CF73-42C5-983D-0415CF501E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{449F99AC-CF73-42C5-983D-0415CF501E03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 		{449F99AC-CF73-42C5-983D-0415CF501E03} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
+		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {587D0652-52E0-4A29-84A8-DE4C64FE1F02}
