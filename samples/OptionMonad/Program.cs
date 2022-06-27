@@ -20,15 +20,7 @@ static Option<int> ParseInt(string? value) =>
 [Union]
 public partial record Option<T>
 {
-    partial record Some(T Value)
-    {
-        public override bool IsSome => true;
-    }
+    partial record Some(T Value);
 
-    partial record None()
-    {
-        public override bool IsSome => false;
-    }
-
-    public abstract bool IsSome { get; }
+    partial record None();
 }
