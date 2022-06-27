@@ -1,6 +1,6 @@
 name: Merge Check Build and Test
 
-on:  
+on:
   pull_request:
     branches: [ main ]
 jobs:

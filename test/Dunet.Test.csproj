@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Dunet\Dunet.csproj" />
+      <ProjectReference Include="..\src\Dunet.csproj" />
     </ItemGroup>
 
 </Project>

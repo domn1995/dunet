@@ -1,9 +1,9 @@
 ﻿using Dunet.Test.Compiler;
 using Dunet.Test.Runtime;
 
-namespace Dunet.Test.GenerateUnionInterface;
+namespace Dunet.Test.GenerateUnionRecord;
 
-public class MatchMethodTests : UnionInterfaceTests
+public class MatchMethodTests : UnionRecordTests
 {
     [Fact]
     public void CanUseUnionTypesInDedicatedMatchMethod()
@@ -13,7 +13,7 @@ public class MatchMethodTests : UnionInterfaceTests
             @"
 using Dunet;
 
-IShape shape = new Rectangle(3, 4);
+Shape shape = new Shape.Rectangle(3, 4);
 
 var area = shape.Match(
     circle => 3.14 * circle.Radius * circle.Radius,
@@ -22,11 +22,11 @@ var area = shape.Match(
 );
 
 [Union]
-interface IShape
+partial record Shape
 {
-    IShape Circle(double radius);
-    IShape Rectangle(double length, double width);
-    IShape Triangle(double @base, double height);
+    partial record Circle(double Radius);
+    partial record Rectangle(double Length, double Width);
+    partial record Triangle(double Base, double Height);
 }";
         // Act.
         var result = Compile.ToAssembly(source);
@@ -37,9 +37,9 @@ interface IShape
     }
 
     [Theory]
-    [InlineData("IShape shape = new Rectangle(3, 4);", 12d)]
-    [InlineData("IShape shape = new Circle(1);", 3.14d)]
-    [InlineData("IShape shape = new Triangle(4, 2);", 4d)]
+    [InlineData("Shape shape = new Shape.Rectangle(3, 4);", 12d)]
+    [InlineData("Shape shape = new Shape.Circle(1);", 3.14d)]
+    [InlineData("Shape shape = new Shape.Triangle(4, 2);", 4d)]
     public void MatchMethodCallsCorrectFunctionArgument(
         string shapeDeclaration,
         double expectedArea
@@ -61,15 +61,15 @@ static double GetArea()
 }}
 
 [Union]
-interface IShape
+partial record Shape
 {{
-    IShape Circle(double radius);
-    IShape Rectangle(double length, double width);
-    IShape Triangle(double @base, double height);
+    partial record Circle(double Radius);
+    partial record Rectangle(double Length, double Width);
+    partial record Triangle(double Base, double Height);
 }}";
         // Act.
         var result = Compile.ToAssembly(source);
-        var actualArea = result.Assembly.ExecuteStaticMethod<double>("GetArea");
+        var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();

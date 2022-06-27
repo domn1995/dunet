@@ -1,26 +1,25 @@
-﻿using Dunet.Test.Runtime;
+﻿using Dunet.Test.Compiler;
+using Dunet.Test.Runtime;
 
 namespace Dunet.Test.GenerateUnionInterface;
 
-public class SwitchExpressionTests : UnionInterfaceTests
+public class MatchMethodTests : UnionInterfaceTests
 {
     [Fact]
-    public void CanUseUnionTypesInSwitchExpression()
+    public void CanUseUnionTypesInDedicatedMatchMethod()
     {
         // Arrange.
         var source =
             @"
 using Dunet;
 
-IShape circle = new Circle(3.14);
+IShape shape = new Rectangle(3, 4);
 
-var area = circle switch
-{
-    Rectangle r => r.Length * r.Width,
-    Circle c => 3.14 * c.Radius * c.Radius,
-    Triangle t => t.Base * t.Height / 2,
-    _ => 0d,
-};
+var area = shape.Match(
+    circle => 3.14 * circle.Radius * circle.Radius,
+    rectangle => rectangle.Length * rectangle.Width,
+    triangle => triangle.Base * triangle.Height / 2
+);
 
 [Union]
 interface IShape
@@ -38,10 +37,13 @@ interface IShape
     }
 
     [Theory]
-    [InlineData("IShape shape = new Rectangle(4, 4);", 16d)]
-    [InlineData("IShape shape = new Circle(2);", 12.56d)]
-    [InlineData("IShape shape = new Triangle(2, 3);", 3d)]
-    public void SwitchExpressionMatchesCorrectCase(string shapeDeclaration, double expectedArea)
+    [InlineData("IShape shape = new Rectangle(3, 4);", 12d)]
+    [InlineData("IShape shape = new Circle(1);", 3.14d)]
+    [InlineData("IShape shape = new Triangle(4, 2);", 4d)]
+    public void MatchMethodCallsCorrectFunctionArgument(
+        string shapeDeclaration,
+        double expectedArea
+    )
     {
         // Arrange.
         var source =
@@ -51,13 +53,11 @@ using Dunet;
 static double GetArea()
 {{
     {shapeDeclaration}
-    return shape switch
-    {{
-        Rectangle r => r.Length * r.Width,
-        Circle c => 3.14 * c.Radius * c.Radius,
-        Triangle t => t.Base * t.Height / 2,
-        _ => 0d,
-    }};
+    return shape.Match(
+        circle => 3.14 * circle.Radius * circle.Radius,
+        rectangle => rectangle.Length * rectangle.Width,
+        triangle => triangle.Base * triangle.Height / 2
+    );
 }}
 
 [Union]
@@ -69,7 +69,7 @@ interface IShape
 }}";
         // Act.
         var result = Compile.ToAssembly(source);
-        var actualArea = result.Assembly.ExecuteStaticMethod<double>("GetArea");
+        var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
