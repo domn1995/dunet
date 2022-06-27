@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization", "samples\Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptionMonad", "samples\OptionMonad\OptionMonad.csproj", "{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokemonClient", "samples\PokemonClient\PokemonClient.csproj", "{ED68670F-60E0-410F-8427-C83D39A886F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED68670F-60E0-410F-8427-C83D39A886F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED68670F-60E0-410F-8427-C83D39A886F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED68670F-60E0-410F-8427-C83D39A886F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED68670F-60E0-410F-8427-C83D39A886F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{576600EB-FBCF-4724-8ADC-F9F6B72AEDDC} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 		{449F99AC-CF73-42C5-983D-0415CF501E03} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
+		{ED68670F-60E0-410F-8427-C83D39A886F8} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {587D0652-52E0-4A29-84A8-DE4C64FE1F02}

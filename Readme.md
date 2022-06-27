@@ -73,3 +73,4 @@ Console.WriteLine(GetOutput(input)); // "12345".
 - [Area Calculator](./samples/AreaCalculator/Program.cs)
 - [Serialization/Deserialization](./samples/Serialization/Program.cs)
 - [Option Monad](./samples/OptionMonad/Program.cs)
+- [Web Client](./samples/PokemonClient/PokeClient.cs)
