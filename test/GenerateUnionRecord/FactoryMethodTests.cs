@@ -68,6 +68,38 @@ partial record ComplexUnion<T>
     }
 
     [Fact]
+    public void FactoryMethodGenerationCanBeEnabledByBuildProperty()
+    {
+        // Arrange.
+        var programCs =
+            @"
+using Dunet;
+
+ComplexUnion<int> generic = ComplexUnion<int>.MakeGenericCaseNow(15, ""Hello"");
+ComplexUnion<int> argless = ComplexUnion<int>.MakeArglessNow();
+ComplexUnion<int> recursive = ComplexUnion<int>.MakeRecursiveCaseNow(generic);
+
+[Union]
+partial record ComplexUnion<T>
+{
+    partial record GenericCase(T Generic, string Test);
+    partial record Argless();
+    partial record RecursiveCase(ComplexUnion<T> Inner);
+}";
+        var options = Compile.DefaultGlobalConfig
+            .SetItem("build_property.Dunet_GenerateFactoryMethods", "true")
+            .SetItem("build_property.Dunet_FactoryMethodPrefix", "Make")
+            .SetItem("build_property.Dunet_FactoryMethodSuffix", "Now");
+
+        // Act.
+        var result = Compile.ToAssembly(options, programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
+
+    [Fact]
     public void FactoryMethodGenerationCanBeDisabled()
     {
         // Arrange.
@@ -84,9 +116,10 @@ partial record ComplexUnion<T>
     partial record Argless();
     partial record RecursiveCase(ComplexUnion<T> Inner);
 }";
+        var options = Compile.DefaultGlobalConfig.SetItem("build_property.Dunet_GenerateFactoryMethods", "true");
 
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compile.ToAssembly(options, programCs);
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();

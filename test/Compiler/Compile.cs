@@ -15,20 +15,21 @@ public class Compile
     private readonly IIncrementalGenerator generator;
 
     public Compile(IIncrementalGenerator generator) => this.generator = generator;
-    
-    public static readonly AnalyzerConfigOptions DefaultConfigOptions = new DictionaryAnalyzerConfigOptions(
-        ImmutableDictionary<string, string>.Empty
-            .Add("build_property.Dunet_GenerateFactoryMethods", "false"));
+
+    public static readonly ImmutableDictionary<string, string> DefaultGlobalConfig = ImmutableDictionary<string, string>.Empty
+        .Add("build_property.Dunet_GenerateFactoryMethods", "false")
+        .Add("build_property.Dunet_FactoryMethodPrefix", "New")
+        .Add("build_property.Dunet_FactoryMethodSuffix", "");
 
     public CompilationResult ToAssembly(params string[] sources) =>
-        ToAssembly(DefaultConfigOptions, sources);
+        ToAssembly(DefaultGlobalConfig, sources);
     
-    public CompilationResult ToAssembly(AnalyzerConfigOptions configOptions, params string[] sources)
+    public CompilationResult ToAssembly(ImmutableDictionary<string, string> globalOptions, params string[] sources)
     {
         var baseCompilation = CreateCompilation(sources);
         var (outputCompilation, compilationDiagnostics, generationDiagnostics) = RunGenerator(
             baseCompilation,
-            configOptions
+            globalOptions
         );
 
         using var ms = new MemoryStream();
@@ -62,10 +63,10 @@ public class Compile
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
 
-    private GenerationResult RunGenerator(Compilation compilation, AnalyzerConfigOptions configOptions)
+    private GenerationResult RunGenerator(Compilation compilation, ImmutableDictionary<string, string> configOptions)
     {
         CSharpGeneratorDriver.Create(generator, unionAttributeGenerator)
-            .WithUpdatedAnalyzerConfigOptions(new DictionaryAnalyzerConfigOptionsProvider(configOptions))
+            .WithUpdatedAnalyzerConfigOptions(new DictionaryAnalyzerConfigOptionsProvider(new DictionaryAnalyzerConfigOptions(configOptions)))
             .RunGeneratorsAndUpdateCompilation(
                 compilation,
                 out var outputCompilation,

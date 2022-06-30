@@ -17,7 +17,7 @@ QueryState successFactory = QueryState.NewSuccess();
 QueryState error = new QueryState.Error();
 QueryState errorFactory = QueryState.NewError();
 
-[Union]
+[Union(GenerateFactoryMethods = true)]
 partial record QueryState
 {
     partial record Loading();

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Dunet.Test.Compiler;
 
-class DictionaryAnalyzerConfigOptions : AnalyzerConfigOptions
+public class DictionaryAnalyzerConfigOptions : AnalyzerConfigOptions
 {
     public static DictionaryAnalyzerConfigOptions Empty { get; } = new(ImmutableDictionary.Create<string, string>(KeyComparer));
 
@@ -18,16 +18,16 @@ class DictionaryAnalyzerConfigOptions : AnalyzerConfigOptions
         => Options.TryGetValue(key, out value);
 }
 
-class DictionaryAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
+public class DictionaryAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
 {
     public static DictionaryAnalyzerConfigOptionsProvider Empty { get; } = new(DictionaryAnalyzerConfigOptions.Empty);
 
-    internal DictionaryAnalyzerConfigOptionsProvider(AnalyzerConfigOptions globalOptions)
+    internal DictionaryAnalyzerConfigOptionsProvider(DictionaryAnalyzerConfigOptions globalOptions)
     {
         GlobalOptions = globalOptions;
     }
 
-    public override AnalyzerConfigOptions GlobalOptions { get; }
+    public override DictionaryAnalyzerConfigOptions GlobalOptions { get; }
 
     public override AnalyzerConfigOptions GetOptions(SyntaxTree tree)
         => DictionaryAnalyzerConfigOptions.Empty;
