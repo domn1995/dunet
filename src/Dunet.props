@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <Dunet_GenerateFactoryMethods Condition=" '$(Dunet_GenerateFactoryMethods)' == '' ">false</Dunet_GenerateFactoryMethods>
+    <Dunet_FactoryMethodPrefix Condition=" '$(Dunet_FactoryMethodPrefix)' == '' ">New</Dunet_FactoryMethodPrefix>
+    <Dunet_FactoryMethodSuffix Condition=" '$(Dunet_FactoryMethodSuffix)' == '' "></Dunet_FactoryMethodSuffix>
+  </PropertyGroup>
+  <ItemGroup>
+    <CompilerVisibleProperty Include="Dunet_GenerateFactoryMethods" />
+    <CompilerVisibleProperty Include="Dunet_FactoryMethodPrefix" />
+    <CompilerVisibleProperty Include="Dunet_FactoryMethodSuffix" />
+  </ItemGroup>
+</Project>

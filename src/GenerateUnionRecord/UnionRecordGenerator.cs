@@ -5,10 +5,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Text;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Dunet.GenerateUnionRecord;
 
-record GenerationTarget(RecordDeclarationSyntax RecordDeclaration, UnionAttributeOptions Options);
+record GenerationTarget(RecordDeclarationSyntax RecordDeclaration,
+    IEnumerable<AttributeArgumentSyntax> AttributeArguments);
 
 [Generator]
 public class UnionRecordGenerator : IIncrementalGenerator
@@ -22,11 +24,13 @@ public class UnionRecordGenerator : IIncrementalGenerator
             )
             .Where(static m => m is not null);
 
-        var compilation = context.CompilationProvider.Combine(recordDeclarations.Collect());
+        var compilation = context.CompilationProvider
+            .Combine(recordDeclarations.Collect())
+            .Combine(context.AnalyzerConfigOptionsProvider);
 
         context.RegisterSourceOutput(
             compilation,
-            static (spc, source) => Execute(source.Left, source.Right!, spc)
+            static (spc, xy) => Execute(xy.Left.Left, xy.Left.Right!, xy.Right, spc)
         );
     }
 
@@ -51,12 +55,8 @@ public class UnionRecordGenerator : IIncrementalGenerator
 
                 if (fullAttributeName is UnionAttributeSource.FullAttributeName)
                 {
-                    var options =
-                        attribute.ArgumentList?.Arguments.Aggregate(UnionAttributeOptions.Default,
-                            (options, arg) => options.WithAttributeArgument(context, arg))
-                        ?? UnionAttributeOptions.Default;
-
-                    return new GenerationTarget(recordDeclaration, options);
+                    return new GenerationTarget(recordDeclaration,
+                        attribute.ArgumentList?.Arguments ?? Enumerable.Empty<AttributeArgumentSyntax>());
                 }
             }
         }
@@ -64,20 +64,38 @@ public class UnionRecordGenerator : IIncrementalGenerator
         return null;
     }
 
-    private static void Execute(
-        Compilation compilation,
+    private static void Execute(Compilation compilation,
         ImmutableArray<GenerationTarget> targets,
-        SourceProductionContext context
-    )
+        AnalyzerConfigOptionsProvider configOptions,
+        SourceProductionContext context)
     {
         if (targets.IsDefaultOrEmpty)
         {
             return;
         }
-
+        
+        UnionAttributeOptions defaultUnionOptions;
+        try
+        {
+            defaultUnionOptions = UnionAttributeOptions.CreateDefault(configOptions);
+        }
+        catch (Exception e)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(
+                new DiagnosticDescriptor("DU1001", "Dunet configuration error", "Invalid Dunet configuration: {0}", "Configuration",
+                    DiagnosticSeverity.Error, true), Location.None, e.Message));
+            return;
+        }
+        
+        context.AddSource(
+            $"{UnionAttributeSource.AttributeName}.Properties.g.cs",
+            SourceText.From(UnionAttributeSource.GetPropertySource(defaultUnionOptions), Encoding.UTF8)
+        );
+        
         var unionRecords = GetCodeToGenerate(
             compilation,
             targets,
+            defaultUnionOptions,
             context.CancellationToken
         );
 
@@ -93,11 +111,10 @@ public class UnionRecordGenerator : IIncrementalGenerator
         }
     }
 
-    private static List<UnionRecord> GetCodeToGenerate(
-        Compilation compilation,
+    private static List<UnionRecord> GetCodeToGenerate(Compilation compilation,
         IEnumerable<GenerationTarget> targets,
-        CancellationToken _
-    )
+        UnionAttributeOptions defaultUnionOptions,
+        CancellationToken _)
     {
         var unionRecords = new List<UnionRecord>();
 
@@ -147,13 +164,16 @@ public class UnionRecordGenerator : IIncrementalGenerator
                 unionRecordMembers.Add(memberRecord);
             }
 
+            var options = target.AttributeArguments.Aggregate(defaultUnionOptions,
+                (options, argument) => options.WithAttributeArgument(semanticModel, argument));
+
             var record = new UnionRecord(
                 Imports: imports.ToList(),
                 Namespace: @namespace,
                 Name: recordSymbol.Name,
                 TypeParameters: unionRecordTypeParameters?.ToList() ?? new(),
                 Members: unionRecordMembers,
-                Options: target.Options 
+                Options: options 
             );
 
             unionRecords.Add(record);

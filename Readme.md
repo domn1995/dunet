@@ -32,6 +32,32 @@ var area = shape.Match(
 Console.WriteLine(area); // "12"
 ```
 
+### Configuration
+
+Dunet can be configured by setting `Dunet_*` properties in your project file:
+
+```xml
+<PropertyGroup>
+  <Dunet_GenerateFactoryMethods>true</Dunet_GenerateFactoryMethods>
+  <Dunet_FactoryMethodPrefix>Create</Dunet_FactoryMethodPrefix>
+  <Dunet_FactoryMethodSuffix>Now</Dunet_FactoryMethodSuffix>
+</PropertyGroup>
+```
+
+Overrides to project defaults can be set by setting properties on `UnionAttribute`:
+
+```cs
+[Union(GenerateFactoryMethods=true, FactoryMethodPrefix="Create", FactoryMethodSuffix="Now")]
+partial record Shape
+{
+    partial record Circle(double Radius);
+    partial record Rectangle(double Length, double Width);
+}
+
+var circle = Shape.CreateCircleNow(7);
+```
+
+
 ## Generics Support
 
 Use generics for more advanced union types. For example, an option monad:

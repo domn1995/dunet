@@ -12,7 +12,7 @@ public class UnionAttributeGenerator : IIncrementalGenerator
         context.RegisterPostInitializationOutput(
             ctx =>
                 ctx.AddSource(
-                    "UnionAttribute.g.cs",
+                    $"{UnionAttributeSource.AttributeName}.g.cs",
                     SourceText.From(UnionAttributeSource.Attribute, Encoding.UTF8)
                 )
         );

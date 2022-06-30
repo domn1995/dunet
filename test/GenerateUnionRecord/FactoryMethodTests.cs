@@ -1,25 +1,26 @@
-﻿namespace Dunet.Test.GenerateUnionRecord;
+﻿using System.Reflection;
+using Dunet.Test.Compiler;
+
+namespace Dunet.Test.GenerateUnionRecord;
 
 public class FactoryMethodTests : UnionRecordTests
 {
     [Fact]
-    public void FactoryMethodsAreGeneratedByDefault()
+    public void FactoryMethodsAreNotGeneratedByDefault()
     {
         // Arrange.
         var programCs =
             @"
 using Dunet;
 
-ComplexUnion<int> generic = ComplexUnion<int>.NewGenericCase(15, ""Hello"");
-ComplexUnion<int> argless = ComplexUnion<int>.NewArgless();
-ComplexUnion<int> recursive = ComplexUnion<int>.NewRecursiveCase(generic);
+var union = new ComplexUnion<string>.Argless();
 
 [Union]
-partial record ComplexUnion<T>
+public partial record ComplexUnion<T>
 {
-    partial record GenericCase(T Generic, string Test);
-    partial record Argless();
-    partial record RecursiveCase(ComplexUnion<T> Inner);
+    public partial record GenericCase(T Generic, string Test);
+    public partial record Argless();
+    public partial record RecursiveCase(ComplexUnion<T> Inner);
 }";
 
         // Act.
@@ -28,8 +29,12 @@ partial record ComplexUnion<T>
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
+
+        GetStaticMethodNames(result, "ComplexUnion`1")
+            .Should()
+            .BeEmpty();
     }
-    
+
     [Fact]
     public void FactoryMethodGenerationCanBeCustomised()
     {
@@ -42,7 +47,7 @@ ComplexUnion<int> generic = ComplexUnion<int>.MakeGenericCaseNow(15, ""Hello"");
 ComplexUnion<int> argless = ComplexUnion<int>.MakeArglessNow();
 ComplexUnion<int> recursive = ComplexUnion<int>.MakeRecursiveCaseNow(generic);
 
-[Union(FactoryMethodPrefix = ""Make"", FactoryMethodSuffix = ""Now"")]
+[Union(GenerateFactoryMethods = true, FactoryMethodPrefix = ""Make"", FactoryMethodSuffix = ""Now"")]
 partial record ComplexUnion<T>
 {
     partial record GenericCase(T Generic, string Test);
@@ -56,8 +61,12 @@ partial record ComplexUnion<T>
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
+
+        GetStaticMethodNames(result, "ComplexUnion`1")
+            .Should()
+            .BeEquivalentTo("MakeGenericCaseNow", "MakeArglessNow", "MakeRecursiveCaseNow");
     }
-    
+
     [Fact]
     public void FactoryMethodGenerationCanBeDisabled()
     {
@@ -66,9 +75,7 @@ partial record ComplexUnion<T>
             @"
 using Dunet;
 
-ComplexUnion<int> generic = ComplexUnion<int>.NewGenericCase(15, ""Hello"");
-ComplexUnion<int> argless = ComplexUnion<int>.NewArgless();
-ComplexUnion<int> recursive = ComplexUnion<int>.NewRecursiveCase(generic);
+var union = new ComplexUnion<string>.Argless();
 
 [Union(GenerateFactoryMethods = false)]
 partial record ComplexUnion<T>
@@ -82,8 +89,20 @@ partial record ComplexUnion<T>
         var result = Compile.ToAssembly(programCs);
 
         // Assert.
-        result.CompilationErrors.Should().HaveCount(3);
-        result.CompilationErrors.Should().AllSatisfy(diagnostic => diagnostic.Id.Should().Be("CS0117"));
+        result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
+
+        GetStaticMethodNames(result, "ComplexUnion`1")
+            .Should()
+            .BeEmpty();
+    }
+
+    private static IEnumerable<string> GetStaticMethodNames(CompilationResult result, string typeName)
+    {
+        result.Assembly.Should().NotBeNull();
+        var unionType = result.Assembly.GetType(typeName);
+        return unionType.GetMethods(BindingFlags.Static | BindingFlags.Public)
+            .Where(m => !m.IsSpecialName)
+            .Select(m => m.Name);
     }
 }

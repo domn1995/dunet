@@ -1,7 +1,9 @@
-﻿using Dunet.UnionAttributeGeneration;
+﻿using System.Collections.Immutable;
+using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Dunet.Test.Compiler;
 
@@ -13,12 +15,20 @@ public class Compile
     private readonly IIncrementalGenerator generator;
 
     public Compile(IIncrementalGenerator generator) => this.generator = generator;
+    
+    public static readonly AnalyzerConfigOptions DefaultConfigOptions = new DictionaryAnalyzerConfigOptions(
+        ImmutableDictionary<string, string>.Empty
+            .Add("build_property.Dunet_GenerateFactoryMethods", "false"));
 
-    public CompilationResult ToAssembly(params string[] sources)
+    public CompilationResult ToAssembly(params string[] sources) =>
+        ToAssembly(DefaultConfigOptions, sources);
+    
+    public CompilationResult ToAssembly(AnalyzerConfigOptions configOptions, params string[] sources)
     {
         var baseCompilation = CreateCompilation(sources);
         var (outputCompilation, compilationDiagnostics, generationDiagnostics) = RunGenerator(
-            baseCompilation
+            baseCompilation,
+            configOptions
         );
 
         using var ms = new MemoryStream();
@@ -52,10 +62,10 @@ public class Compile
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
 
-    private GenerationResult RunGenerator(Compilation compilation)
+    private GenerationResult RunGenerator(Compilation compilation, AnalyzerConfigOptions configOptions)
     {
-        CSharpGeneratorDriver
-            .Create(generator, unionAttributeGenerator)
+        CSharpGeneratorDriver.Create(generator, unionAttributeGenerator)
+            .WithUpdatedAnalyzerConfigOptions(new DictionaryAnalyzerConfigOptionsProvider(configOptions))
             .RunGeneratorsAndUpdateCompilation(
                 compilation,
                 out var outputCompilation,
