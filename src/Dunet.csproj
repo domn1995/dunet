@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>10.0</LangVersion>
         <IsPublishable>True</IsPublishable>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <Authors>domn1995</Authors>
         <Company />
@@ -33,6 +34,8 @@
         <SignAssembly>False</SignAssembly>
         <Version>1.0.0</Version>
         <NeutralLanguage>en</NeutralLanguage>
+        <DevelopmentDependency>true</DevelopmentDependency>
+        <NoWarn>$(NoWarn);NU5128</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
