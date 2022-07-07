@@ -77,7 +77,10 @@ public class UnionRecordGenerator : IIncrementalGenerator
         foreach (var unionRecord in unionRecords)
         {
             var result = UnionRecordSource.GenerateRecord(unionRecord);
-            context.AddSource($"{unionRecord.Name}.g.cs", SourceText.From(result, Encoding.UTF8));
+            context.AddSource(
+                $"{unionRecord.Name}.{unionRecord.Name}.g.cs",
+                SourceText.From(result, Encoding.UTF8)
+            );
         }
     }
 
