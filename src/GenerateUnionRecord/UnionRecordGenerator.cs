@@ -13,14 +13,14 @@ public class UnionRecordGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var recordDeclarations = context.SyntaxProvider
+        var targets = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (node, _) => node.IsDecoratedRecord(),
                 transform: static (ctx, _) => GetGenerationTarget(ctx)
             )
             .Where(static m => m is not null);
 
-        var compilation = context.CompilationProvider.Combine(recordDeclarations.Collect());
+        var compilation = context.CompilationProvider.Combine(targets.Collect());
 
         context.RegisterSourceOutput(
             compilation,
