@@ -68,18 +68,11 @@ public class UnionRecordGenerator : IIncrementalGenerator
             return;
         }
 
-        var distinctRecords = recordDeclarations.Distinct();
-
         var unionRecords = GetCodeToGenerate(
             compilation,
-            distinctRecords,
+            recordDeclarations,
             context.CancellationToken
         );
-
-        if (unionRecords.Count <= 0)
-        {
-            return;
-        }
 
         foreach (var unionRecord in unionRecords)
         {
