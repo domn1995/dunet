@@ -13,14 +13,14 @@ public class UnionRecordGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var recordDeclarations = context.SyntaxProvider
+        var targets = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (node, _) => node.IsDecoratedRecord(),
                 transform: static (ctx, _) => GetGenerationTarget(ctx)
             )
             .Where(static m => m is not null);
 
-        var compilation = context.CompilationProvider.Combine(recordDeclarations.Collect());
+        var compilation = context.CompilationProvider.Combine(targets.Collect());
 
         context.RegisterSourceOutput(
             compilation,
@@ -47,7 +47,7 @@ public class UnionRecordGenerator : IIncrementalGenerator
 
                 var fullAttributeName = attributeSymbol.ToDisplayString();
 
-                if (fullAttributeName is UnionAttributeSource.FullAttributeName)
+                if (fullAttributeName is UnionAttributeSource.FullyQualifiedName)
                 {
                     return recordDeclaration;
                 }
@@ -68,23 +68,19 @@ public class UnionRecordGenerator : IIncrementalGenerator
             return;
         }
 
-        var distinctRecords = recordDeclarations.Distinct();
-
         var unionRecords = GetCodeToGenerate(
             compilation,
-            distinctRecords,
+            recordDeclarations,
             context.CancellationToken
         );
-
-        if (unionRecords.Count <= 0)
-        {
-            return;
-        }
 
         foreach (var unionRecord in unionRecords)
         {
             var result = UnionRecordSource.GenerateRecord(unionRecord);
-            context.AddSource($"{unionRecord.Name}.g.cs", SourceText.From(result, Encoding.UTF8));
+            context.AddSource(
+                $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
+                SourceText.From(result, Encoding.UTF8)
+            );
         }
     }
 

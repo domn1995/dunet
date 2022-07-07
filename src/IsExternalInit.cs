@@ -11,4 +11,4 @@ namespace System.Runtime.CompilerServices;
 /// Predefined type 'System.Runtime.CompilerServices.IsExternalInit' is not defined or imported
 /// </remarks>
 [EditorBrowsable(EditorBrowsableState.Never)]
-sealed class IsExternalInit { }
+internal sealed class IsExternalInit { }
