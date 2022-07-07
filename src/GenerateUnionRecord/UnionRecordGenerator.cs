@@ -47,7 +47,7 @@ public class UnionRecordGenerator : IIncrementalGenerator
 
                 var fullAttributeName = attributeSymbol.ToDisplayString();
 
-                if (fullAttributeName is UnionAttributeSource.FullAttributeName)
+                if (fullAttributeName is UnionAttributeSource.FullyQualifiedName)
                 {
                     return recordDeclaration;
                 }

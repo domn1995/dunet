@@ -2,11 +2,11 @@
 
 internal class UnionAttributeSource
 {
-    public const string AttributeNamespace = "Dunet";
-    public const string AttributeName = "UnionAttribute";
-    public const string FullAttributeName = $"{AttributeNamespace}.{AttributeName}";
+    public const string Namespace = "Dunet";
+    public const string Name = "UnionAttribute";
+    public const string FullyQualifiedName = $"{Namespace}.{Name}";
 
-    public const string Attribute =
+    public const string SourceCode =
         @"using System;
 
 namespace Dunet;
