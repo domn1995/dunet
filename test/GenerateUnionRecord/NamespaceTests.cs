@@ -254,4 +254,48 @@ public static class Program
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void CanHaveMultipleUnionsWithSameNameInSeparateNamespaces()
+    {
+        // Arrange.
+        var resultCs =
+            @"
+using Dunet;
+
+namespace Foo;
+
+[Union]
+partial record Result
+{
+    partial record Success();
+    partial record Failure();
+}";
+        var otherResultCs =
+            @"
+using Dunet;
+
+namespace Bar;
+
+[Union]
+partial record Result
+{
+    partial record Ok();
+    partial record Error();
+}";
+        var programCs =
+            @"
+Foo.Result success = new Foo.Result.Success();
+Foo.Result failure = new Foo.Result.Failure();
+Bar.Result ok = new Bar.Result.Ok();
+Bar.Result error = new Bar.Result.Error();
+";
+
+        // Act.
+        var result = Compile.ToAssembly(resultCs, otherResultCs, programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }

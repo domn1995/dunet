@@ -31,7 +31,7 @@ partial record QueryState
     }
 
     [Fact]
-    public void UnionTypeMayHaveNoMembers()
+    public void UnionMemberTypesMayBeEmpty()
     {
         // Arrange.
         var programCs =
