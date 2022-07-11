@@ -45,8 +45,10 @@ internal static class UnionRecordSource
         {
             foreach (var member in record.Members)
             {
+                builder.Append($"    public static implicit operator {record.Name}");
+                builder.AppendTypeParams(record.TypeParameters);
                 builder.AppendLine(
-                    $"    public static implicit operator {record.Name}({member.Properties[0].Type} value) => new {member.Name}(value);"
+                    $"({member.Properties[0].Type} value) => new {member.Name}(value);"
                 );
             }
             builder.AppendLine();

@@ -54,4 +54,30 @@ partial record Result
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void UnionMemberGenericInnerValuesAreAssignableToUnionType()
+    {
+        var programCs =
+            @"
+using Dunet;
+using System;
+using static Result<string, int>;
+
+Result<string, int> success = 42;
+Result<string, int> error = ""Something went wrong."";
+
+[Union]
+partial record Result<TFailure, TSuccess>
+{
+    partial record Success(TSuccess Value);
+    partial record Failure(TFailure Error);
+}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }
