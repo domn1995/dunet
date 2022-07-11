@@ -102,7 +102,7 @@ Result Divide(double numerator, double denominator)
     return numerator / denominator;
 }
 
-var result = Divide(success, 0);
+var result = Divide(42, 0);
 var output = result.Match(
     success => success.Value.ToString(),
     failure => failure.Error.Message
