@@ -41,6 +41,17 @@ internal static class UnionRecordSource
         builder.AppendLine("    );");
         builder.AppendLine();
 
+        if (SupportsImplicitConversions(record))
+        {
+            foreach (var member in record.Members)
+            {
+                builder.AppendLine(
+                    $"    public static implicit operator {record.Name}({member.Properties[0].Type} value) => new {member.Name}(value);"
+                );
+            }
+            builder.AppendLine();
+        }
+
         foreach (var member in record.Members)
         {
             builder.Append($"    public sealed partial record {member.Name}");
@@ -70,5 +81,28 @@ internal static class UnionRecordSource
         builder.AppendLine("}");
 
         return builder.ToString();
+    }
+
+    private static bool SupportsImplicitConversions(UnionRecord union)
+    {
+        var membersHaveSingleParameter = () =>
+            union.Members.All(member => member.Properties.Count is 1);
+        var membersHaveUniqueTypes = () =>
+        {
+            var allPropertyTypes = union.Members
+                .SelectMany(member => member.Properties)
+                .Select(prop => prop.Type);
+            var allPropertyTypesCount = allPropertyTypes.Count();
+            var uniquePropertyTypesCount = allPropertyTypes.Distinct().Count();
+            return allPropertyTypesCount == uniquePropertyTypesCount;
+        };
+
+        var requirements = new List<Func<bool>>()
+        {
+            membersHaveSingleParameter,
+            membersHaveUniqueTypes,
+        };
+
+        return requirements.All(requirement => requirement());
     }
 }
