@@ -56,7 +56,32 @@ partial record Result
     }
 
     [Fact]
-    public void UnionMemberGenericInnerValuesAreAssignableToUnionType()
+    public void UnionMemberGenericInnerValueIsAssignableToUnionType()
+    {
+        var programCs =
+            @"
+using Dunet;
+using System;
+
+Result<int> success = 42;
+Result<string> error = new Exception(""Something went wrong."");
+
+[Union]
+partial record Result<T>
+{
+    partial record Success(T Value);
+    partial record Failure(Exception Error);
+}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void UnionMemberMultipleGenericInnerValuesAreAssignableToUnionType()
     {
         var programCs =
             @"
