@@ -68,6 +68,49 @@ input = ParseInt(Console.ReadLine()); // User inputs "12345".
 Console.WriteLine(GetOutput(input)); // "12345".
 ```
 
+## Implicit Conversion Support
+
+Given a union type where all members contain only a single parameter
+and all parameters are a different type, Dunet will generate implicit
+conversions between their values and the union type.
+
+For example, consider a `Result` union type that represents success
+as a `double` and failure as an `Exception`:
+
+```cs
+// 1. Import the namespace.
+using Dunet;
+
+// 2. Define a union type with single unique member values:
+[Union]
+partial record Result
+{
+    partial record Success(double Value);
+    partial record Failure(Exception Error);
+}
+
+// 3. Return union member values directly.
+Result Divide(double numerator, double denominator)
+{
+    if (denominator is 0d)
+    {
+        // No need for `new Result.Failure(new InvalidOperationException("..."));`
+        return new InvalidOperationException("Cannot divide by zero!");
+    }
+
+    // No need for `new Result.Success(numerator / denominator);`
+    return numerator / denominator;
+}
+
+var result = Divide(success, 0);
+var output = result.Match(
+    success => success.Value.ToString(),
+    failure => failure.Error.Message
+);
+
+Console.WriteLine(output); // "Cannot divide by zero!"
+```
+
 ## Samples
 
 - [Area Calculator](./samples/AreaCalculator/Program.cs)
