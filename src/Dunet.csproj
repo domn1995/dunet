@@ -14,10 +14,11 @@
         <PackageReadmeFile>Readme.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/domn1995/dunet</RepositoryUrl>
         <PackageTags>source; generator; discriminated; union; functional; tagged;</PackageTags>
-        <AssemblyVersion>1.0.2</AssemblyVersion>
-        <FileVersion>1.0.2</FileVersion>
+        <AssemblyVersion>1.1.0</AssemblyVersion>
+        <FileVersion>1.1.0</FileVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>1.0.2 - Support multiple unions with the same name.
+        <PackageReleaseNotes>1.1.0 - Add implicit conversions for union members.
+1.0.2 - Support multiple unions with the same name.
 1.0.1 - Configure Dunet as development dependency.
 1.0.0 - Production release.
 0.5.0 - Generate dedicated match method on union records.
@@ -34,7 +35,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageIcon>favicon.png</PackageIcon>
         <SignAssembly>False</SignAssembly>
-        <Version>1.0.2</Version>
+        <Version>1.1.0</Version>
         <NeutralLanguage>en</NeutralLanguage>
         <DevelopmentDependency>true</DevelopmentDependency>
         <NoWarn>$(NoWarn);NU5128</NoWarn>
