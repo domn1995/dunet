@@ -99,12 +99,6 @@ internal static class UnionRecordSource
             return allPropertyTypesCount == uniquePropertyTypesCount;
         };
 
-        var requirements = new List<Func<bool>>()
-        {
-            membersHaveSingleParameter,
-            membersHaveUniqueTypes,
-        };
-
-        return requirements.All(requirement => requirement());
+        return membersHaveSingleParameter() && membersHaveUniqueTypes();
     }
 }
