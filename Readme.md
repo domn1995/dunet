@@ -39,6 +39,8 @@ Use generics for more advanced union types. For example, an option monad:
 ```cs
 // 1. Import the namespace.
 using Dunet;
+// Optional: use aliasing for more terse code.
+using static Option<int>;
 
 // 2. Add the `Union` attribute to a partial record.
 // 3. Add one or more type arguments to the union record.
@@ -50,22 +52,26 @@ partial record Option<T>
 }
 
 // 4. Use the union members.
-static Option<int> ParseInt(string? value) =>
+Option<int> ParseInt(string? value) =>
     int.TryParse(value, out var number)
-        ? Option<int>.Some(number)
-        : Option<int>.None();
+        ? new Some(number)
+        : new None();
 
-static string GetOutput(Option<int> number) =>
+string GetOutput(Option<int> number) =>
     number.Match(
         some => some.Value.ToString(),
         none => "Invalid input!"
     );
 
-var input = ParseInt(Console.ReadLine()); // User inputs "not a number".
-Console.WriteLine(GetOutput(input)); // "Invalid input!"
+var input = Console.ReadLine(); // User inputs "not a number".
+var result = ParseInt(input);
+var output = GetOutput(result);
+Console.WriteLine(output); // "Invalid input!"
 
-input = ParseInt(Console.ReadLine()); // User inputs "12345".
-Console.WriteLine(GetOutput(input)); // "12345".
+input = Console.ReadLine(); // User inputs "12345".
+result = ParseInt(input);
+output = GetOutput(input);
+Console.WriteLine(output); // "12345".
 ```
 
 ## Implicit Conversion Support
@@ -98,7 +104,7 @@ Result Divide(double numerator, double denominator)
         return new InvalidOperationException("Cannot divide by zero!");
     }
 
-    // No need for `new Result.Success(numerator / denominator);`
+    // No need for `new Result.Success(...);`
     return numerator / denominator;
 }
 
