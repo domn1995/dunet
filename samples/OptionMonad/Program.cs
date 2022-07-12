@@ -4,9 +4,10 @@ using static Option<int>;
 while (true)
 {
     Console.Write("Please enter a number: ");
-    var input = ParseInt(Console.ReadLine());
+    var input = Console.ReadLine();
+    var result = ParseInt(input);
 
-    var output = input.Match(
+    var output = result.Match(
         some => $"You entered the number: {some.Value}",
         none => "That's not a number!"
     );
@@ -14,12 +15,13 @@ while (true)
     Console.WriteLine(output);
 }
 
-static Option<int> ParseInt(string? value) =>
-    int.TryParse(value, out var num) ? new Some(num) : new None();
+static Option<int> ParseInt(string? value) => int.TryParse(value, out var num) ? num : new None();
 
 [Union]
 public partial record Option<T>
 {
+    public static implicit operator Option<T>(T value) => new Some(value);
+
     partial record Some(T Value);
 
     partial record None();
