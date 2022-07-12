@@ -3,29 +3,25 @@ using System.Net.Http.Json;
 
 namespace PokemonClient;
 
-// Some aliases to make code more terse and less noisy.
-using PokemonResult = Result<string, Pokemon>;
-using static Result<string, Pokemon>;
-
 public class PokeClient
 {
     private readonly HttpClient client;
 
     public PokeClient(HttpClient httpClient) => client = httpClient;
 
-    public async Task<PokemonResult> GetPokemonAsync(string name)
+    public async Task<Result<Exception, Pokemon>> GetPokemonAsync(string name)
     {
         var fetch = () => client.GetFromJsonAsync<Pokemon>(name);
 
         try
         {
             return await fetch() is Pokemon pokemon
-                ? new Success(pokemon)
-                : new Failure($"Unable to retrieve pokemon '{name}'.");
+                ? pokemon
+                : new Exception($"Unable to retrieve pokemon '{name}'.");
         }
         catch (Exception ex)
         {
-            return new Failure(ex.Message);
+            return ex;
         }
     }
 }

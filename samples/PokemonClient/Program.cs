@@ -9,6 +9,9 @@ while (true)
     Console.Write("Enter a pokemon name: ");
     var pokemonName = Console.ReadLine() ?? "";
     var result = await pokemonClient.GetPokemonAsync(pokemonName);
-    var output = result.Match(success => success.Value.ToString(), failure => failure.Error);
+    var output = result.Match(
+        success => success.Value.ToString(),
+        failure => failure.Error.Message
+    );
     Console.WriteLine(output);
 }
