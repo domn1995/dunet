@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Dunet" Version="1.1.0" />
-        <PackageReference Include="System.Text.Json" Version="7.0.0-preview.5.22301.12" />
+        <PackageReference Include="System.Text.Json" Version="7.0.0-preview.6.22324.4" />
     </ItemGroup>
 
 </Project>
