@@ -70,7 +70,7 @@ Console.WriteLine(output); // "Invalid input!"
 
 input = Console.ReadLine(); // User inputs "12345".
 result = ParseInt(input);
-output = GetOutput(input);
+output = GetOutput(result);
 Console.WriteLine(output); // "12345".
 ```
 
