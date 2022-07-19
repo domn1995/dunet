@@ -1,4 +1,5 @@
 ﻿using Dunet.Integration.GenerateUnionRecord.Unions;
+using System.Globalization;
 
 namespace Dunet.Integration.GenerateUnionRecord;
 
@@ -23,6 +24,6 @@ public class Match
     private static string Format(NumberType number) =>
         number.Match(
             rational => $"{rational.Numerator}/{rational.Denominator}",
-            irrational => irrational.Value.ToString()
+            irrational => irrational.Value.ToString(CultureInfo.InvariantCulture)
         );
 }
