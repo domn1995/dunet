@@ -5,7 +5,8 @@ internal record UnionRecord(
     string? Namespace,
     string Name,
     List<TypeParameter> TypeParameters,
-    List<UnionRecordMember> Members
+    List<UnionRecordMember> Members,
+    Stack<ParentType> ParentTypes
 );
 
 internal record UnionRecordMember(
@@ -20,3 +21,10 @@ internal record TypeParameter(string Name)
 }
 
 internal record RecordProperty(string Type, string Name);
+
+/// <summary>
+/// Represents a parent type declaration that nests a union record.
+/// </summary>
+/// <param name="IsRecord">Whether the type is a record or a plain class.</param>
+/// <param name="Name">This type's name.</param>
+internal record ParentType(bool IsRecord, string Name);
