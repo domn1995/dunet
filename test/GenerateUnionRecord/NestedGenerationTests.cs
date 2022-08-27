@@ -136,4 +136,55 @@ var bar = Parent1.Parent2.Parent3.Bar();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void CanReturnMultipleDeeplyNestedUnionMembers()
+    {
+        // Arrange.
+        var programCs =
+            @"
+using Dunet;
+
+var foo = Parent1.Parent2.Parent3.Foo();
+var bar = Parent1.Parent2.Parent3.Bar();
+
+public partial class Parent1
+{
+    public partial class Parent2
+    {
+        public partial class Parent3
+        {
+            [Union]
+            public partial record Nested1
+            {
+                public partial record Member1;
+                public partial record Member2;
+            }
+
+            [Union]
+            public partial record Nested2
+            {
+                public partial record Member1;
+                public partial record Member2;
+            }
+
+            public static Nested1 Foo()
+            {
+                return new Nested1.Member1();
+            }
+
+            public static Nested2 Bar()
+            {
+                return new Nested2.Member1();
+            }
+        }
+    }
+}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }
