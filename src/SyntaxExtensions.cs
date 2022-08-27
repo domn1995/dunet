@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Dunet;
@@ -27,4 +28,14 @@ internal static class SyntaxExtensions
 
     public static bool IsImporting(this UsingDirectiveSyntax import, string name) =>
         import.Name.ToString() == name;
+
+    public static bool IsPartial(this TypeDeclarationSyntax declaration) =>
+        declaration.Modifiers.Any(SyntaxKind.PartialKeyword);
+
+    public static bool IsRecordDeclaration(this SyntaxNode node) => node is RecordDeclarationSyntax;
+
+    public static bool IsClassDeclaration(this SyntaxNode node) => node is ClassDeclarationSyntax;
+
+    public static bool IsClassOrRecordDeclaration(this SyntaxNode node) =>
+        node.IsRecordDeclaration() || node.IsClassDeclaration();
 }

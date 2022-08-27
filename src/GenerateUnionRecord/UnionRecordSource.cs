@@ -18,6 +18,14 @@ internal static class UnionRecordSource
             builder.AppendLine($"namespace {record.Namespace};");
         }
 
+        var parentTypes = record.ParentTypes;
+
+        foreach (var type in parentTypes)
+        {
+            builder.AppendLine($"partial {(type.IsRecord ? "record" : "class")} {type.Name}");
+            builder.AppendLine("{");
+        }
+
         builder.Append($"abstract partial record {record.Name}");
         builder.AppendTypeParams(record.TypeParameters);
         builder.AppendLine();
@@ -81,6 +89,11 @@ internal static class UnionRecordSource
         }
 
         builder.AppendLine("}");
+
+        foreach (var _ in parentTypes)
+        {
+            builder.AppendLine("}");
+        }
 
         return builder.ToString();
     }
