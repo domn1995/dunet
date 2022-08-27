@@ -117,7 +117,7 @@ var output = result.Match(
 Console.WriteLine(output); // "Cannot divide by zero!"
 ```
 
-## Nested Union Suppoort
+## Nested Union Support
 
 To declare a union nested within a class or record, the class or record must be `partial`. For example:
 
