@@ -117,6 +117,31 @@ var output = result.Match(
 Console.WriteLine(output); // "Cannot divide by zero!"
 ```
 
+## Nested Union Suppoort
+
+To declare a union nested within a class or record, the class or record must be `partial`. For example:
+
+```cs
+// This type declaration must be partial.
+public partial class Parent1
+{
+    // So must this one.
+    public partial class Parent2
+    {
+        // Unions must always be partial.
+        [Union]
+        public partial record Nested
+        {
+            public partial record Member1;
+            public partial record Member2;
+        }
+    }
+}
+
+// Access union members like any other nested type.
+var member1 = new Parent1.Parent2.Nested.Member1();
+```
+
 ## Samples
 
 - [Area Calculator](./samples/AreaCalculator/Program.cs)
