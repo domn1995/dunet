@@ -141,7 +141,7 @@ partial record Result<TFailure, TSuccess>
     }
 
     [Fact]
-    public void SupportsGenericTypeArgumentConstraints()
+    public void SupportsGenericTypeParameterConstraints()
     {
         var programCs =
             @$"
@@ -164,10 +164,50 @@ partial record Result<TFailure, TSuccess> where TFailure : Exception
         result.Assembly.Should().BeNull();
         errorMessages
             .Should()
-            .ContainSingle(
+            .Contain(
                 "The type 'string' cannot be used as type parameter 'TFailure' in the "
-                    + "generic type or method 'Result<TFailure, TSuccess>'.There is no "
+                    + "generic type or method 'Result<TFailure, TSuccess>'. There is no "
                     + "implicit reference conversion from 'string' to 'System.Exception'."
+            );
+    }
+
+    [Fact]
+    public void SupportsMultipleGenericTypeParameterConstraints()
+    {
+        var programCs =
+            @$"
+using System;
+using Dunet;
+
+var result1 = new Result<string, string>.Success(""Can't do this."");
+var result2 = new Result<Exception, int>.Success(0);
+
+[Union]
+partial record Result<TFailure, TSuccess>
+    where TFailure : notnull, Exception
+    where TSuccess : class
+{{
+    partial record Success(TSuccess Value);
+    partial record Failure(TFailure Error);
+}}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+
+        // Assert.
+        result.Assembly.Should().BeNull();
+        errorMessages
+            .Should()
+            .Contain(
+                "The type 'string' cannot be used as type parameter 'TFailure' in the "
+                    + "generic type or method 'Result<TFailure, TSuccess>'. There is no "
+                    + "implicit reference conversion from 'string' to 'System.Exception'."
+            );
+        errorMessages
+            .Should()
+            .Contain(
+                "The type 'int' must be a reference type in order to use it as parameter " +
+                "'TSuccess' in the generic type or method 'Result<TFailure, TSuccess>'"
             );
     }
 }

@@ -49,7 +49,7 @@ public class Compile
             {
                 MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location)
             },
-            new CSharpCompilationOptions(OutputKind.ConsoleApplication)
+            new CSharpCompilationOptions(OutputKind.ConsoleApplication, nullableContextOptions: NullableContextOptions.Enable)
         );
 
     private GenerationResult RunGenerator(Compilation compilation)
