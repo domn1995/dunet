@@ -24,7 +24,7 @@ var area = await GetShapeAsync()
 
 async Task<Shape> GetShapeAsync()
 {
-    await Task.Delay(1);
+    await Task.Delay(0);
     return new Shape.Rectangle(3, 4);
 }
 
@@ -62,7 +62,7 @@ var area = await GetShapeAsync()
 
 async ValueTask<Shape> GetShapeAsync()
 {
-    await Task.Delay(1);
+    await Task.Delay(0);
     return new Shape.Rectangle(3, 4);
 }
 
@@ -99,7 +99,7 @@ using Dunet.Extensions;
 
 async static Task<Shape> GetShapeAsync()
 {{
-    await Task.Delay(1);
+    await Task.Delay(0);
     return {shapeDeclaration};
 }};
 
@@ -148,7 +148,7 @@ using Dunet.Extensions;
 
 async static ValueTask<Shape> GetShapeAsync()
 {{
-    await Task.Delay(1);
+    await Task.Delay(0);
     return {shapeDeclaration};
 }};
 
