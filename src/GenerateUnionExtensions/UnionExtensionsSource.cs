@@ -30,11 +30,24 @@ internal static class UnionExtensionsSource
             $"{union.Accessibility.ToKeyword()} static partial class {union.Name}MatchExtensions"
         );
         builder.AppendLine("{");
-        builder.Append("    public static async Task<TMatchOutput> MatchAsync");
+        var taskMethod = GenerateMatchAsyncMethod(union, "Task");
+        builder.AppendLine(taskMethod);
+        var valueTaskMethod = GenerateMatchAsyncMethod(union, "ValueTask");
+        builder.Append(valueTaskMethod);
+        builder.Append("}");
+
+        return builder.ToString();
+    }
+
+    private static string GenerateMatchAsyncMethod(UnionRecord union, string taskType)
+    {
+        var builder = new StringBuilder();
+
+        builder.Append($"    public static async {taskType}<TMatchOutput> MatchAsync");
         var methodTypeParams = union.TypeParameters.Prepend(new("TMatchOutput")).ToList();
         builder.AppendTypeParams(methodTypeParams);
         builder.AppendLine("(");
-        builder.Append($"        this Task<");
+        builder.Append($"        this {taskType}<");
         builder.AppendFullUnionName(union);
         builder.AppendTypeParams(union.TypeParameters);
         builder.AppendLine("> unionTask,");
@@ -73,8 +86,6 @@ internal static class UnionExtensionsSource
         }
 
         builder.AppendLine("        );");
-
-        builder.Append("}");
 
         return builder.ToString();
     }

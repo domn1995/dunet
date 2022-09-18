@@ -82,6 +82,7 @@ public class UnionRecordGenerator : IIncrementalGenerator
                 $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
                 SourceText.From(union, Encoding.UTF8)
             );
+
             if (unionRecord.Members.Any())
             {
                 var matchExtensions = UnionExtensionsSource.GenerateExtensions(unionRecord);
