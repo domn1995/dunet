@@ -11,7 +11,12 @@ internal record UnionRecord(
     List<TypeParameterConstraint> TypeParameterConstraints,
     List<UnionRecordMember> Members,
     Stack<ParentType> ParentTypes
-);
+)
+{
+    // Extension methods cannot be generated for a union declared in a top level program (no namespace).
+    // It also doesn't make sense to generate Match extensions if there are no members to match aginst.
+    public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Members.Count > 0;
+}
 
 internal record UnionRecordMember(
     string Name,

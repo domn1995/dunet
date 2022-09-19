@@ -7,32 +7,32 @@ internal static class UnionExtensionsSource
 {
     public static string GenerateExtensions(UnionRecord union)
     {
-        var builder = new StringBuilder();
+        if (union.Namespace is null)
+        {
+            throw new InvalidOperationException(
+                "Cannot generate async match extensions if the union has no namespace."
+            );
+        }
 
-        builder.AppendLine("using System;");
-        builder.AppendLine("using System.Threading.Tasks;");
+        var builder = new StringBuilder();
 
         foreach (var import in union.Imports)
         {
             builder.AppendLine(import);
         }
 
-        if (union.Namespace is not null)
-        {
-            builder.AppendLine($"using {union.Namespace};");
-        }
+        builder.AppendLine($"using {union.Namespace};");
 
         builder.AppendLine();
-        builder.AppendLine($"namespace Dunet.Extensions;");
-
         builder.AppendLine();
+
         builder.AppendLine(
             $"{union.Accessibility.ToKeyword()} static partial class {union.Name}MatchExtensions"
         );
         builder.AppendLine("{");
-        var taskMethod = GenerateMatchAsyncMethod(union, "Task");
+        var taskMethod = GenerateMatchAsyncMethod(union, "System.Threading.Tasks.Task");
         builder.AppendLine(taskMethod);
-        var valueTaskMethod = GenerateMatchAsyncMethod(union, "ValueTask");
+        var valueTaskMethod = GenerateMatchAsyncMethod(union, "System.Threading.Tasks.ValueTask");
         builder.Append(valueTaskMethod);
         builder.Append("}");
 
@@ -55,7 +55,7 @@ internal static class UnionExtensionsSource
         for (int i = 0; i < union.Members.Count; ++i)
         {
             var member = union.Members[i];
-            builder.Append($"        Func<");
+            builder.Append($"        System.Func<");
             builder.AppendFullUnionName(union);
             builder.AppendTypeParams(union.TypeParameters);
             builder.Append($".{member.Name}");

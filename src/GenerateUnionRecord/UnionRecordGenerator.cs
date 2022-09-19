@@ -83,7 +83,7 @@ public class UnionRecordGenerator : IIncrementalGenerator
                 SourceText.From(union, Encoding.UTF8)
             );
 
-            if (unionRecord.Members.Any())
+            if (unionRecord.SupportsAsyncMatchExtensionMethods())
             {
                 var matchExtensions = UnionExtensionsSource.GenerateExtensions(unionRecord);
                 context.AddSource(
