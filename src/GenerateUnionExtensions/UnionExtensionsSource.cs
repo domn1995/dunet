@@ -21,13 +21,14 @@ internal static class UnionExtensionsSource
             builder.AppendLine(import);
         }
 
-        builder.AppendLine($"using {union.Namespace};");
-
         builder.AppendLine();
+
+        builder.AppendLine($"namespace {union.Namespace};");
+
         builder.AppendLine();
 
         builder.AppendLine(
-            $"{union.Accessibility.ToKeyword()} static partial class {union.Name}MatchExtensions"
+            $"{union.Accessibility.ToKeyword()} static class {union.Name}MatchExtensions"
         );
         builder.AppendLine("{");
         var taskMethod = GenerateMatchAsyncMethod(union, "System.Threading.Tasks.Task");
