@@ -22,9 +22,7 @@ internal static class UnionExtensionsSource
         }
 
         builder.AppendLine();
-
         builder.AppendLine($"namespace {union.Namespace};");
-
         builder.AppendLine();
 
         builder.AppendLine(
