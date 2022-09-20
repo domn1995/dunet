@@ -2,7 +2,13 @@
 
 public class GenerationTests : UnionRecordTests
 {
-    private const string shapeCs =
+    [Theory]
+    [InlineData("Task")]
+    [InlineData("ValueTask")]
+    public void CanUseMatchAsyncOnAsyncMethodsThatReturnUnions(string taskType)
+    {
+        // Arrange.
+        const string shapeCs =
         @"
 using Dunet;
 
@@ -16,12 +22,6 @@ partial record Shape
     partial record Triangle(double Base, double Height);
 }";
 
-    [Theory]
-    [InlineData("Task")]
-    [InlineData("ValueTask")]
-    public void CanUseMatchAsyncOnAsyncMethodsThatReturnUnions(string taskType)
-    {
-        // Arrange.
         var programCs =
             @$"
 using System.Threading.Tasks;
@@ -98,6 +98,7 @@ partial record Shape
     [InlineData("ValueTask")]
     public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoMembers(string taskType)
     {
+        // Arrange.
         var emptyCs = @"
 using Dunet;
 
@@ -106,7 +107,6 @@ namespace EmptyTest;
 [Union]
 partial record Empty;";
 
-        // Arrange.
         var source =
             @$"
 using System.Threading.Tasks;
@@ -120,6 +120,7 @@ var empty = await GetEmptyAsync()
     );
 
 async {taskType}<Empty> GetEmptyAsync() => (null as Empty)!;";
+
         // Act.
         var result = Compile.ToAssembly(emptyCs, source);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
