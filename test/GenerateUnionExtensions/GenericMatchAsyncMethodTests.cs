@@ -62,7 +62,7 @@ async static Task<int> GetValueAsync() =>
     [InlineData("ValueTask", "new Result<string, double>.Failure(\"Error!\")", "Error!")]
     public async Task MultiGenericMatchAsyncCallsCorrectFunctionArgument(
         string taskType,
-        string optionDeclaration,
+        string resultDeclaration,
         string expectedValue
     )
     {
@@ -89,7 +89,7 @@ using GenericsTest;
 async static {taskType}<Result<string, double>> GetResultAsync()
 {{
     await Task.Delay(0);
-    return {optionDeclaration};
+    return {resultDeclaration};
 }}
 
 async static Task<string> GetValueAsync() =>
