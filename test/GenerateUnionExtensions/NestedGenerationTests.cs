@@ -41,7 +41,6 @@ public partial class Parent1
             @$"
 using System.Threading.Tasks;
 using NestedTests;
-using Dunet;
 
 async static Task<int> GetValueAsync() =>
     await GetNestedAsync().MatchAsync(member1 => 1, member2 => 2);
