@@ -1,14 +1,23 @@
-﻿namespace Dunet.Test.GenerateUnionExtensions;
+﻿using Dunet.Test.Runtime;
+
+namespace Dunet.Test.GenerateUnionExtensions;
 
 public class GenericGenerationTests : UnionRecordTests
 {
     [Theory]
-    [InlineData("Task")]
-    [InlineData("ValueTask")]
-    public void SupportsUnionsWithSingleTypeParameter(string taskType)
+    [InlineData("Task", "new Option<int>.Some(1)", 1)]
+    [InlineData("ValueTask", "new Option<int>.Some(1)", 1)]
+    [InlineData("Task", "new Option<int>.None()", 0)]
+    [InlineData("ValueTask", "new Option<int>.None()", 0)]
+    public async Task SupportsUnionsWithSingleTypeParameter(
+        string taskType,
+        string optionDeclaration,
+        int expectedValue
+    )
     {
         // Arrange.
-        var optionCs = @"
+        var optionCs =
+            @"
 using Dunet;
 
 namespace GenericsTest;
@@ -24,19 +33,20 @@ partial record Option<T>
 using System.Threading.Tasks;
 using GenericsTest;
 
-async static Task<Option<int>> await GetOptionAsync()
-    .MatchAsync(some => some.Value, none => 0);
+async static Task<int> GetValueAsync() =>
+    await GetOptionAsync().MatchAsync(some => some.Value, none => 0);
 
 async static {taskType}<Option<int>> GetOptionAsync() =>
-    await Task.FromResult(new Option<int>.Some(1));
+    await Task.FromResult({optionDeclaration});
 ";
 
         // Act.
         var result = Compile.ToAssembly(optionCs, programCs);
+        var value = await result.Assembly!.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
+        value.Should().Be(expectedValue);
     }
 }
-
