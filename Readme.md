@@ -141,6 +141,7 @@ partial record Choice
 // Program.cs
 
 using Core;
+using static Core.Choice;
 
 // 2. Define async methods like you would for any other type.
 static async Task<Choice> AskAsync()
@@ -148,7 +149,7 @@ static async Task<Choice> AskAsync()
     // Simulating network call.
     await Task.Delay(1000);
 
-    // 3. Return unions from async methods as you'd return any other type.
+    // 3. Return unions from async methods like any other type.
     return new No("because I don't wanna!");
 }
 
@@ -159,7 +160,7 @@ Console.WriteLine(response); // Prints "No, because I don't wanna!" after 1 seco
 ```
 
 > **Note**:
-> `MatchAsync()` can only be generated for namespace unions.
+> `MatchAsync()` can only be generated for namespaced unions.
 
 ## Nested Union Support
 
