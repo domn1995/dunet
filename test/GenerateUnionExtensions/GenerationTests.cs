@@ -85,9 +85,10 @@ partial record Shape
         // Assert.
         errorMessages
             .Should()
-            .ContainSingle(
-                "'Task<Shape>' does not contain a definition for 'MatchAsync' and no accessible extension method " +
-                "'MatchAsync' accepting a first argument of type 'Task<Shape>' could be found (are you missing a " +
+            .HaveCount(1)
+            .And.Contain(
+                $"'{taskType}<Shape>' does not contain a definition for 'MatchAsync' and no accessible extension method " +
+                $"'MatchAsync' accepting a first argument of type '{taskType}<Shape>' could be found (are you missing a " +
                 "using directive or an assembly reference?)"
             );
         result.GenerationErrors.Should().BeEmpty();
@@ -128,9 +129,10 @@ async {taskType}<Empty> GetEmptyAsync() => (null as Empty)!;";
         // Assert.
         errorMessages
             .Should()
-            .ContainSingle(
-                "'Task<Empty>' does not contain a definition for 'MatchAsync' and no accessible extension method " +
-                "'MatchAsync' accepting a first argument of type 'Task<Empty>' could be found (are you missing a " +
+            .HaveCount(1)
+            .And.Contain(
+                $"'{taskType}<Empty>' does not contain a definition for 'MatchAsync' and no accessible extension method " +
+                $"'MatchAsync' accepting a first argument of type '{taskType}<Empty>' could be found (are you missing a " +
                 "using directive or an assembly reference?)"
             );
         result.GenerationErrors.Should().BeEmpty();
