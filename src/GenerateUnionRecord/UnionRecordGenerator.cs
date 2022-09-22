@@ -1,4 +1,5 @@
-﻿using Dunet.UnionAttributeGeneration;
+﻿using Dunet.GenerateUnionExtensions;
+using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -76,11 +77,20 @@ public class UnionRecordGenerator : IIncrementalGenerator
 
         foreach (var unionRecord in unionRecords)
         {
-            var result = UnionRecordSource.GenerateRecord(unionRecord);
+            var union = UnionRecordSource.GenerateRecord(unionRecord);
             context.AddSource(
                 $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
-                SourceText.From(result, Encoding.UTF8)
+                SourceText.From(union, Encoding.UTF8)
             );
+
+            if (unionRecord.SupportsAsyncMatchExtensionMethods())
+            {
+                var matchExtensions = UnionExtensionsSource.GenerateExtensions(unionRecord);
+                context.AddSource(
+                    $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.g.cs",
+                    SourceText.From(matchExtensions, Encoding.UTF8)
+                );
+            }
         }
     }
 
@@ -109,6 +119,9 @@ public class UnionRecordGenerator : IIncrementalGenerator
             var @namespace = recordSymbol.GetNamespace();
             var unionRecordTypeParameters = recordDeclaration.TypeParameterList?.Parameters.Select(
                 static typeParam => new TypeParameter(typeParam.Identifier.ToString())
+            );
+            var unionRecordTypeParameterConstraints = recordDeclaration.ConstraintClauses.Select(
+                constraint => new TypeParameterConstraint(constraint.ToString())
             );
             var unionRecordMemberDeclarations = recordDeclaration
                 .DescendantNodes()
@@ -141,8 +154,10 @@ public class UnionRecordGenerator : IIncrementalGenerator
             var record = new UnionRecord(
                 Imports: imports.ToList(),
                 Namespace: @namespace,
+                Accessibility: recordSymbol.DeclaredAccessibility,
                 Name: recordSymbol.Name,
                 TypeParameters: unionRecordTypeParameters?.ToList() ?? new(),
+                TypeParameterConstraints: unionRecordTypeParameterConstraints?.ToList() ?? new(),
                 Members: unionRecordMembers,
                 ParentTypes: GetParentTypes(semanticModel, recordDeclaration)
             );
