@@ -117,6 +117,50 @@ var output = result.Match(
 Console.WriteLine(output); // "Cannot divide by zero!"
 ```
 
+## Async Match Support
+
+Dunet generates a `MatchAsync()` extension method for all `Task<T>` and `ValueTask<T>` where `T` is a union type. For example:
+
+```cs
+// Choice.cs
+
+using Dunet;
+
+namespace Core;
+
+// 1. Define a union type within a namespace.
+[Union]
+partial record Choice
+{
+    partial record Yes;
+    partial record No(string Reason);
+}
+```
+
+```cs
+// Program.cs
+
+using Core;
+
+// 2. Define async methods like you would for any other type.
+static async Task<Choice> AskAsync()
+{
+    // Simulating network call.
+    await Task.Delay(1000);
+
+    // 3. Return unions from async methods as you'd return any other type.
+    return new No("because I don't wanna!");
+}
+
+// 4. Asynchronously match any union `Task` or `ValueTask`.
+var response = await AskAsync().MatchAsync(yes => "Yes!!!", no => $"No, {no.Reason}");
+
+Console.WriteLine(response); // Prints "No, because I don't wanna!" after 1 second.
+```
+
+> **Note**:
+> `MatchAsync()` can only be generated for namespace unions.
+
 ## Nested Union Support
 
 To declare a union nested within a class or record, the class or record must be `partial`. For example:
