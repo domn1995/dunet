@@ -39,15 +39,20 @@ internal static class SyntaxExtensions
     public static bool IsClassOrRecordDeclaration(this SyntaxNode node) =>
         node.IsRecordDeclaration() || node.IsClassDeclaration();
 
-    public static string ToKeyword(this Accessibility accessibility) => accessibility switch
-    {
-        Accessibility.Public => "public",
-        Accessibility.ProtectedOrInternal or Accessibility.ProtectedOrFriend => "protected internal",
-        Accessibility.Internal or Accessibility.Friend => "internal",
-        Accessibility.Protected => "protected",
-        Accessibility.ProtectedAndInternal or Accessibility.ProtectedAndFriend => "private protected",
-        Accessibility.Private => "private",
-        Accessibility.NotApplicable => "",
-        _ => "",
-    };
+    public static string ToKeyword(this Accessibility accessibility) =>
+        accessibility switch
+        {
+            Accessibility.Public => "public",
+            Accessibility.ProtectedOrInternal
+            or Accessibility.ProtectedOrFriend
+                => "protected internal",
+            Accessibility.Internal or Accessibility.Friend => "internal",
+            Accessibility.Protected => "protected",
+            Accessibility.ProtectedAndInternal
+            or Accessibility.ProtectedAndFriend
+                => "private protected",
+            Accessibility.Private => "private",
+            Accessibility.NotApplicable => "",
+            _ => "",
+        };
 }

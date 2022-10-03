@@ -9,7 +9,7 @@ public class GenerationTests : UnionRecordTests
     {
         // Arrange.
         const string shapeCs =
-        @"
+            @"
 using Dunet;
 
 namespace Shapes;
@@ -87,9 +87,9 @@ partial record Shape
             .Should()
             .HaveCount(1)
             .And.Contain(
-                $"'{taskType}<Shape>' does not contain a definition for 'MatchAsync' and no accessible extension method " +
-                $"'MatchAsync' accepting a first argument of type '{taskType}<Shape>' could be found (are you missing a " +
-                "using directive or an assembly reference?)"
+                $"'{taskType}<Shape>' does not contain a definition for 'MatchAsync' and no accessible extension method "
+                    + $"'MatchAsync' accepting a first argument of type '{taskType}<Shape>' could be found (are you missing a "
+                    + "using directive or an assembly reference?)"
             );
         result.GenerationErrors.Should().BeEmpty();
     }
@@ -100,7 +100,8 @@ partial record Shape
     public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoMembers(string taskType)
     {
         // Arrange.
-        var emptyCs = @"
+        var emptyCs =
+            @"
 using Dunet;
 
 namespace EmptyTest;
@@ -131,9 +132,9 @@ async {taskType}<Empty> GetEmptyAsync() => (null as Empty)!;";
             .Should()
             .HaveCount(1)
             .And.Contain(
-                $"'{taskType}<Empty>' does not contain a definition for 'MatchAsync' and no accessible extension method " +
-                $"'MatchAsync' accepting a first argument of type '{taskType}<Empty>' could be found (are you missing a " +
-                "using directive or an assembly reference?)"
+                $"'{taskType}<Empty>' does not contain a definition for 'MatchAsync' and no accessible extension method "
+                    + $"'MatchAsync' accepting a first argument of type '{taskType}<Empty>' could be found (are you missing a "
+                    + "using directive or an assembly reference?)"
             );
         result.GenerationErrors.Should().BeEmpty();
     }

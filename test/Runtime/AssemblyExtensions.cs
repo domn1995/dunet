@@ -12,7 +12,10 @@ public static class AssemblyExtensions
         return (T)method?.Invoke(null, null)!;
     }
 
-    public static async Task<T> ExecuteStaticAsyncMethod<T>(this Assembly assembly, string methodName)
+    public static async Task<T> ExecuteStaticAsyncMethod<T>(
+        this Assembly assembly,
+        string methodName
+    )
     {
         var method = assembly.DefinedTypes
             .SelectMany(type => type.DeclaredMethods)
