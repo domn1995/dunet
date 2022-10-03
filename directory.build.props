@@ -1,0 +1,5 @@
+<Project>
+    <Target Name="DotnetToolRestore">
+        <Exec Command="dotnet tool restore" />
+    </Target>
+</Project>
