@@ -206,8 +206,8 @@ partial record Result<TFailure, TSuccess>
         errorMessages
             .Should()
             .Contain(
-                "The type 'int' must be a reference type in order to use it as parameter " +
-                "'TSuccess' in the generic type or method 'Result<TFailure, TSuccess>'"
+                "The type 'int' must be a reference type in order to use it as parameter "
+                    + "'TSuccess' in the generic type or method 'Result<TFailure, TSuccess>'"
             );
     }
 }
