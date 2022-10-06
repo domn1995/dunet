@@ -33,6 +33,7 @@ internal static class UnionRecordSource
         builder.AppendLine($"    private {record.Name}() {{}}");
         builder.AppendLine();
 
+        // Func match method.
         builder.AppendLine("    public abstract TMatchOutput Match<TMatchOutput>(");
         for (int i = 0; i < record.Members.Count; ++i)
         {
@@ -47,6 +48,23 @@ internal static class UnionRecordSource
             builder.AppendLine();
         }
         builder.AppendLine("    );");
+
+        // Action match method.
+        builder.AppendLine("    public abstract void Match(");
+        for (int i = 0; i < record.Members.Count; ++i)
+        {
+            var member = record.Members[i];
+            builder.Append($"        System.Action<{member.Name}");
+            builder.AppendTypeParams(member.TypeParameters);
+            builder.Append($"> {member.Name.ToMethodParameterCase()}");
+            if (i < record.Members.Count - 1)
+            {
+                builder.Append(",");
+            }
+            builder.AppendLine();
+        }
+        builder.AppendLine("    );");
+
         builder.AppendLine();
 
         if (SupportsImplicitConversions(record))
@@ -70,6 +88,8 @@ internal static class UnionRecordSource
             builder.AppendTypeParams(record.TypeParameters);
             builder.AppendLine();
             builder.AppendLine("    {");
+
+            // Func match method.
             builder.AppendLine("        public override TMatchOutput Match<TMatchOutput>(");
             for (int i = 0; i < record.Members.Count; ++i)
             {
@@ -84,6 +104,23 @@ internal static class UnionRecordSource
                 builder.AppendLine();
             }
             builder.AppendLine($"        ) => {member.Name.ToMethodParameterCase()}(this);");
+
+            // Action match method.
+            builder.AppendLine("        public override void Match(");
+            for (int i = 0; i < record.Members.Count; ++i)
+            {
+                var memberParam = record.Members[i];
+                builder.Append($"            System.Action<{memberParam.Name}");
+                builder.AppendTypeParams(memberParam.TypeParameters);
+                builder.Append($"> {memberParam.Name.ToMethodParameterCase()}");
+                if (i < record.Members.Count - 1)
+                {
+                    builder.Append(",");
+                }
+                builder.AppendLine();
+            }
+            builder.AppendLine($"        ) => {member.Name.ToMethodParameterCase()}(this);");
+
             builder.AppendLine("    }");
             builder.AppendLine();
         }

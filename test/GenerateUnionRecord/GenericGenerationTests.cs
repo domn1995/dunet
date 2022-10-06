@@ -67,7 +67,7 @@ partial record Option
 using Dunet;
 using System.Globalization;
 
-static string GetActualArea() => Divide() switch
+static string GetResult() => Divide() switch
 {{
     Option<double>.Some some => some.Value.ToString(CultureInfo.InvariantCulture),
     Option<double>.None none => ""Error: division by zero."",
@@ -96,7 +96,7 @@ partial record Option<T>
 
         // Act.
         var result = Compile.ToAssembly(programCs);
-        var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetActualArea");
+        var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetResult");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
