@@ -3,6 +3,9 @@ using Dunet.Test.Runtime;
 
 namespace Dunet.Test.GenerateUnionRecord;
 
+/// <summary>
+/// Tests the correctness of match method that don't return anything.
+/// </summary>
 public class ActionMatchMethodTests : UnionRecordTests
 {
     [Fact]
@@ -79,5 +82,46 @@ partial record Shape
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
+    }
+
+    [Theory]
+    [InlineData("Success(\"Successful!\")", "Successful!")]
+    [InlineData("Failure(new Exception(\"Failure!\"))", "Failure!")]
+    public void GenericMatchMethodCallsCorrectActionArgument(
+        string resultRecord,
+        string expectedMessage
+    )
+    {
+        var programCs =
+            @$"
+using System;
+using Dunet;
+
+static Result<Exception, string> DoWork() => new Result<Exception, string>.{resultRecord};
+
+static string GetActualMessage()
+{{
+    var value = """";
+    DoWork().Match(
+        success => value = success.Value,
+        failure => value = failure.Error.Message
+    );
+    return value;
+}}
+
+[Union]
+partial record Result<TFailure, TSuccess>
+{{
+    partial record Success(TSuccess Value);
+    partial record Failure(TFailure Error);
+}}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+        var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+        actualMessage.Should().Be(expectedMessage);
     }
 }
