@@ -85,9 +85,63 @@ partial record Shape
     }
 
     [Theory]
+    [InlineData(1, 2, "0.5")]
+    [InlineData(1, 0, "Error: division by zero.")]
+    public void GenericMatchMethodCallsCorrectActionArgument(
+        int dividend,
+        int divisor,
+        string expectedOutput
+    )
+    {
+        var programCs =
+            @$"
+using Dunet;
+using System.Globalization;
+
+static string GetResult()
+{{
+    var value = """";
+    Divide().Match(
+        some => value = some.Value.ToString(CultureInfo.InvariantCulture),
+        none => value = ""Error: division by zero.""
+    );
+    return value;
+}};
+
+static Option<double> Divide()
+{{
+    var dividend = {dividend};
+    var divisor = {divisor};
+
+    if (divisor is 0)
+    {{
+        return new Option<double>.None();
+    }}
+
+    return new Option<double>.Some((double)dividend / divisor);
+}}
+
+[Union]
+partial record Option<T>
+{{
+    partial record Some(T Value);
+    partial record None();
+}}";
+
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+        var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetResult");
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationErrors.Should().BeEmpty();
+        actualArea.Should().Be(expectedOutput);
+    }
+
+    [Theory]
     [InlineData("Success(\"Successful!\")", "Successful!")]
     [InlineData("Failure(new Exception(\"Failure!\"))", "Failure!")]
-    public void GenericMatchMethodCallsCorrectActionArgument(
+    public void MultiGenericMatchMethodCallsCorrectActionArgument(
         string resultRecord,
         string expectedMessage
     )
