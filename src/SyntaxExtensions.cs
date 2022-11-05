@@ -55,4 +55,8 @@ internal static class SyntaxExtensions
             Accessibility.NotApplicable => "",
             _ => "",
         };
+
+    public static bool IsInterfaceType(this TypeSyntax? typeSyntax, SemanticModel semanticModel) =>
+        typeSyntax is not null
+        && semanticModel.GetTypeInfo(typeSyntax).Type?.TypeKind is TypeKind.Interface;
 }
