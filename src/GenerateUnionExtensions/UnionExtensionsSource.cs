@@ -16,6 +16,8 @@ internal static class UnionExtensionsSource
 
         var builder = new StringBuilder();
 
+        builder.AppendLine("#pragma warning disable 1591");
+
         foreach (var import in union.Imports)
         {
             builder.AppendLine(import);
@@ -85,6 +87,8 @@ internal static class UnionExtensionsSource
         }
 
         builder.AppendLine("        );");
+
+        builder.AppendLine("#pragma warning restore 1591");
 
         return builder.ToString();
     }

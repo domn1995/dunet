@@ -8,6 +8,8 @@ internal static class UnionRecordSource
     {
         var builder = new StringBuilder();
 
+        builder.AppendLine("#pragma warning disable 1591");
+
         foreach (var import in record.Imports)
         {
             builder.AppendLine(import);
@@ -131,6 +133,8 @@ internal static class UnionRecordSource
         {
             builder.AppendLine("}");
         }
+
+        builder.AppendLine("#pragma warning restore 1591");
 
         return builder.ToString();
     }
