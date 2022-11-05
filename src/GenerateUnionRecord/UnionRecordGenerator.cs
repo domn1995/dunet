@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
+using System.Reflection.Metadata;
 using System.Text;
 
 namespace Dunet.GenerateUnionRecord;
@@ -135,10 +136,14 @@ public class UnionRecordGenerator : IIncrementalGenerator
                 var typeParameters = memberRecordDeclaration.TypeParameterList?.Parameters
                     .Select(static typeParam => typeParam.Identifier.ToString())
                     .Select(static identifier => new TypeParameter(identifier));
+
                 var properties = memberRecordDeclaration.ParameterList?.Parameters.Select(
-                    static parameter =>
+                    parameter =>
                         new RecordProperty(
-                            Type: parameter.Type?.ToString() ?? "",
+                            Type: new PropertyType(
+                                Name: parameter.Type?.ToString() ?? "",
+                                IsInterface: parameter.Type.IsInterfaceType(semanticModel)
+                            ),
                             Name: parameter.Identifier.ToString()
                         )
                 );
