@@ -76,9 +76,12 @@ Console.WriteLine(output); // "12345".
 
 ## Implicit Conversion Support
 
-Given a union type where all members contain only a single parameter
-and all parameters are a different type, Dunet will generate implicit
-conversions between their values and the union type.
+Dunet generates implicit conversions between union member values and the union type
+if your union meets all of the following conditions:
+
+- All members contain only a single parameter.
+- All parameters are a different type.
+- No parameters are an interface type.
 
 For example, consider a `Result` union type that represents success
 as a `double` and failure as an `Exception`:
