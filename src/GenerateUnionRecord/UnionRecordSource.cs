@@ -76,7 +76,7 @@ internal static class UnionRecordSource
                 builder.Append($"    public static implicit operator {record.Name}");
                 builder.AppendTypeParams(record.TypeParameters);
                 builder.AppendLine(
-                    $"({member.Properties[0].Type} value) => new {member.Name}(value);"
+                    $"({member.Properties[0].Type.Name} value) => new {member.Name}(value);"
                 );
             }
             builder.AppendLine();
@@ -143,7 +143,13 @@ internal static class UnionRecordSource
     {
         var membersHaveSingleParameter = () =>
             union.Members.All(member => member.Properties.Count is 1);
-        var membersHaveUniqueTypes = () =>
+
+        var membersHaveNoInterfaceParameters = () =>
+            !union.Members
+                .SelectMany(member => member.Properties)
+                .Any(prop => prop.Type.IsInterface);
+
+        var membersHaveUniqueParameterTypes = () =>
         {
             var allPropertyTypes = union.Members
                 .SelectMany(member => member.Properties)
@@ -153,6 +159,8 @@ internal static class UnionRecordSource
             return allPropertyTypesCount == uniquePropertyTypesCount;
         };
 
-        return membersHaveSingleParameter() && membersHaveUniqueTypes();
+        return membersHaveSingleParameter()
+            && membersHaveNoInterfaceParameters()
+            && membersHaveUniqueParameterTypes();
     }
 }

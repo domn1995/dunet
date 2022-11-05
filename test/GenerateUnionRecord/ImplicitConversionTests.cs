@@ -105,4 +105,31 @@ partial record Result<TFailure, TSuccess>
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void ImplicitConversionsAreNotCreatedForInterfaceMembers()
+    {
+        var programCs =
+            @"
+using Dunet;
+using System;
+using System.Collections.Generic;
+using static Result<int>;
+
+Result<int> success = new Success(42);
+Result<int> error = new Failure(new string[] { ""Error 1"", ""Error 2"", ""Error 3"" });
+
+[Union]
+partial record Result<T>
+{
+    partial record Success(T Value);
+    partial record Failure(IEnumerable<string> Errors);
+}";
+        // Act.
+        var result = Compile.ToAssembly(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }

@@ -29,7 +29,9 @@ internal record TypeParameter(string Name)
     public sealed override string ToString() => Name;
 }
 
-internal record RecordProperty(string Type, string Name);
+internal record RecordProperty(PropertyType Type, string Name);
+
+internal record PropertyType(string Name, bool IsInterface);
 
 /// <summary>
 /// Represents a parent type declaration that nests a union record.

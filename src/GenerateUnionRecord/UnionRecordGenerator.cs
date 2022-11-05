@@ -135,10 +135,16 @@ public class UnionRecordGenerator : IIncrementalGenerator
                 var typeParameters = memberRecordDeclaration.TypeParameterList?.Parameters
                     .Select(static typeParam => typeParam.Identifier.ToString())
                     .Select(static identifier => new TypeParameter(identifier));
+
                 var properties = memberRecordDeclaration.ParameterList?.Parameters.Select(
-                    static parameter =>
+                    parameter =>
                         new RecordProperty(
-                            Type: parameter.Type?.ToString() ?? "",
+                            Type: new PropertyType(
+                                Name: parameter.Type?.ToString() ?? "",
+                                IsInterface: parameter.Type is not null
+                                    && semanticModel.GetTypeInfo(parameter.Type).Type?.TypeKind
+                                        is TypeKind.Interface
+                            ),
                             Name: parameter.Identifier.ToString()
                         )
                 );
