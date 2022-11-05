@@ -35,7 +35,9 @@ internal static class UnionExtensionsSource
         builder.AppendLine(taskMethod);
         var valueTaskMethod = GenerateMatchAsyncMethod(union, "System.Threading.Tasks.ValueTask");
         builder.Append(valueTaskMethod);
-        builder.Append("}");
+        builder.AppendLine("}");
+
+        builder.AppendLine("#pragma warning restore 1591");
 
         return builder.ToString();
     }
@@ -87,8 +89,6 @@ internal static class UnionExtensionsSource
         }
 
         builder.AppendLine("        );");
-
-        builder.AppendLine("#pragma warning restore 1591");
 
         return builder.ToString();
     }
