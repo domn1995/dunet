@@ -50,6 +50,53 @@ async static {taskType}<Shape> GetShapeAsync()
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
+    public void CanUseMatchAsyncWithActionsOnAsyncMethodsThatReturnUnions(string taskType)
+    {
+        // Arrange.
+        const string shapeCs =
+            @"
+using Dunet;
+
+namespace Shapes;
+
+[Union]
+partial record Shape
+{
+    partial record Circle(double Radius);
+    partial record Rectangle(double Length, double Width);
+    partial record Triangle(double Base, double Height);
+}";
+
+        var programCs =
+            @$"
+using System.Threading.Tasks;
+using Shapes;
+
+await GetShapeAsync()
+    .MatchAsync(
+        circle => DoNothing(),
+        rectangle => DoNothing(),
+        triangle => DoNothing()
+    );
+
+void DoNothing() {{ }}
+
+async static {taskType}<Shape> GetShapeAsync()
+{{
+    await Task.Delay(0);
+    return new Shape.Rectangle(3, 4);
+}}";
+        // Act.
+        var result = Compile.ToAssembly(shapeCs, programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationErrors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData("Task")]
+    [InlineData("ValueTask")]
     public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoNamespace(string taskType)
     {
         // Arrange.
