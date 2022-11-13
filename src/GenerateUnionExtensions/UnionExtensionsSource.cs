@@ -42,13 +42,13 @@ internal static class UnionExtensionsSource
             union,
             "System.Threading.Tasks.ValueTask"
         );
-        builder.Append(valueTaskMethodForFuncs);
+        builder.AppendLine(valueTaskMethodForFuncs);
 
         var taskMethodForActions = GenerateMatchAsyncMethodForActions(
             union,
             "System.Threading.Tasks.Task"
         );
-        builder.Append(taskMethodForActions);
+        builder.AppendLine(taskMethodForActions);
 
         var valueTaskMethodForActions = GenerateMatchAsyncMethodForActions(
             union,
