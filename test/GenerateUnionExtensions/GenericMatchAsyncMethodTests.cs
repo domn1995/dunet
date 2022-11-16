@@ -17,8 +17,7 @@ public class GenericMatchAsyncMethodTests : UnionRecordTests
     )
     {
         // Arrange.
-        const string optionCs =
-            @"
+        const string optionCs = """
 using Dunet;
 
 namespace GenericsTest;
@@ -28,23 +27,23 @@ partial record Option<T>
 {
     partial record Some(T Value);
     partial record None();
-}";
+}
+""";
 
-        var programCs =
-            @$"
+        var programCs = $$"""
 using System.Threading.Tasks;
 using GenericsTest;
 
-async static {taskType}<Option<int>> GetOptionAsync()
-{{
+async static {{taskType}}<Option<int>> GetOptionAsync()
+{
     await Task.Delay(0);
-    return {optionDeclaration};
-}}
+    return {{optionDeclaration}};
+}
 
 async static Task<int> GetValueAsync() =>
     await GetOptionAsync()
         .MatchAsync(some => some.Value, none => 0);
-";
+""";
         // Act.
         var result = Compile.ToAssembly(optionCs, programCs);
         var value = await result.Assembly!.ExecuteStaticAsyncMethod<int>("GetValueAsync");
@@ -67,8 +66,7 @@ async static Task<int> GetValueAsync() =>
     )
     {
         // Arrange.
-        const string optionCs =
-            @"
+        const string optionCs = """
 using Dunet;
 
 namespace GenericsTest;
@@ -78,26 +76,30 @@ partial record Option<T>
 {
     partial record Some(T Value);
     partial record None();
-}";
+}
+""";
 
-        var programCs =
-            @$"
+        var programCs = $$"""
 using System.Threading.Tasks;
 using GenericsTest;
 
-async static {taskType}<Option<int>> GetOptionAsync()
-{{
+async static {{taskType}}<Option<int>> GetOptionAsync()
+{
     await Task.Delay(0);
-    return {optionDeclaration};
-}}
+    return {{optionDeclaration}};
+}
 
 async static Task<int> GetValueAsync()
-{{
+{
     var value = 0;
     await GetOptionAsync()
-        .MatchAsync(some => value = some.Value, none => value = 0);
+        .MatchAsync(
+            some => { value = some.Value; },
+            none => { value = 0; }
+        );
     return value;
-}}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(optionCs, programCs);
         var value = await result.Assembly!.ExecuteStaticAsyncMethod<int>("GetValueAsync");
@@ -111,8 +113,8 @@ async static Task<int> GetValueAsync()
     [Theory]
     [InlineData("Task", "new Result<string, double>.Success(1d)", "1")]
     [InlineData("ValueTask", "new Result<string, double>.Success(1d)", "1")]
-    [InlineData("Task", "new Result<string, double>.Failure(\"Error!\")", "Error!")]
-    [InlineData("ValueTask", "new Result<string, double>.Failure(\"Error!\")", "Error!")]
+    [InlineData("Task", """new Result<string, double>.Failure("Error!")""", "Error!")]
+    [InlineData("ValueTask", """new Result<string, double>.Failure("Error!")""", "Error!")]
     public async Task MultiGenericMatchAsyncCallsCorrectFunctionArgument(
         string taskType,
         string resultDeclaration,
@@ -120,8 +122,7 @@ async static Task<int> GetValueAsync()
     )
     {
         // Arrange.
-        const string resultCs =
-            @"
+        const string resultCs = """
 using Dunet;
 
 namespace GenericsTest;
@@ -131,7 +132,8 @@ partial record Result<TFailure, TSuccess>
 {
     partial record Success(TSuccess Value);
     partial record Failure(TFailure Error);
-}";
+}
+""";
 
         var programCs =
             @$"
@@ -163,8 +165,8 @@ async static Task<string> GetValueAsync() =>
     [Theory]
     [InlineData("Task", "new Result<string, double>.Success(1d)", "1")]
     [InlineData("ValueTask", "new Result<string, double>.Success(1d)", "1")]
-    [InlineData("Task", "new Result<string, double>.Failure(\"Error!\")", "Error!")]
-    [InlineData("ValueTask", "new Result<string, double>.Failure(\"Error!\")", "Error!")]
+    [InlineData("Task", """new Result<string, double>.Failure("Error!")""", "Error!")]
+    [InlineData("ValueTask", """new Result<string, double>.Failure("Error!")""", "Error!")]
     public async Task MultiGenericMatchAsyncCallsCorrectActionArgument(
         string taskType,
         string resultDeclaration,
@@ -172,8 +174,7 @@ async static Task<string> GetValueAsync() =>
     )
     {
         // Arrange.
-        const string resultCs =
-            @"
+        const string resultCs = """
 using Dunet;
 
 namespace GenericsTest;
@@ -183,27 +184,31 @@ partial record Result<TFailure, TSuccess>
 {
     partial record Success(TSuccess Value);
     partial record Failure(TFailure Error);
-}";
+}
+""";
 
-        var programCs =
-            @$"
+        var programCs = $$"""
 using System;
 using System.Threading.Tasks;
 using GenericsTest;
 
-async static {taskType}<Result<string, double>> GetResultAsync()
-{{
+async static {{taskType}}<Result<string, double>> GetResultAsync()
+{
     await Task.Delay(0);
-    return {resultDeclaration};
-}}
+    return {{resultDeclaration}};
+}
 
 async static Task<string> GetValueAsync()
-{{
-    var value = """";
+{
+    var value = "";
     await GetResultAsync()
-        .MatchAsync(success => {{ value = success.Value.ToString(); }}, failure => {{ value = failure.Error; }});
+        .MatchAsync(
+            success => { value = success.Value.ToString(); },
+            failure => { value = failure.Error; }
+        );
     return value;
-}}";
+}
+""";
 
         // Act.
         var result = Compile.ToAssembly(resultCs, programCs);

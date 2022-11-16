@@ -9,8 +9,7 @@ public class MatchMethodTests : UnionRecordTests
     public void CanUseUnionTypesInDedicatedMatchMethod()
     {
         // Arrange.
-        var source =
-            @"
+        var source = """
 using Dunet;
 
 Shape shape = new Shape.Rectangle(3, 4);
@@ -27,7 +26,8 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(source);
 
@@ -46,27 +46,27 @@ partial record Shape
     )
     {
         // Arrange.
-        var source =
-            @$"
+        var source = $$"""
 using Dunet;
 
 static double GetArea()
-{{
-    {shapeDeclaration}
+{
+    {{shapeDeclaration}}
     return shape.Match(
         circle => 3.14 * circle.Radius * circle.Radius,
         rectangle => rectangle.Length * rectangle.Width,
         triangle => triangle.Base * triangle.Height / 2
     );
-}}
+}
 
 [Union]
 partial record Shape
-{{
+{
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");

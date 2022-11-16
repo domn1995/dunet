@@ -6,8 +6,7 @@ public class NamespaceTests : UnionRecordTests
     public void CanReferenceUnionTypesFromSeparateNamespace()
     {
         // Arrange.
-        var iShapeCs =
-            @"
+        var iShapeCs = """
 using Dunet;
 
 namespace Shapes;
@@ -18,9 +17,9 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
-        var programCs =
-            @"
+}
+""";
+        var programCs = """
 using System;
 using Shapes;
 
@@ -34,7 +33,8 @@ public static class Program
         Shape rectangle = new Shape.Rectangle(1.5, 3.5);
         Shape triangle = new Shape.Triangle(2.0, 3.0);
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(iShapeCs, programCs);
 
@@ -46,8 +46,7 @@ public static class Program
     [Fact]
     public void CanUseUnionTypesInSameNamespace()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 namespace Test;
@@ -68,7 +67,8 @@ public static class Program
         Shape rectangle = new Shape.Rectangle(1.5, 3.5);
         Shape triangle = new Shape.Triangle(2.0, 3.0);
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -80,8 +80,7 @@ public static class Program
     [Fact]
     public void CanUseUnionTypesInTopLevelPrograms()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 Shape circle = new Shape.Circle(3.14);
@@ -94,7 +93,8 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -106,8 +106,7 @@ partial record Shape
     [Fact]
     public void CanUseUnionTypesWithBlockScopedNamespaces()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 namespace Test
@@ -129,7 +128,8 @@ namespace Test
             Shape triangle = new Shape.Triangle(2.0, 3.0);
         }
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -141,8 +141,7 @@ namespace Test
     [Fact]
     public void CanUseUnionTypesWithFileScopedNamespaces()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 namespace Test;
@@ -163,7 +162,8 @@ public static class Program
         Shape rectangle = new Shape.Rectangle(1.5, 3.5);
         Shape triangle = new Shape.Triangle(2.0, 3.0);
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -176,8 +176,7 @@ public static class Program
     public void CanReferenceUnionTypesFromSeparateFileScopedNamespace()
     {
         // Arrange.
-        var iShapeCs =
-            @"
+        var iShapeCs = """
 using Dunet;
 
 namespace Shapes;
@@ -188,9 +187,9 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
-        var programCs =
-            @"
+}
+""";
+        var programCs = """
 using System;
 using Shapes;
 
@@ -204,7 +203,8 @@ public static class Program
         Shape rectangle = new Shape.Rectangle(1.5, 3.5);
         Shape triangle = new Shape.Triangle(2.0, 3.0);
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(iShapeCs, programCs);
 
@@ -217,8 +217,7 @@ public static class Program
     public void CanReferenceUnionTypesFromSeparateBlockScopedNamespace()
     {
         // Arrange.
-        var iShapeCs =
-            @"
+        var iShapeCs = """
 using Dunet;
 
 namespace Shapes
@@ -230,9 +229,9 @@ namespace Shapes
         partial record Rectangle(double Length, double Width);
         partial record Triangle(double Base, double Height);
     }
-}";
-        var programCs =
-            @"
+}
+""";
+        var programCs = """
 using System;
 using Shapes;
 
@@ -246,7 +245,8 @@ public static class Program
         Shape rectangle = new Shape.Rectangle(1.5, 3.5);
         Shape triangle = new Shape.Triangle(2.0, 3.0);
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(iShapeCs, programCs);
 
@@ -259,8 +259,7 @@ public static class Program
     public void CanHaveMultipleUnionsWithSameNameInSeparateNamespaces()
     {
         // Arrange.
-        var resultCs =
-            @"
+        var resultCs = """
 using Dunet;
 
 namespace Foo;
@@ -270,9 +269,9 @@ partial record Result
 {
     partial record Success();
     partial record Failure();
-}";
-        var otherResultCs =
-            @"
+}
+""";
+        var otherResultCs = """
 using Dunet;
 
 namespace Bar;
@@ -282,14 +281,14 @@ partial record Result
 {
     partial record Ok();
     partial record Error();
-}";
-        var programCs =
-            @"
+}
+""";
+        var programCs = """
 Foo.Result success = new Foo.Result.Success();
 Foo.Result failure = new Foo.Result.Failure();
 Bar.Result ok = new Bar.Result.Ok();
 Bar.Result error = new Bar.Result.Error();
-";
+""";
 
         // Act.
         var result = Compile.ToAssembly(resultCs, otherResultCs, programCs);

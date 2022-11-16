@@ -16,8 +16,7 @@ public class NestedGenerationTests : UnionRecordTests
     )
     {
         // Arrange.
-        var nestedCs =
-            @"
+        var nestedCs = """
 using Dunet;
 
 namespace NestedTests;
@@ -36,21 +35,21 @@ public partial class Parent1
             }
         }
     }
-};";
-        var programCs =
-            @$"
+}
+""";
+        var programCs = $$"""
 using System.Threading.Tasks;
 using NestedTests;
 
 async static Task<int> GetValueAsync() =>
     await GetNestedAsync().MatchAsync(member1 => 1, member2 => 2);
 
-async static {taskType}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
-{{
+async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
+{
     await Task.Delay(0);
-    return {unionDeclaration};
-}}
-";
+    return {{unionDeclaration}};
+}
+""";
 
         // Act.
         var result = Compile.ToAssembly(nestedCs, programCs);
@@ -74,8 +73,7 @@ async static {taskType}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
     )
     {
         // Arrange.
-        var nestedCs =
-            @"
+        var nestedCs = """
 using Dunet;
 
 namespace NestedTests;
@@ -94,25 +92,29 @@ public partial class Parent1
             }
         }
     }
-};";
-        var programCs =
-            @$"
+}
+""";
+        var programCs = $$"""
 using System.Threading.Tasks;
 using NestedTests;
 
 async static Task<int> GetValueAsync()
-{{
+{
     var value = 0;
-    await GetNestedAsync().MatchAsync(member1 => value = 1, member2 => value = 2);
+    await GetNestedAsync()
+        .MatchAsync(
+            member1 => { value = 1; },
+            member2 => { value = 2; }
+        );
     return value;
-}}
+}
 
-async static {taskType}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
-{{
+async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
+{
     await Task.Delay(0);
-    return {unionDeclaration};
-}}
-";
+    return {{unionDeclaration}};
+}
+""";
 
         // Act.
         var result = Compile.ToAssembly(nestedCs, programCs);

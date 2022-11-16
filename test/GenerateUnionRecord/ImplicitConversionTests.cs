@@ -5,20 +5,20 @@ public class ImplicitConversionTests : UnionRecordTests
     [Fact]
     public void UnionMemberInnerValuesAreAssignableToUnionType()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 using System;
 
-Result success = ""Hello, world!"";
-Result error = new Exception(""Boom!"");
+Result success = "Hello, world!";
+Result error = new Exception("Boom!");
 
 [Union]
 partial record Result
 {
     partial record Success(string Value);
     partial record Failure(Exception Error);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -30,14 +30,13 @@ partial record Result
     [Fact]
     public void UnionMemberInnerValueSubclassesAreAssignableToUnionType()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 using System;
 using System.Collections.Generic;
 
-Result success = new StringList() { ""foo"", ""bar"", ""baz"" };
-Result error = new InvalidOperationException(""Boom!"");
+Result success = new StringList() { "foo", "bar", "baz" };
+Result error = new InvalidOperationException("Boom!");
 
 class StringList : List<string> {}
 
@@ -46,7 +45,8 @@ partial record Result
 {
     partial record Success(List<string> Values);
     partial record Failure(Exception Error);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -58,20 +58,20 @@ partial record Result
     [Fact]
     public void UnionMemberGenericInnerValueIsAssignableToUnionType()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 using System;
 
 Result<int> success = 42;
-Result<string> error = new Exception(""Something went wrong."");
+Result<string> error = new Exception("Something went wrong.");
 
 [Union]
 partial record Result<T>
 {
     partial record Success(T Value);
     partial record Failure(Exception Error);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -83,21 +83,21 @@ partial record Result<T>
     [Fact]
     public void UnionMemberMultipleGenericInnerValuesAreAssignableToUnionType()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 using System;
 using static Result<string, int>;
 
 Result<string, int> success = 42;
-Result<string, int> error = ""Something went wrong."";
+Result<string, int> error = "Something went wrong.";
 
 [Union]
 partial record Result<TFailure, TSuccess>
 {
     partial record Success(TSuccess Value);
     partial record Failure(TFailure Error);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -109,22 +109,22 @@ partial record Result<TFailure, TSuccess>
     [Fact]
     public void ImplicitConversionsAreNotCreatedForInterfaceMembers()
     {
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 using System;
 using System.Collections.Generic;
 using static Result<int>;
 
 Result<int> success = new Success(42);
-Result<int> error = new Failure(new string[] { ""Error 1"", ""Error 2"", ""Error 3"" });
+Result<int> error = new Failure(new string[] { "Error 1", "Error 2", "Error 3" });
 
 [Union]
 partial record Result<T>
 {
     partial record Success(T Value);
     partial record Failure(IEnumerable<string> Errors);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 

@@ -9,8 +9,7 @@ public class NestedGenerationTests : UnionRecordTests
     public void CanReturnNestedMember()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 var foo = Parent.Foo();
@@ -34,7 +33,8 @@ public partial class Parent
     {
         return new Nested.Member2();
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -47,8 +47,7 @@ public partial class Parent
     public void CanReturnDeeplyNestedMember()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 var foo = Parent1.Parent2.Parent3.Foo();
@@ -78,7 +77,8 @@ public partial class Parent1
             }
         }
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -90,8 +90,7 @@ public partial class Parent1
     [Fact]
     public void CanReturnDeeplyNestedMemberFromOtherNamespace()
     {
-        var nestedCs =
-            @"
+        var nestedCs = """
 using Dunet;
 
 namespace NestedTests;
@@ -120,15 +119,15 @@ public partial class Parent1
             }
         }
     }
-}";
+}
+""";
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using NestedTests;
 
 var foo = Parent1.Parent2.Parent3.Foo();
 var bar = Parent1.Parent2.Parent3.Bar();
-";
+""";
         // Act.
         var result = Compile.ToAssembly(nestedCs, programCs);
 
@@ -141,8 +140,7 @@ var bar = Parent1.Parent2.Parent3.Bar();
     public void CanReturnMultipleDeeplyNestedUnionMembers()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 var foo = Parent1.Parent2.Parent3.Foo();
@@ -179,7 +177,8 @@ public partial class Parent1
             }
         }
     }
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
