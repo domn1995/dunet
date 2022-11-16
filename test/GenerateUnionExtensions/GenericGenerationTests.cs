@@ -16,8 +16,7 @@ public class GenericGenerationTests : UnionRecordTests
     )
     {
         // Arrange.
-        var optionCs =
-            @"
+        var optionCs = """
 using Dunet;
 
 namespace GenericsTest;
@@ -27,9 +26,9 @@ partial record Option<T>
 {
     partial record Some(T Value);
     partial record None();
-}";
-        var programCs =
-            @$"
+}
+""";
+        var programCs = $"""
 using System.Threading.Tasks;
 using GenericsTest;
 
@@ -38,7 +37,7 @@ async static Task<int> GetValueAsync() =>
 
 async static {taskType}<Option<int>> GetOptionAsync() =>
     await Task.FromResult({optionDeclaration});
-";
+""";
 
         // Act.
         var result = Compile.ToAssembly(optionCs, programCs);
@@ -62,8 +61,7 @@ async static {taskType}<Option<int>> GetOptionAsync() =>
     )
     {
         // Arrange.
-        var optionCs =
-            @"
+        var optionCs = """
 using Dunet;
 
 namespace GenericsTest;
@@ -73,22 +71,26 @@ partial record Option<T>
 {
     partial record Some(T Value);
     partial record None();
-}";
-        var programCs =
-            @$"
+}
+""";
+        var programCs = $$"""
 using System.Threading.Tasks;
 using GenericsTest;
 
 async static Task<int> GetValueAsync()
-{{
+{
     var value = 0;
-    await GetOptionAsync().MatchAsync(some => value = some.Value, none => value = 0);
+    await GetOptionAsync()
+        .MatchAsync(
+            some => { value = some.Value; },
+            none => { value = 0; }
+        );
     return value;
-}}
+}
 
-async static {taskType}<Option<int>> GetOptionAsync() =>
-    await Task.FromResult({optionDeclaration});
-";
+async static {{taskType}}<Option<int>> GetOptionAsync() =>
+    await Task.FromResult({{optionDeclaration}});
+""";
 
         // Act.
         var result = Compile.ToAssembly(optionCs, programCs);

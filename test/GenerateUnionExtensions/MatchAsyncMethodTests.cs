@@ -19,8 +19,7 @@ public class MatchAsyncMethodTests : UnionRecordTests
     )
     {
         // Arrange.
-        const string shapeCs =
-            @"
+        const string shapeCs = """
 using Dunet;
 
 namespace Shapes;
@@ -31,18 +30,18 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
+}
+""";
 
-        var programCs =
-            @$"
+        var programCs = $$"""
 using System.Threading.Tasks;
 using Shapes;
 
-async static {taskType}<Shape> GetShapeAsync()
-{{
+async static {{taskType}}<Shape> GetShapeAsync()
+{
     await Task.Delay(0);
-    return {shapeDeclaration};
-}};
+    return {{shapeDeclaration}};
+};
 
 async static Task<double> GetAreaAsync() =>
     await GetShapeAsync()
@@ -50,7 +49,8 @@ async static Task<double> GetAreaAsync() =>
             circle => 3.14 * circle.Radius * circle.Radius,
             rectangle => rectangle.Length * rectangle.Width,
             triangle => triangle.Base * triangle.Height / 2
-        );";
+        );
+""";
 
         // Act.
         var result = Compile.ToAssembly(shapeCs, programCs);
@@ -76,8 +76,7 @@ async static Task<double> GetAreaAsync() =>
     )
     {
         // Arrange.
-        const string shapeCs =
-            @"
+        const string shapeCs = """
 using Dunet;
 
 namespace Shapes;
@@ -88,30 +87,31 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
+}
+""";
 
-        var programCs =
-            @$"
+        var programCs = $$"""
 using System.Threading.Tasks;
 using Shapes;
 
-async static {taskType}<Shape> GetShapeAsync()
-{{
+async static {{taskType}}<Shape> GetShapeAsync()
+{
     await Task.Delay(0);
-    return {shapeDeclaration};
-}};
+    return {{shapeDeclaration}};
+};
 
 async static Task<double> GetAreaAsync()
-{{
+{
     var value = 0d;
     await GetShapeAsync()
         .MatchAsync(
-            circle => value = 3.14 * circle.Radius * circle.Radius,
-            rectangle => value = rectangle.Length * rectangle.Width,
-            triangle => value = triangle.Base * triangle.Height / 2
+            circle => { value = 3.14 * circle.Radius * circle.Radius; },
+            rectangle => { value = rectangle.Length * rectangle.Width; },
+            triangle => { value = triangle.Base * triangle.Height / 2; }
         );
     return value;
-}}";
+}
+""";
 
         // Act.
         var result = Compile.ToAssembly(shapeCs, programCs);

@@ -6,8 +6,7 @@ public class GenerationTests : UnionRecordTests
     public void UnionMembersExtendUnionType()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 QueryState loading = new QueryState.Loading();
@@ -20,7 +19,8 @@ partial record QueryState
     partial record Loading();
     partial record Success();
     partial record Error();
-}";
+}
+""";
 
         // Act.
         var result = Compile.ToAssembly(programCs);
@@ -34,8 +34,7 @@ partial record QueryState
     public void UnionMemberTypesMayBeEmpty()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 var loading = new QueryState.Loading();
@@ -48,7 +47,9 @@ partial record QueryState
     partial record Loading();
     partial record Success();
     partial record Error();
-}";
+}
+
+""";
 
         // Act.
         var result = Compile.ToAssembly(programCs);
@@ -62,8 +63,7 @@ partial record QueryState
     public void UnionMayContainSingleType()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 var single = new Single.OnlyMember();
@@ -72,7 +72,8 @@ var single = new Single.OnlyMember();
 partial record Single
 {
     partial record OnlyMember();
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -85,15 +86,15 @@ partial record Single
     public void UnionMayBeEmpty()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 
 // Must have something for top level program to compile.
 var dummy = 1;
 
 [Union]
-partial record Empty;";
+partial record Empty;
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -106,20 +107,20 @@ partial record Empty;";
     public void UnionTypeMayHaveComplexMembers()
     {
         // Arrange.
-        var programCs =
-            @"
+        var programCs = """
 using Dunet;
 using System;
 
 var success = new Result.Success(Guid.NewGuid());
-var failure = new Result.Failure(new Exception(""Boom!""));
+var failure = new Result.Failure(new Exception("Boom!"));
 
 [Union]
 partial record Result
 {
     partial record Success(Guid Id);
     partial record Failure(Exception Error);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(programCs);
 
@@ -132,15 +133,13 @@ partial record Result
     public void UnionTypeMayHaveComplexMembersFromOtherNamespace()
     {
         // Arrange.
-        var dataCs =
-            @"
+        var dataCs = """
 namespace ComplexTypes;
 
 public record Data(string Value);
-";
+""";
 
-        var iResultCs =
-            @"
+        var resultCs = """
 using Dunet;
 using ComplexTypes;
 using System;
@@ -152,20 +151,20 @@ partial record Result
 {
     partial record Success(Data Value);
     partial record Failure(Exception Error);
-}";
+}
+""";
 
-        var programCs =
-            @"
+        var programCs = """
 using System;
 using ComplexTypes;
 using Results;
 
 // Must have something for top level program to execute.
-var success = new Result.Success(new Data(""foo""));
-var failure = new Result.Failure(new Exception(""bar""));
-";
+var success = new Result.Success(new Data("foo"));
+var failure = new Result.Failure(new Exception("bar"));
+""";
         // Act.
-        var result = Compile.ToAssembly(dataCs, iResultCs, programCs);
+        var result = Compile.ToAssembly(dataCs, resultCs, programCs);
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();

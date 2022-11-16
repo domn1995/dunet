@@ -8,8 +8,7 @@ public class SwitchExpressionTests : UnionRecordTests
     public void CanUseUnionTypesInSwitchExpression()
     {
         // Arrange.
-        var source =
-            @"
+        var source = """
 using Dunet;
 
 Shape circle = new Shape.Circle(3.14);
@@ -28,7 +27,8 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(source);
 
@@ -44,29 +44,29 @@ partial record Shape
     public void SwitchExpressionMatchesCorrectCase(string shapeDeclaration, double expectedArea)
     {
         // Arrange.
-        var source =
-            @$"
+        var source = $$"""
 using Dunet;
 
 static double GetActualArea()
-{{
-    {shapeDeclaration}
+{
+    {{shapeDeclaration}}
     return shape switch
-    {{
+    {
         Shape.Rectangle r => r.Length * r.Width,
         Shape.Circle c => 3.14 * c.Radius * c.Radius,
         Shape.Triangle t => t.Base * t.Height / 2,
         _ => 0d,
-    }};
-}}
+    };
+}
 
 [Union]
 partial record Shape
-{{
+{
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetActualArea");

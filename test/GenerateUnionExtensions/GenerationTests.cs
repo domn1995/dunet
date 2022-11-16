@@ -8,8 +8,7 @@ public class GenerationTests : UnionRecordTests
     public void CanUseMatchAsyncOnAsyncMethodsThatReturnUnions(string taskType)
     {
         // Arrange.
-        const string shapeCs =
-            @"
+        const string shapeCs = """
 using Dunet;
 
 namespace Shapes;
@@ -20,10 +19,10 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
+}
+""";
 
-        var programCs =
-            @$"
+        var programCs = $$"""
 using System.Threading.Tasks;
 using Shapes;
 
@@ -34,11 +33,13 @@ var area = await GetShapeAsync()
         triangle => triangle.Base * triangle.Height / 2
     );
 
-async static {taskType}<Shape> GetShapeAsync()
-{{
+async static {{taskType}}<Shape> GetShapeAsync()
+{
     await Task.Delay(0);
     return new Shape.Rectangle(3, 4);
-}}";
+}
+""";
+
         // Act.
         var result = Compile.ToAssembly(shapeCs, programCs);
 
@@ -53,8 +54,7 @@ async static {taskType}<Shape> GetShapeAsync()
     public void CanUseMatchAsyncWithActionsOnAsyncMethodsThatReturnUnions(string taskType)
     {
         // Arrange.
-        const string shapeCs =
-            @"
+        const string shapeCs = """
 using Dunet;
 
 namespace Shapes;
@@ -65,10 +65,10 @@ partial record Shape
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}";
+}
+""";
 
-        var programCs =
-            @$"
+        var programCs = $$"""
 using System.Threading.Tasks;
 using Shapes;
 
@@ -79,13 +79,14 @@ await GetShapeAsync()
         triangle => DoNothing()
     );
 
-void DoNothing() {{ }}
+void DoNothing() { }
 
-async static {taskType}<Shape> GetShapeAsync()
-{{
+async static {{taskType}}<Shape> GetShapeAsync()
+{
     await Task.Delay(0);
     return new Shape.Rectangle(3, 4);
-}}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(shapeCs, programCs);
 
@@ -100,8 +101,7 @@ async static {taskType}<Shape> GetShapeAsync()
     public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoNamespace(string taskType)
     {
         // Arrange.
-        var source =
-            @$"
+        var source = $$"""
 using System.Threading.Tasks;
 using Dunet;
 
@@ -112,19 +112,20 @@ var area = await GetShapeAsync()
         triangle => triangle.Base * triangle.Height / 2
     );
 
-async static {taskType}<Shape> GetShapeAsync()
-{{
+async static {{taskType}}<Shape> GetShapeAsync()
+{
     await Task.Delay(0);
     return new Shape.Rectangle(3, 4);
-}}
+}
 
 [Union]
 partial record Shape
-{{
+{
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
-}}";
+}
+""";
         // Act.
         var result = Compile.ToAssembly(source);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
@@ -147,17 +148,16 @@ partial record Shape
     public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoMembers(string taskType)
     {
         // Arrange.
-        var emptyCs =
-            @"
+        var emptyCs = """
 using Dunet;
 
 namespace EmptyTest;
 
 [Union]
-partial record Empty;";
+partial record Empty;
+""";
 
-        var source =
-            @$"
+        var source = $$"""
 using System.Threading.Tasks;
 using EmptyTest;
 
@@ -168,7 +168,8 @@ var empty = await GetEmptyAsync()
         triangle => triangle.Base * triangle.Height / 2
     );
 
-async {taskType}<Empty> GetEmptyAsync() => (null as Empty)!;";
+async {{taskType}}<Empty> GetEmptyAsync() => (null as Empty)!;
+""";
 
         // Act.
         var result = Compile.ToAssembly(emptyCs, source);
