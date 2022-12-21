@@ -17,7 +17,7 @@
         <AssemblyVersion>1.5.0</AssemblyVersion>
         <FileVersion>1.5.0</FileVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>1.5.0 - Support async Action match functions. 
+        <PackageReleaseNotes>1.5.0 - Support async Action match functions.
 1.4.2 - Disables implicit conversions when union member is an interface type.
 1.4.1 - Disable CS1591 in generated code.
 1.4.0 - Support Action match functions.
@@ -62,6 +62,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" />
+        <PackageReference Include="PolySharp" Version="1.8.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>
