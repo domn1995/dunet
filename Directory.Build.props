@@ -1,5 +1,5 @@
 <Project>
-    <Target Name="DotnetToolRestore">
+    <Target Name="DotnetToolRestore" BeforeTargets="CoreBuild">
         <Exec Command="dotnet tool restore" />
     </Target>
 </Project>
