@@ -76,4 +76,45 @@ partial record Shape
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
+
+    [Theory]
+    [InlineData("Keyword keyword = new Keyword.New();", "new")]
+    [InlineData("Keyword keyword = new Keyword.Base();", "base")]
+    [InlineData("Keyword keyword = new Keyword.Null();", "null")]
+    public void CanMatchOnUnionMembersNamedAfterKeywords(
+        string keywordDeclaration,
+        string expectedKeyword
+    )
+    {
+        // Arrange.
+        var source = $$"""
+using Dunet;
+
+static string GetKeyword()
+{
+    {{keywordDeclaration}}
+    return keyword.Match(
+        @new => "new",
+        @base => "base",
+        @null => "null"
+    );
+}
+
+[Union]
+partial record Keyword
+{
+    partial record New;
+    partial record Base;
+    partial record Null;
+}
+""";
+        // Act.
+        var result = Compile.ToAssembly(source);
+        var actualKeyword = result.Assembly?.ExecuteStaticMethod<string>("GetKeyword");
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationErrors.Should().BeEmpty();
+        actualKeyword.Should().Be(expectedKeyword);
+    }
 }

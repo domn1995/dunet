@@ -122,4 +122,66 @@ async static Task<double> GetAreaAsync()
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
+
+    [Theory]
+    [InlineData("Task", "new Keyword.New()", "new")]
+    [InlineData("ValueTask", "new Keyword.New()", "new")]
+    [InlineData("Task", "new Keyword.Base()", "base")]
+    [InlineData("ValueTask", "new Keyword.Base()", "base")]
+    [InlineData("Task", "new Keyword.Null()", "null")]
+    [InlineData("ValueTask", "new Keyword.Null()", "null")]
+    public async Task CanMatchAsyncOnUnionMembersNamedAfterKeywords(
+    string taskType,
+    string keywordDeclaration,
+    string expectedKeyword
+)
+    {
+        // Arrange.
+        const string keywordCs = """
+using Dunet;
+
+namespace Keywords;
+
+[Union]
+partial record Keyword
+{
+    partial record New;
+    partial record Base;
+    partial record Null;
+}
+""";
+
+        var programCs = $$"""
+using System.Threading.Tasks;
+using Keywords;
+
+async static {{taskType}}<Keyword> GetKeywordAsync()
+{
+    await Task.Delay(0);
+    return {{keywordDeclaration}};
+};
+
+async static Task<string> GetValueAsync()
+{
+    var keyword = "";
+    await GetKeywordAsync()
+        .MatchAsync(
+            @new => keyword = "new",
+            @base => keyword = "base",
+            @null => keyword = "null"
+        );
+    return keyword;
+}
+""";
+
+        // Act.
+        var result = Compile.ToAssembly(keywordCs, programCs);
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationErrors.Should().BeEmpty();
+        var actualKeyword = await result.Assembly!.ExecuteStaticAsyncMethod<string>("GetValueAsync");
+
+
+        // Assert.
+        actualKeyword.Should().Be(expectedKeyword);
+    }
 }
