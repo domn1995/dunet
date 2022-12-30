@@ -2,7 +2,7 @@
 
 namespace Dunet.GenerateUnionRecord;
 
-internal record UnionRecord(
+internal sealed record UnionRecord(
     List<string> Imports,
     string? Namespace,
     Accessibility Accessibility,
@@ -18,20 +18,20 @@ internal record UnionRecord(
     public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Members.Count > 0;
 }
 
-internal record UnionRecordMember(
+internal sealed record UnionRecordMember(
     string Name,
     List<TypeParameter> TypeParameters,
     List<RecordProperty> Properties
 );
 
-internal record TypeParameter(string Name)
+internal sealed record TypeParameter(string Name)
 {
-    public sealed override string ToString() => Name;
+    public override string ToString() => Name;
 }
 
-internal record RecordProperty(PropertyType Type, string Name);
+internal sealed record RecordProperty(PropertyType Type, string Name);
 
-internal record PropertyType(string Name, bool IsInterface);
+internal sealed record PropertyType(string Name, bool IsInterface);
 
 /// <summary>
 /// Represents a parent type declaration that nests a union record.
@@ -40,7 +40,7 @@ internal record PropertyType(string Name, bool IsInterface);
 /// <param name="Name">This type's name.</param>
 internal sealed record ParentType(bool IsRecord, string Name)
 {
-    public sealed override string ToString() => Name;
+    public override string ToString() => Name;
 }
 
 /// <summary>
@@ -49,5 +49,5 @@ internal sealed record ParentType(bool IsRecord, string Name)
 /// <param name="Value">The full string value of the constraint. Ex: `where T : notnull, System.Exception`</param>
 internal sealed record TypeParameterConstraint(string Value)
 {
-    public sealed override string ToString() => Value;
+    public override string ToString() => Value;
 }

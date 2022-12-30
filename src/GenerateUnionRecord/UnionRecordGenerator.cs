@@ -5,13 +5,12 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
-using System.Reflection.Metadata;
 using System.Text;
 
 namespace Dunet.GenerateUnionRecord;
 
 [Generator]
-public class UnionRecordGenerator : IIncrementalGenerator
+public sealed class UnionRecordGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
