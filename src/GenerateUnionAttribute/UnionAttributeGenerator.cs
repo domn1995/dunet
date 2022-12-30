@@ -5,7 +5,7 @@ using System.Text;
 namespace Dunet.UnionAttributeGeneration;
 
 [Generator]
-public class UnionAttributeGenerator : IIncrementalGenerator
+public sealed class UnionAttributeGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
