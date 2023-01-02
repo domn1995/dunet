@@ -114,15 +114,13 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                 .Where(static node => node.IsKind(SyntaxKind.RecordDeclaration))
                 .OfType<RecordDeclarationSyntax>();
 
-            var unionRecordMembers = new List<UnionRecordMember>();
-
-            foreach (var memberRecordDeclaration in unionRecordMemberDeclarations)
+            var unionRecordMembers = unionRecordMemberDeclarations.Select(declaration =>
             {
-                var typeParameters = memberRecordDeclaration.TypeParameterList?.Parameters
+                var typeParameters = declaration.TypeParameterList?.Parameters
                     .Select(static typeParam => typeParam.Identifier.ToString())
                     .Select(static identifier => new TypeParameter(identifier));
 
-                var properties = memberRecordDeclaration.ParameterList?.Parameters.Select(
+                var properties = declaration.ParameterList?.Parameters.Select(
                     parameter =>
                         new RecordProperty(
                             Type: new PropertyType(
@@ -132,14 +130,13 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                             Name: parameter.Identifier.ToString()
                         )
                 );
-                var memberRecord = new UnionRecordMember(
-                    Name: memberRecordDeclaration.Identifier.ToString(),
+
+                return new UnionRecordMember(
+                    Name: declaration.Identifier.ToString(),
                     TypeParameters: typeParameters?.ToList() ?? new(),
                     Properties: properties?.ToList() ?? new()
                 );
-
-                unionRecordMembers.Add(memberRecord);
-            }
+            });
 
             var record = new UnionRecord(
                 Imports: imports.ToList(),
@@ -148,7 +145,7 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                 Name: recordSymbol.Name,
                 TypeParameters: unionRecordTypeParameters?.ToList() ?? new(),
                 TypeParameterConstraints: unionRecordTypeParameterConstraints?.ToList() ?? new(),
-                Members: unionRecordMembers,
+                Members: unionRecordMembers.ToList(),
                 ParentTypes: GetParentTypes(semanticModel, recordDeclaration)
             );
 
