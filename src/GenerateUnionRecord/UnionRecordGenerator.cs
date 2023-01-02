@@ -1,5 +1,4 @@
 ﻿using Dunet.GenerateUnionExtensions;
-using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,13 +18,14 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                 predicate: static (node, _) => node.IsDecoratedRecord(),
                 transform: static (ctx, _) => GetGenerationTarget(ctx)
             )
-            .Where(static m => m is not null);
+            .Flatten()
+            .Collect();
 
-        var compilation = context.CompilationProvider.Combine(targets.Collect());
+        var compilation = context.CompilationProvider.Combine(targets);
 
         context.RegisterSourceOutput(
             compilation,
-            static (spc, source) => Execute(source.Left, source.Right!, spc)
+            static (spc, source) => Execute(source.Left, source.Right, spc)
         );
     }
 

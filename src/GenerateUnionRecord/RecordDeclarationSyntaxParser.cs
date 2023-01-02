@@ -14,7 +14,7 @@ internal static class RecordDeclarationSyntaxParser
     /// Gets the type parameters of this record declaration.
     /// </summary>
     /// <param name="record">This record declaration.</param>
-    /// <returns>The sequence of type parameters, if any. Otherwise, <c>null</c>.</returns>
+    /// <returns>The sequence of type parameters, if any. Otherwise, <see langword="null"/>.</returns>
     public static IEnumerable<TypeParameter>? GetTypeParameters(
         this RecordDeclarationSyntax record
     ) =>
@@ -26,7 +26,7 @@ internal static class RecordDeclarationSyntaxParser
     /// Gets the type parameter constraints of this record declaration.
     /// </summary>
     /// <param name="record">This record declaration.</param>
-    /// <returns>The sequence of type parameter constraints, if any. Otherwise, <c>null</c>.</returns>
+    /// <returns>The sequence of type parameter constraints, if any. Otherwise, <see langword="null"/>.</returns>
     public static IEnumerable<TypeParameterConstraint>? GetTypeParameterConstraints(
         this RecordDeclarationSyntax record
     ) =>
@@ -39,7 +39,7 @@ internal static class RecordDeclarationSyntaxParser
     /// </summary>
     /// <param name="record">This record declaration.</param>
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
-    /// <returns>The sequence of properties, if any. Otherwise, <c>null</c>.</returns>
+    /// <returns>The sequence of properties, if any. Otherwise, <see langword="null"/>.</returns>
     public static IEnumerable<Property>? GetProperties(
         this RecordDeclarationSyntax record,
         SemanticModel semanticModel
@@ -60,7 +60,7 @@ internal static class RecordDeclarationSyntaxParser
     /// </summary>
     /// <param name="record">This record declaration.</param>
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
-    /// <returns>The sequence of nested record declarations, if any. Otherwise, <c>null</c>.</returns>
+    /// <returns>The sequence of nested record declarations, if any. Otherwise, <see langword="null"/>.</returns>
     public static IEnumerable<UnionRecordMember> GetNestedRecordDeclarations(
         this RecordDeclarationSyntax record,
         SemanticModel semanticModel
@@ -86,7 +86,8 @@ internal static class RecordDeclarationSyntaxParser
     /// <param name="record">This record declaration.</param>
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
     /// <returns>
-    /// A boolean <c>true</c> if decorated with the union attribute; otherwise, <c>false</c>.
+    /// A boolean <see langword="true"/> if decorated with the union attribute; otherwise,
+    /// <see langword="false"/>.
     /// </returns>
     public static bool IsDecoratedWithUnionAttribute(
         this RecordDeclarationSyntax record,
@@ -110,7 +111,7 @@ internal static class RecordDeclarationSyntaxParser
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
     /// <returns>
     /// A stack containing the types surrounding this record declaration. The type declared closest
-    /// to this record declaration will be at the top of the stack, and the type declarated closest
+    /// to this record declaration will be at the top of the stack, and the type declared closest
     /// to the namespace will be at the bottom of the stack.
     /// </returns>
     public static Stack<ParentType> GetParentTypes(
