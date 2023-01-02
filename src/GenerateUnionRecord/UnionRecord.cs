@@ -18,20 +18,14 @@ internal sealed record UnionRecord(
     public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Members.Count > 0;
 }
 
-internal sealed record UnionRecordMember(
-    string Name,
-    List<TypeParameter> TypeParameters,
-    List<RecordProperty> Properties
-);
-
 internal sealed record TypeParameter(string Name)
 {
     public override string ToString() => Name;
 }
 
-internal sealed record RecordProperty(PropertyType Type, string Name);
+internal sealed record Property(PropertyType Type, string Identifier);
 
-internal sealed record PropertyType(string Name, bool IsInterface);
+internal sealed record PropertyType(string Identifier, bool IsInterface);
 
 /// <summary>
 /// Represents a parent type declaration that nests a union record.

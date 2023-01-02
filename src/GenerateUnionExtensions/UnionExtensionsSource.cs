@@ -81,8 +81,8 @@ internal static class UnionExtensionsSource
             builder.Append($"        System.Func<");
             builder.AppendFullUnionName(union);
             builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($".{member.Name}");
-            builder.Append($", TMatchOutput> {member.Name.ToMethodParameterCase()}");
+            builder.Append($".{member.Identifier}");
+            builder.Append($", TMatchOutput> {member.Identifier.ToMethodParameterCase()}");
             if (i < union.Members.Count - 1)
             {
                 builder.Append(",");
@@ -100,7 +100,7 @@ internal static class UnionExtensionsSource
         for (int i = 0; i < union.Members.Count; ++i)
         {
             var member = union.Members[i];
-            builder.Append($"            {member.Name.ToMethodParameterCase()}");
+            builder.Append($"            {member.Identifier.ToMethodParameterCase()}");
             if (i < union.Members.Count - 1)
             {
                 builder.Append(",");
@@ -131,8 +131,8 @@ internal static class UnionExtensionsSource
             builder.Append($"        System.Action<");
             builder.AppendFullUnionName(union);
             builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($".{member.Name}");
-            builder.Append($"> {member.Name.ToMethodParameterCase()}");
+            builder.Append($".{member.Identifier}");
+            builder.Append($"> {member.Identifier.ToMethodParameterCase()}");
             if (i < union.Members.Count - 1)
             {
                 builder.Append(",");
@@ -150,7 +150,7 @@ internal static class UnionExtensionsSource
         for (int i = 0; i < union.Members.Count; ++i)
         {
             var member = union.Members[i];
-            builder.Append($"            {member.Name.ToMethodParameterCase()}");
+            builder.Append($"            {member.Identifier.ToMethodParameterCase()}");
             if (i < union.Members.Count - 1)
             {
                 builder.Append(",");

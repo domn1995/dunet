@@ -29,20 +29,11 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
         );
     }
 
-    private static RecordDeclarationSyntax? GetGenerationTarget(GeneratorSyntaxContext context)
-    {
-        var recordDeclaration = (RecordDeclarationSyntax)context.Node;
-        var getContainingType = (AttributeSyntax attributeSyntax) =>
-            context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol?.ContainingType;
-
-        var isDecoratedWithUnionAttribute = recordDeclaration.AttributeLists
-            .SelectMany(static attributeListSyntax => attributeListSyntax.Attributes)
-            .Select(getContainingType)
-            .Select(static attributeSymbol => attributeSymbol?.ToDisplayString())
-            .Any(static attributeName => attributeName is UnionAttributeSource.FullyQualifiedName);
-
-        return isDecoratedWithUnionAttribute ? recordDeclaration : null;
-    }
+    private static RecordDeclarationSyntax? GetGenerationTarget(GeneratorSyntaxContext context) =>
+        context.Node is RecordDeclarationSyntax record
+        && record.IsDecoratedWithUnionAttribute(context.SemanticModel)
+            ? record
+            : null;
 
     private static void Execute(
         Compilation compilation,
@@ -82,78 +73,42 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
 
     private static List<UnionRecord> GetCodeToGenerate(
         Compilation compilation,
-        IEnumerable<RecordDeclarationSyntax> recordDeclarations,
+        IEnumerable<RecordDeclarationSyntax> declarations,
         CancellationToken _
-    )
-    {
-        var unionRecords = new List<UnionRecord>();
-
-        foreach (var recordDeclaration in recordDeclarations)
-        {
-            var semanticModel = compilation.GetSemanticModel(recordDeclaration.SyntaxTree);
-            var recordSymbol = semanticModel.GetDeclaredSymbol(recordDeclaration);
-
-            if (recordSymbol is null)
+    ) =>
+        declarations
+            .Select(declaration =>
             {
-                continue;
-            }
+                var semanticModel = compilation.GetSemanticModel(declaration.SyntaxTree);
+                var recordSymbol = semanticModel.GetDeclaredSymbol(declaration);
 
-            var imports = recordDeclaration
-                .GetImports()
-                .Where(static import => !import.IsImporting("Dunet"))
-                .Select(static import => import.ToString());
-            var @namespace = recordSymbol.GetNamespace();
-            var unionRecordTypeParameters = recordDeclaration.TypeParameterList?.Parameters.Select(
-                static typeParam => new TypeParameter(typeParam.Identifier.ToString())
-            );
-            var unionRecordTypeParameterConstraints = recordDeclaration.ConstraintClauses.Select(
-                constraint => new TypeParameterConstraint(constraint.ToString())
-            );
-            var unionRecordMemberDeclarations = recordDeclaration
-                .DescendantNodes()
-                .Where(static node => node.IsKind(SyntaxKind.RecordDeclaration))
-                .OfType<RecordDeclarationSyntax>();
+                if (recordSymbol is null)
+                {
+                    return null;
+                }
 
-            var unionRecordMembers = unionRecordMemberDeclarations.Select(declaration =>
-            {
-                var typeParameters = declaration.TypeParameterList?.Parameters
-                    .Select(static typeParam => typeParam.Identifier.ToString())
-                    .Select(static identifier => new TypeParameter(identifier));
+                var imports = declaration
+                    .GetImports()
+                    .Where(static usingDirective => !usingDirective.IsImporting("Dunet"))
+                    .Select(static usingDirective => usingDirective.ToString());
+                var @namespace = recordSymbol.GetNamespace();
+                var typeParameters = declaration.GetTypeParameters();
+                var typeParameterConstraints = declaration.GetTypeParameterConstraints();
+                var unionRecordMembers = declaration.GetNestedRecordDeclarations(semanticModel);
 
-                var properties = declaration.ParameterList?.Parameters.Select(
-                    parameter =>
-                        new RecordProperty(
-                            Type: new PropertyType(
-                                Name: parameter.Type?.ToString() ?? "",
-                                IsInterface: parameter.Type.IsInterfaceType(semanticModel)
-                            ),
-                            Name: parameter.Identifier.ToString()
-                        )
-                );
-
-                return new UnionRecordMember(
-                    Name: declaration.Identifier.ToString(),
+                return new UnionRecord(
+                    Imports: imports.ToList(),
+                    Namespace: @namespace,
+                    Accessibility: recordSymbol.DeclaredAccessibility,
+                    Name: recordSymbol.Name,
                     TypeParameters: typeParameters?.ToList() ?? new(),
-                    Properties: properties?.ToList() ?? new()
+                    TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
+                    Members: unionRecordMembers.ToList(),
+                    ParentTypes: GetParentTypes(semanticModel, declaration)
                 );
-            });
-
-            var record = new UnionRecord(
-                Imports: imports.ToList(),
-                Namespace: @namespace,
-                Accessibility: recordSymbol.DeclaredAccessibility,
-                Name: recordSymbol.Name,
-                TypeParameters: unionRecordTypeParameters?.ToList() ?? new(),
-                TypeParameterConstraints: unionRecordTypeParameterConstraints?.ToList() ?? new(),
-                Members: unionRecordMembers.ToList(),
-                ParentTypes: GetParentTypes(semanticModel, recordDeclaration)
-            );
-
-            unionRecords.Add(record);
-        }
-
-        return unionRecords;
-    }
+            })
+            .OfType<UnionRecord>()
+            .ToList();
 
     private static Stack<ParentType> GetParentTypes(
         SemanticModel semanticModel,

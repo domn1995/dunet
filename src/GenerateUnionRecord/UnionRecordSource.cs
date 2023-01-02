@@ -40,9 +40,9 @@ internal static class UnionRecordSource
         for (int i = 0; i < record.Members.Count; ++i)
         {
             var member = record.Members[i];
-            builder.Append($"        System.Func<{member.Name}");
+            builder.Append($"        System.Func<{member.Identifier}");
             builder.AppendTypeParams(member.TypeParameters);
-            builder.Append($", TMatchOutput> {member.Name.ToMethodParameterCase()}");
+            builder.Append($", TMatchOutput> {member.Identifier.ToMethodParameterCase()}");
             if (i < record.Members.Count - 1)
             {
                 builder.Append(",");
@@ -56,9 +56,9 @@ internal static class UnionRecordSource
         for (int i = 0; i < record.Members.Count; ++i)
         {
             var member = record.Members[i];
-            builder.Append($"        System.Action<{member.Name}");
+            builder.Append($"        System.Action<{member.Identifier}");
             builder.AppendTypeParams(member.TypeParameters);
-            builder.Append($"> {member.Name.ToMethodParameterCase()}");
+            builder.Append($"> {member.Identifier.ToMethodParameterCase()}");
             if (i < record.Members.Count - 1)
             {
                 builder.Append(",");
@@ -76,7 +76,7 @@ internal static class UnionRecordSource
                 builder.Append($"    public static implicit operator {record.Name}");
                 builder.AppendTypeParams(record.TypeParameters);
                 builder.AppendLine(
-                    $"({member.Properties[0].Type.Name} value) => new {member.Name}(value);"
+                    $"({member.Properties[0].Type.Identifier} value) => new {member.Identifier}(value);"
                 );
             }
             builder.AppendLine();
@@ -84,7 +84,7 @@ internal static class UnionRecordSource
 
         foreach (var member in record.Members)
         {
-            builder.Append($"    public sealed partial record {member.Name}");
+            builder.Append($"    public sealed partial record {member.Identifier}");
             builder.AppendTypeParams(member.TypeParameters);
             builder.Append($" : {record.Name}");
             builder.AppendTypeParams(record.TypeParameters);
@@ -96,32 +96,32 @@ internal static class UnionRecordSource
             for (int i = 0; i < record.Members.Count; ++i)
             {
                 var memberParam = record.Members[i];
-                builder.Append($"            System.Func<{memberParam.Name}");
+                builder.Append($"            System.Func<{memberParam.Identifier}");
                 builder.AppendTypeParams(memberParam.TypeParameters);
-                builder.Append($", TMatchOutput> {memberParam.Name.ToMethodParameterCase()}");
+                builder.Append($", TMatchOutput> {memberParam.Identifier.ToMethodParameterCase()}");
                 if (i < record.Members.Count - 1)
                 {
                     builder.Append(",");
                 }
                 builder.AppendLine();
             }
-            builder.AppendLine($"        ) => {member.Name.ToMethodParameterCase()}(this);");
+            builder.AppendLine($"        ) => {member.Identifier.ToMethodParameterCase()}(this);");
 
             // Action match method.
             builder.AppendLine("        public override void Match(");
             for (int i = 0; i < record.Members.Count; ++i)
             {
                 var memberParam = record.Members[i];
-                builder.Append($"            System.Action<{memberParam.Name}");
+                builder.Append($"            System.Action<{memberParam.Identifier}");
                 builder.AppendTypeParams(memberParam.TypeParameters);
-                builder.Append($"> {memberParam.Name.ToMethodParameterCase()}");
+                builder.Append($"> {memberParam.Identifier.ToMethodParameterCase()}");
                 if (i < record.Members.Count - 1)
                 {
                     builder.Append(",");
                 }
                 builder.AppendLine();
             }
-            builder.AppendLine($"        ) => {member.Name.ToMethodParameterCase()}(this);");
+            builder.AppendLine($"        ) => {member.Identifier.ToMethodParameterCase()}(this);");
 
             builder.AppendLine("    }");
             builder.AppendLine();
