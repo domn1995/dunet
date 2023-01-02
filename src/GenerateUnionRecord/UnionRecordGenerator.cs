@@ -32,30 +32,16 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
     private static RecordDeclarationSyntax? GetGenerationTarget(GeneratorSyntaxContext context)
     {
         var recordDeclaration = (RecordDeclarationSyntax)context.Node;
+        var getContainingType = (AttributeSyntax attributeSyntax) =>
+            context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol?.ContainingType;
 
-        foreach (var attributeList in recordDeclaration.AttributeLists)
-        {
-            foreach (var attribute in attributeList.Attributes)
-            {
-                var attributeSymbol = context.SemanticModel
-                    .GetSymbolInfo(attribute)
-                    .Symbol?.ContainingType;
+        var isDecoratedWithUnionAttribute = recordDeclaration.AttributeLists
+            .SelectMany(static attributeListSyntax => attributeListSyntax.Attributes)
+            .Select(getContainingType)
+            .Select(static attributeSymbol => attributeSymbol?.ToDisplayString())
+            .Any(static attributeName => attributeName is UnionAttributeSource.FullyQualifiedName);
 
-                if (attributeSymbol is null)
-                {
-                    continue;
-                }
-
-                var fullAttributeName = attributeSymbol.ToDisplayString();
-
-                if (fullAttributeName is UnionAttributeSource.FullyQualifiedName)
-                {
-                    return recordDeclaration;
-                }
-            }
-        }
-
-        return null;
+        return isDecoratedWithUnionAttribute ? recordDeclaration : null;
     }
 
     private static void Execute(
