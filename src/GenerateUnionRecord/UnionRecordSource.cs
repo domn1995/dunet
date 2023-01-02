@@ -24,7 +24,7 @@ internal static class UnionRecordSource
 
         foreach (var type in parentTypes)
         {
-            builder.AppendLine($"partial {(type.IsRecord ? "record" : "class")} {type.Name}");
+            builder.AppendLine($"partial {(type.IsRecord ? "record" : "class")} {type.Identifier}");
             builder.AppendLine("{");
         }
 

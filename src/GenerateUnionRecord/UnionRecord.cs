@@ -18,9 +18,9 @@ internal sealed record UnionRecord(
     public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Members.Count > 0;
 }
 
-internal sealed record TypeParameter(string Name)
+internal sealed record TypeParameter(string Identifier)
 {
-    public override string ToString() => Name;
+    public override string ToString() => Identifier;
 }
 
 internal sealed record Property(PropertyType Type, string Identifier);
@@ -31,16 +31,17 @@ internal sealed record PropertyType(string Identifier, bool IsInterface);
 /// Represents a parent type declaration that nests a union record.
 /// </summary>
 /// <param name="IsRecord">Whether the type is a record or a plain class.</param>
-/// <param name="Name">This type's name.</param>
-internal sealed record ParentType(bool IsRecord, string Name)
+/// <param name="Identifier">This type's name.</param>
+internal sealed record ParentType(bool IsRecord, string Identifier)
 {
-    public override string ToString() => Name;
+    public override string ToString() => Identifier;
 }
 
 /// <summary>
 /// Represents a type parameter constraint on a union record's type parameters.
 /// </summary>
-/// <param name="Value">The full string value of the constraint. Ex: `where T : notnull, System.Exception`</param>
+/// <param name="Value">The full string value of the constraint.<br />
+/// Ex: <c>where T : notnull, System.Exception</c></param>
 internal sealed record TypeParameterConstraint(string Value)
 {
     public override string ToString() => Value;

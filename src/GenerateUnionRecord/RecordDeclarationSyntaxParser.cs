@@ -160,7 +160,7 @@ internal static class RecordDeclarationSyntaxParser
 
         var parentType = new ParentType(
             IsRecord: parent.IsRecordDeclaration(),
-            Name: parentSymbol.Name
+            Identifier: parentSymbol.Name
         );
 
         parentTypes.Push(parentType);
