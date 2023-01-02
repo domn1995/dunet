@@ -54,11 +54,21 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
 
         foreach (var unionRecord in unionRecords)
         {
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             var union = UnionRecordSource.GenerateRecord(unionRecord);
             context.AddSource(
                 $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
                 SourceText.From(union, Encoding.UTF8)
             );
+
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
 
             if (unionRecord.SupportsAsyncMatchExtensionMethods())
             {
@@ -71,43 +81,47 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
         }
     }
 
-    private static List<UnionRecord> GetCodeToGenerate(
+    private static IEnumerable<UnionRecord> GetCodeToGenerate(
         Compilation compilation,
         IEnumerable<RecordDeclarationSyntax> declarations,
-        CancellationToken _
-    ) =>
-        declarations
-            .Select(declaration =>
+        CancellationToken cancellation
+    )
+    {
+        foreach (var declaration in declarations)
+        {
+            if (cancellation.IsCancellationRequested)
             {
-                var semanticModel = compilation.GetSemanticModel(declaration.SyntaxTree);
-                var recordSymbol = semanticModel.GetDeclaredSymbol(declaration);
+                yield break;
+            }
 
-                if (recordSymbol is null)
-                {
-                    return null;
-                }
+            var semanticModel = compilation.GetSemanticModel(declaration.SyntaxTree);
+            var recordSymbol = semanticModel.GetDeclaredSymbol(declaration);
 
-                var imports = declaration
-                    .GetImports()
-                    .Where(static usingDirective => !usingDirective.IsImporting("Dunet"))
-                    .Select(static usingDirective => usingDirective.ToString());
-                var @namespace = recordSymbol.GetNamespace();
-                var typeParameters = declaration.GetTypeParameters();
-                var typeParameterConstraints = declaration.GetTypeParameterConstraints();
-                var unionRecordMembers = declaration.GetNestedRecordDeclarations(semanticModel);
-                var parentTypes = declaration.GetParentTypes(semanticModel);
+            if (recordSymbol is null)
+            {
+                continue;
+            }
 
-                return new UnionRecord(
-                    Imports: imports.ToList(),
-                    Namespace: @namespace,
-                    Accessibility: recordSymbol.DeclaredAccessibility,
-                    Name: recordSymbol.Name,
-                    TypeParameters: typeParameters?.ToList() ?? new(),
-                    TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
-                    Members: unionRecordMembers.ToList(),
-                    ParentTypes: parentTypes
-                );
-            })
-            .OfType<UnionRecord>()
-            .ToList();
+            var imports = declaration
+                .GetImports()
+                .Where(static usingDirective => !usingDirective.IsImporting("Dunet"))
+                .Select(static usingDirective => usingDirective.ToString());
+            var @namespace = recordSymbol.GetNamespace();
+            var typeParameters = declaration.GetTypeParameters();
+            var typeParameterConstraints = declaration.GetTypeParameterConstraints();
+            var unionRecordMembers = declaration.GetNestedRecordDeclarations(semanticModel);
+            var parentTypes = declaration.GetParentTypes(semanticModel);
+
+            yield return new UnionRecord(
+                Imports: imports.ToList(),
+                Namespace: @namespace,
+                Accessibility: recordSymbol.DeclaredAccessibility,
+                Name: recordSymbol.Name,
+                TypeParameters: typeParameters?.ToList() ?? new(),
+                TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
+                Members: unionRecordMembers.ToList(),
+                ParentTypes: parentTypes
+            );
+        }
+    }
 }
