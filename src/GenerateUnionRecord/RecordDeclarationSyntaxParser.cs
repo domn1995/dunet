@@ -102,4 +102,68 @@ internal static class RecordDeclarationSyntaxParser
             .Select(static attributeSymbol => attributeSymbol?.ToDisplayString())
             .Any(static attributeName => attributeName is UnionAttributeSource.FullyQualifiedName);
     }
+
+    /// <summary>
+    /// Gets a stack representation of the types that nest this record declaration.
+    /// </summary>
+    /// <param name="record">This record declaration.</param>
+    /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
+    /// <returns>
+    /// A stack containing the types surrounding this record declaration. The type declared closest
+    /// to this record declaration will be at the top of the stack, and the type declarated closest
+    /// to the namespace will be at the bottom of the stack.
+    /// </returns>
+    public static Stack<ParentType> GetParentTypes(
+        this RecordDeclarationSyntax record,
+        SemanticModel semanticModel
+    )
+    {
+        var parentTypes = new Stack<ParentType>();
+        RecursivelyAddParentTypes(semanticModel, record, parentTypes);
+        return parentTypes;
+    }
+
+    private static void RecursivelyAddParentTypes(
+        SemanticModel semanticModel,
+        SyntaxNode declaration,
+        Stack<ParentType> parentTypes
+    )
+    {
+        var parent = declaration.Parent;
+
+        if (parent is null)
+        {
+            return;
+        }
+
+        if (!parent.IsClassOrRecordDeclaration())
+        {
+            return;
+        }
+
+        var parentSymbol = semanticModel.GetDeclaredSymbol(parent);
+
+        // Ignore top level statement synthentic program class.
+        if (parentSymbol?.ToDisplayString() is null or "<top-level-statements-entry-point>")
+        {
+            return;
+        }
+
+        var parentDeclaration = (TypeDeclarationSyntax)parent;
+
+        // We can only declare a nested union type within a partial parent type declaration.
+        if (!parentDeclaration.IsPartial())
+        {
+            return;
+        }
+
+        var parentType = new ParentType(
+            IsRecord: parent.IsRecordDeclaration(),
+            Name: parentSymbol.Name
+        );
+
+        parentTypes.Push(parentType);
+
+        RecursivelyAddParentTypes(semanticModel, parent, parentTypes);
+    }
 }

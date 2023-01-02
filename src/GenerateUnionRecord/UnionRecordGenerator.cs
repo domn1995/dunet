@@ -95,6 +95,7 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                 var typeParameters = declaration.GetTypeParameters();
                 var typeParameterConstraints = declaration.GetTypeParameterConstraints();
                 var unionRecordMembers = declaration.GetNestedRecordDeclarations(semanticModel);
+                var parentTypes = declaration.GetParentTypes(semanticModel);
 
                 return new UnionRecord(
                     Imports: imports.ToList(),
@@ -104,65 +105,9 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                     TypeParameters: typeParameters?.ToList() ?? new(),
                     TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
                     Members: unionRecordMembers.ToList(),
-                    ParentTypes: GetParentTypes(semanticModel, declaration)
+                    ParentTypes: parentTypes
                 );
             })
             .OfType<UnionRecord>()
             .ToList();
-
-    private static Stack<ParentType> GetParentTypes(
-        SemanticModel semanticModel,
-        RecordDeclarationSyntax recordDeclaration
-    )
-    {
-        var parentTypes = new Stack<ParentType>();
-
-        RecursivelyAddParentTypes(semanticModel, recordDeclaration, parentTypes);
-
-        return parentTypes;
-    }
-
-    private static void RecursivelyAddParentTypes(
-        SemanticModel semanticModel,
-        SyntaxNode declaration,
-        Stack<ParentType> parentTypes
-    )
-    {
-        var parent = declaration.Parent;
-
-        if (parent is null)
-        {
-            return;
-        }
-
-        if (!parent.IsClassOrRecordDeclaration())
-        {
-            return;
-        }
-
-        var parentSymbol = semanticModel.GetDeclaredSymbol(parent);
-
-        // Ignore top level statement synthentic program class.
-        if (parentSymbol?.ToDisplayString() is null or "<top-level-statements-entry-point>")
-        {
-            return;
-        }
-
-        var parentDeclaration = (TypeDeclarationSyntax)parent;
-
-        // We can only declare a nested union type within a partial parent type declaration.
-        if (!parentDeclaration.IsPartial())
-        {
-            return;
-        }
-
-        var parentType = new ParentType(
-            IsRecord: parent.IsRecordDeclaration(),
-            Name: parentSymbol.Name
-        );
-
-        parentTypes.Push(parentType);
-
-        RecursivelyAddParentTypes(semanticModel, parent, parentTypes);
-    }
 }
