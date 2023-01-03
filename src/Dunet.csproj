@@ -17,7 +17,7 @@
         <AssemblyVersion>1.6.0</AssemblyVersion>
         <FileVersion>1.6.0</FileVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>1.6.0-preview1 - Support generator cancellation.
+        <PackageReleaseNotes>1.6.0 - Support generator cancellation.
 1.5.0 - Support async Action match functions.
 1.4.2 - Disables implicit conversions when union member is an interface type.
 1.4.1 - Disable CS1591 in generated code.
@@ -42,7 +42,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageIcon>favicon.png</PackageIcon>
         <SignAssembly>False</SignAssembly>
-        <Version>1.6.0-preview1</Version>
+        <Version>1.6.0</Version>
         <NeutralLanguage>en</NeutralLanguage>
         <DevelopmentDependency>true</DevelopmentDependency>
         <NoWarn>$(NoWarn);NU5128</NoWarn>
