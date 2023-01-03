@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokemonClient", "samples\Po
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpressionCalculator", "samples\ExpressionCalculator\ExpressionCalculator.csproj", "{E48DBF5C-52AA-490C-988A-FF191C8CA4B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructPrototype", "samples\StructPrototype\StructPrototype.csproj", "{E5FE0B5E-45DA-4DF1-BD51-2F9A2612A88E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{E48DBF5C-52AA-490C-988A-FF191C8CA4B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E48DBF5C-52AA-490C-988A-FF191C8CA4B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E48DBF5C-52AA-490C-988A-FF191C8CA4B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5FE0B5E-45DA-4DF1-BD51-2F9A2612A88E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5FE0B5E-45DA-4DF1-BD51-2F9A2612A88E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5FE0B5E-45DA-4DF1-BD51-2F9A2612A88E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5FE0B5E-45DA-4DF1-BD51-2F9A2612A88E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{2D2D1B9E-BF43-496F-9EA1-410B40B0566B} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 		{ED68670F-60E0-410F-8427-C83D39A886F8} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 		{E48DBF5C-52AA-490C-988A-FF191C8CA4B9} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
+		{E5FE0B5E-45DA-4DF1-BD51-2F9A2612A88E} = {7A773F5B-F0CA-444E-BD3D-C954653DF638}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {587D0652-52E0-4A29-84A8-DE4C64FE1F02}
