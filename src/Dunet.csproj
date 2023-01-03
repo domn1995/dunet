@@ -14,10 +14,11 @@
         <PackageReadmeFile>Readme.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/domn1995/dunet</RepositoryUrl>
         <PackageTags>source; generator; discriminated; union; functional; tagged;</PackageTags>
-        <AssemblyVersion>1.5.0</AssemblyVersion>
-        <FileVersion>1.5.0</FileVersion>
+        <AssemblyVersion>1.6.0</AssemblyVersion>
+        <FileVersion>1.6.0</FileVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>1.5.0 - Support async Action match functions.
+        <PackageReleaseNotes>1.6.0 - Support generator cancellation.
+1.5.0 - Support async Action match functions.
 1.4.2 - Disables implicit conversions when union member is an interface type.
 1.4.1 - Disable CS1591 in generated code.
 1.4.0 - Support Action match functions.
@@ -41,7 +42,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageIcon>favicon.png</PackageIcon>
         <SignAssembly>False</SignAssembly>
-        <Version>1.5.0</Version>
+        <Version>1.6.0-preview1</Version>
         <NeutralLanguage>en</NeutralLanguage>
         <DevelopmentDependency>true</DevelopmentDependency>
         <NoWarn>$(NoWarn);NU5128</NoWarn>
