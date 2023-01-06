@@ -1,5 +1,8 @@
 # Dunet
 
+[![Build](https://img.shields.io/github/actions/workflow/status/domn1995/dunet/main.yml?branch=main)](https://github.com/domn1995/dunet/actions)
+[![Package](https://img.shields.io/nuget/v/dunet.svg)](https://nuget.org/packages/dunet)
+
 **Dunet** is a simple source generator for [discriminated unions](https://en.wikipedia.org/wiki/Tagged_union) in C#.
 
 ## Install
