@@ -2,12 +2,15 @@
 
 namespace StructPrototype;
 
-public record struct Option<T> where T : notnull
+public partial record struct Option<T>
 {
     public record struct Some(T Value);
 
     public record struct None;
+}
 
+public partial record struct Option<T>
+{
     private enum OptionType : byte
     {
         None,
@@ -15,9 +18,9 @@ public record struct Option<T> where T : notnull
     };
 
     private OptionType type;
-    private T some;
+    private Some some;
 
-    public TOut Match<TOut>(Func<T, TOut> some, Func<TOut> none) =>
+    public TOut Match<TOut>(Func<Some, TOut> some, Func<TOut> none) =>
         type switch
         {
             OptionType.Some => some(this.some),
@@ -26,26 +29,20 @@ public record struct Option<T> where T : notnull
                 => throw new UnreachableException($"Matched an unreachable union type: {invalid}"),
         };
 
-    public static Option<T> NewSome(T value) => new() { type = OptionType.Some, some = value };
+    public static implicit operator Option<T>(T value) => Prelude.Some(value);
 
-    public static Option<T> NewNone() => new() { type = OptionType.None };
+    public static class Prelude
+    {
+        public static Option<T> Some(T value) =>
+            new() { type = OptionType.Some, some = new Some(value) };
 
-    public static implicit operator Option<T>(T value) => NewSome(value);
-
-    public T UnwrapSome() =>
-        type switch
-        {
-            OptionType.Some => some,
-            var actual
-                => throw new InvalidOperationException(
-                    $"Expected {OptionType.Some} but got {actual}"
-                ),
-        };
+        public static Option<T> None() => new() { type = OptionType.None };
+    }
 }
 
 public static class OptionPrelude
 {
-    public static Option<T> Some<T>(T value) where T : notnull => Option<T>.NewSome(value);
+    public static Option<T> Some<T>(T value) => Option<T>.Prelude.Some(value);
 
-    public static Option<T> None<T>() where T : notnull => Option<T>.NewNone();
+    public static Option<T> None<T>() => Option<T>.Prelude.None();
 }

@@ -2,14 +2,17 @@
 
 namespace StructPrototype;
 
-public record struct Shape
+public partial record struct Shape
 {
     public record struct Circle(double Radius);
 
     public record struct Rectangle(double Height, double Width);
 
     public record struct Triangle(double Base, double Height);
+}
 
+public partial record struct Shape
+{
     private enum ShapeType : byte
     {
         Circle,
@@ -20,49 +23,8 @@ public record struct Shape
     private ShapeType type;
 
     private Circle circle;
-
-    public static Shape NewCircle(double radius) =>
-        new() { circle = new Circle(radius), type = ShapeType.Circle, };
-
-    public Circle UnwrapCircle() =>
-        type switch
-        {
-            ShapeType.Circle => circle,
-            var actual
-                => throw new InvalidOperationException(
-                    $"Expected {ShapeType.Circle} but got {actual}"
-                ),
-        };
-
     private Rectangle rectangle;
-
-    public static Shape NewRectangle(double height, double width) =>
-        new() { rectangle = new Rectangle(height, width), type = ShapeType.Rectangle, };
-
-    public Rectangle UnwrapRectangle() =>
-        type switch
-        {
-            ShapeType.Rectangle => rectangle,
-            var actual
-                => throw new InvalidOperationException(
-                    $"Expected {ShapeType.Rectangle} but got {actual}"
-                ),
-        };
-
     private Triangle triangle;
-
-    public static Shape NewTriangle(double @base, double height) =>
-        new() { triangle = new Triangle(@base, height), type = ShapeType.Triangle, };
-
-    public Triangle UnwrapTriangle() =>
-        type switch
-        {
-            ShapeType.Triangle => triangle,
-            var actual
-                => throw new InvalidOperationException(
-                    $"Expected {ShapeType.Triangle} but got {actual}"
-                ),
-        };
 
     public TOut Match<TOut>(
         Func<Circle, TOut> circle,
@@ -77,13 +39,27 @@ public record struct Shape
             var invalid
                 => throw new UnreachableException($"Matched an unreachable union type: {invalid}"),
         };
+
+    public static class Prelude
+    {
+        public static Shape Circle(double radius) =>
+            new() { circle = new Circle(radius), type = ShapeType.Circle, };
+
+        public static Shape Rectangle(double height, double width) =>
+            new() { rectangle = new Rectangle(height, width), type = ShapeType.Rectangle, };
+
+        public static Shape Triangle(double @base, double height) =>
+            new() { triangle = new Triangle(@base, height), type = ShapeType.Triangle, };
+    }
 }
 
 public static class ShapePrelude
 {
-    public static Shape Circle(double radius) => Shape.NewCircle(radius);
+    public static Shape Circle(double radius) => Shape.Prelude.Circle(radius);
 
-    public static Shape Rectangle(double height, double width) => Shape.NewRectangle(height, width);
+    public static Shape Rectangle(double height, double width) =>
+        Shape.Prelude.Rectangle(height, width);
 
-    public static Shape Triangle(double @base, double height) => Shape.NewTriangle(@base, height);
+    public static Shape Triangle(double @base, double height) =>
+        Shape.Prelude.Triangle(@base, height);
 }

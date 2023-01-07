@@ -5,7 +5,7 @@ while (true)
     Console.Write("Enter a shape (c, r, t): ");
     var shapeInput = Console.ReadLine();
     var shape = InputParser.ParseShape(shapeInput);
-    var area = shape.Match(Calculator.Area, () => 0);
+    var area = shape.Match(some => Calculator.Area(some.Value), () => 0);
     Console.WriteLine($"Area = {area}");
 
     Console.WriteLine("Enter a numerator: ");
@@ -13,25 +13,23 @@ while (true)
     Console.WriteLine("Enter a denominator: ");
     var denominatorInput = Console.ReadLine();
     var numerator = InputParser.ParseNumber<double>(numeratorInput);
-    var denominator = InputParser.ParseNumber<double>(denominatorInput);
+    var denominator = InputParser.ParseNumber<int>(denominatorInput);
 
-    // When you don't implement `SelectMany()` 😅
-    var result = numerator.Match(
-        err: numErr => numErr,
-        ok: top =>
+    // When there's no flatmap... 😅
+    var divisionResult = numerator.Match(
+        err => err.Error.Message,
+        top =>
             denominator.Match(
-                err: denErr => denErr,
-                ok: bottom =>
+                err => err.Error.Message,
+                bottom =>
                     Calculator
-                        .Divide(top, bottom)
-                        .Match<Result<string, double>>(
-                            err: divErr => divErr.Message,
-                            ok: divOk => divOk
+                        .Divide(top.Value, bottom.Value)
+                        .Match(
+                            divisionErr => $"{divisionErr.Error}",
+                            divisionResult => divisionResult.Value.ToString()
                         )
             )
     );
 
-    var output = result.Match(err => $"Error: {err}", ok => ok.ToString());
-
-    Console.WriteLine(output);
+    Console.WriteLine(divisionResult);
 }

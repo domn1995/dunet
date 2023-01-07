@@ -11,7 +11,8 @@ public static class Calculator
             triangle => 0.5 * triangle.Base * triangle.Height
         );
 
-    public static Result<Exception, T> Divide<T>(T numerator, T denominator) where T : INumber<T>
+    public static Result<ArithmeticException, T> Divide<T>(T numerator, T denominator)
+        where T : INumber<T>
     {
         if (denominator == T.Zero)
         {

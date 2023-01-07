@@ -1,7 +1,8 @@
 ﻿using static StructPrototype.ShapePrelude;
-using static StructPrototype.OptionPrelude;
 using static StructPrototype.ResultPrelude;
+using static StructPrototype.OptionPrelude;
 using System.Numerics;
+using System.Globalization;
 
 namespace StructPrototype;
 
@@ -16,8 +17,8 @@ public static class InputParser
             _ => None<Shape>(),
         };
 
-    public static Result<string, T> ParseNumber<T>(string? input) where T : INumber<T> =>
-        T.TryParse(input, null, out var value)
-            ? Ok<string, T>(value)
-            : Err<string, T>("Invalid number");
+    public static Result<FormatException, T> ParseNumber<T>(string? input) where T : INumber<T> =>
+        T.TryParse(input, CultureInfo.CurrentCulture, out var value)
+            ? value
+            : new FormatException($"Failed to parse '{input}' into type '{typeof(T).Name}'.");
 }
