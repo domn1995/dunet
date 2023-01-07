@@ -1,5 +1,4 @@
 ﻿using static StructPrototype.ShapePrelude;
-using static StructPrototype.ResultPrelude;
 using static StructPrototype.OptionPrelude;
 using System.Numerics;
 using System.Globalization;
