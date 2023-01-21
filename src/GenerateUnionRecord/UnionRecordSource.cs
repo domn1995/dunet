@@ -69,6 +69,21 @@ internal static class UnionRecordSource
 
         builder.AppendLine();
 
+        // Specific union value match methods.
+        foreach (var member in record.Members)
+        {
+            builder.AppendLine(
+                $"    public abstract TMatchOutput Match{member.Identifier}<TMatchOutput>("
+            );
+            builder.Append($"        System.Func<{member.Identifier}");
+            builder.AppendTypeParams(member.TypeParameters);
+            builder.AppendLine($", TMatchOutput> {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine($"        System.Func<TMatchOutput> else");
+            builder.AppendLine("    );");
+        }
+
+        builder.AppendLine();
+
         if (SupportsImplicitConversions(record))
         {
             foreach (var member in record.Members)
