@@ -22,7 +22,7 @@ static double GetArea()
     {{shapeDeclaration}}
     return shape.MatchCircle(
         circle => 3.14 * circle.Radius * circle.Radius,
-        () => 0,
+        () => 0
     );
 }
 
@@ -67,7 +67,7 @@ static double GetArea()
     );
     return value;
 }
-s
+
 [Union]
 partial record Shape
 {

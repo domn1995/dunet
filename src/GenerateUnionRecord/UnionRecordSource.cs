@@ -69,7 +69,7 @@ internal static class UnionRecordSource
 
         builder.AppendLine();
 
-        // Specific union value match methods.
+        // Specific union member match methods.
         foreach (var member in record.Members)
         {
             builder.AppendLine(
@@ -78,7 +78,7 @@ internal static class UnionRecordSource
             builder.Append($"        System.Func<{member.Identifier}");
             builder.AppendTypeParams(member.TypeParameters);
             builder.AppendLine($", TMatchOutput> {member.Identifier.ToMethodParameterCase()},");
-            builder.AppendLine($"        System.Func<TMatchOutput> else");
+            builder.AppendLine($"        System.Func<TMatchOutput> @else");
             builder.AppendLine("    );");
         }
 
@@ -137,6 +137,31 @@ internal static class UnionRecordSource
                 builder.AppendLine();
             }
             builder.AppendLine($"        ) => {member.Identifier.ToMethodParameterCase()}(this);");
+
+            // Specific union member match methods.
+            foreach (var specificMember in record.Members)
+            {
+                builder.AppendLine(
+                    $"        public override TMatchOutput Match{specificMember.Identifier}<TMatchOutput>("
+                );
+                builder.Append($"            System.Func<{specificMember.Identifier}");
+                builder.AppendTypeParams(specificMember.TypeParameters);
+                builder.AppendLine(
+                    $", TMatchOutput> {specificMember.Identifier.ToMethodParameterCase()},"
+                );
+                builder.AppendLine($"            System.Func<TMatchOutput> @else");
+                builder.Append("        ) => ");
+                if (specificMember.Identifier == member.Identifier)
+                {
+                    builder.AppendLine(
+                        $"{specificMember.Identifier.ToMethodParameterCase()}(this);"
+                    );
+                }
+                else
+                {
+                    builder.AppendLine("@else();");
+                }
+            }
 
             builder.AppendLine("    }");
             builder.AppendLine();
