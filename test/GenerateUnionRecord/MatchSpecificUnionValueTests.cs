@@ -59,7 +59,7 @@ using Dunet;
 
 static double GetArea()
 {
-    double value = 0d;
+    double value = -1d;
     {{shapeDeclaration}}
     shape.MatchTriangle(
         triangle => { value = 0.5 * triangle.Base * triangle.Height; },
