@@ -46,7 +46,7 @@ async static Task<double> GetAreaAsync() =>
     await GetShapeAsync()
         .MatchCircleAsync(
             circle => 3.14 * circle.Radius * circle.Radius,
-            () => 0
+            () => 0d
         );
 """;
 
