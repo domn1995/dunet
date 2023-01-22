@@ -69,6 +69,32 @@ internal static class UnionRecordSource
 
         builder.AppendLine();
 
+        // Specific func match methods.
+        foreach (var member in record.Members)
+        {
+            builder.AppendLine(
+                $"    public abstract TMatchOutput Match{member.Identifier}<TMatchOutput>("
+            );
+            builder.Append($"        System.Func<{member.Identifier}");
+            builder.AppendTypeParams(member.TypeParameters);
+            builder.AppendLine($", TMatchOutput> {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine($"        System.Func<TMatchOutput> @else");
+            builder.AppendLine("    );");
+        }
+
+        builder.AppendLine();
+
+        // Specific action match methods.
+        foreach (var member in record.Members)
+        {
+            builder.AppendLine($"    public abstract void Match{member.Identifier}(");
+            builder.Append($"        System.Action<{member.Identifier}");
+            builder.AppendTypeParams(member.TypeParameters);
+            builder.AppendLine($"> {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine($"        System.Action @else");
+            builder.AppendLine("    );");
+        }
+
         if (SupportsImplicitConversions(record))
         {
             foreach (var member in record.Members)
@@ -122,6 +148,54 @@ internal static class UnionRecordSource
                 builder.AppendLine();
             }
             builder.AppendLine($"        ) => {member.Identifier.ToMethodParameterCase()}(this);");
+
+            // Specific func match methods.
+            foreach (var specificMember in record.Members)
+            {
+                builder.AppendLine(
+                    $"        public override TMatchOutput Match{specificMember.Identifier}<TMatchOutput>("
+                );
+                builder.Append($"            System.Func<{specificMember.Identifier}");
+                builder.AppendTypeParams(specificMember.TypeParameters);
+                builder.AppendLine(
+                    $", TMatchOutput> {specificMember.Identifier.ToMethodParameterCase()},"
+                );
+                builder.AppendLine($"            System.Func<TMatchOutput> @else");
+                builder.Append("        ) => ");
+                if (specificMember.Identifier == member.Identifier)
+                {
+                    builder.AppendLine(
+                        $"{specificMember.Identifier.ToMethodParameterCase()}(this);"
+                    );
+                }
+                else
+                {
+                    builder.AppendLine("@else();");
+                }
+            }
+
+            // Specific action match methods.
+            foreach (var specificMember in record.Members)
+            {
+                builder.AppendLine(
+                    $"        public override void Match{specificMember.Identifier}("
+                );
+                builder.Append($"            System.Action<{specificMember.Identifier}");
+                builder.AppendTypeParams(specificMember.TypeParameters);
+                builder.AppendLine($"> {specificMember.Identifier.ToMethodParameterCase()},");
+                builder.AppendLine($"            System.Action @else");
+                builder.Append("        ) => ");
+                if (specificMember.Identifier == member.Identifier)
+                {
+                    builder.AppendLine(
+                        $"{specificMember.Identifier.ToMethodParameterCase()}(this);"
+                    );
+                }
+                else
+                {
+                    builder.AppendLine("@else();");
+                }
+            }
 
             builder.AppendLine("    }");
             builder.AppendLine();

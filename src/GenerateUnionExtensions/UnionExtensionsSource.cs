@@ -54,7 +54,31 @@ internal static class UnionExtensionsSource
             union,
             "System.Threading.Tasks.ValueTask"
         );
-        builder.Append(valueTaskMethodForActions);
+        builder.AppendLine(valueTaskMethodForActions);
+
+        var specificTaskMethodForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
+            union,
+            "System.Threading.Tasks.Task"
+        );
+        builder.AppendLine(specificTaskMethodForFuncs);
+
+        var specificValueTaskMethodForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
+            union,
+            "System.Threading.Tasks.ValueTask"
+        );
+        builder.AppendLine(specificValueTaskMethodForFuncs);
+
+        var specificTaskMethodForActions = GenerateSpecificMatchAsyncMethodForActions(
+            union,
+            "System.Threading.Tasks.Task"
+        );
+        builder.AppendLine(specificTaskMethodForActions);
+
+        var specificValueTaskMethodForActions = GenerateSpecificMatchAsyncMethodForActions(
+            union,
+            "System.Threading.Tasks.ValueTask"
+        );
+        builder.AppendLine(specificValueTaskMethodForActions);
 
         builder.AppendLine("}");
         builder.AppendLine("#pragma warning restore 1591");
@@ -159,6 +183,119 @@ internal static class UnionExtensionsSource
         }
 
         builder.AppendLine("        );");
+
+        return builder.ToString();
+    }
+
+    /// <summary>
+    /// public static async TaskType<TMatchOuput> MatchSpecificAsync<T1, T2, ..., TMatchOutput>(
+    ///     this Task<Parent1.Parent2.UnionType<T1, T2, ...>> unionTask,
+    ///     System.Func<Parent1.Parent2.UnionType<T1, T2, ...>.Specific, TMatchOutput> @specific,
+    ///     System.Func<TMatchOutput> @else
+    /// )
+    /// where T1 : notnull
+    /// where T2 : notnull
+    ///     =>
+    ///         (await unionTask.ConfigureAwait(false))
+    ///             .MatchSpecific(
+    ///                 @specific,
+    ///                 @else
+    ///             );
+    /// </summary>
+    private static string GenerateSpecificMatchAsyncMethodForFuncs(
+        UnionRecord union,
+        string taskType
+    )
+    {
+        var builder = new StringBuilder();
+
+        foreach (var member in union.Members)
+        {
+            builder.Append(
+                $"    public static async {taskType}<TMatchOutput> Match{member.Identifier}Async"
+            );
+            var methodTypeParams = union.TypeParameters.Append(new("TMatchOutput")).ToList();
+            builder.AppendTypeParams(methodTypeParams);
+            builder.AppendLine("(");
+            builder.Append($"        this {taskType}<");
+            builder.AppendFullUnionName(union);
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine("> unionTask,");
+            builder.Append($"        System.Func<");
+            builder.AppendFullUnionName(union);
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.Append($".{member.Identifier}");
+            builder.AppendLine($", TMatchOutput> {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine("        System.Func<TMatchOutput> @else");
+
+            builder.AppendLine($"    )");
+            foreach (var typeParamConstraint in union.TypeParameterConstraints)
+            {
+                builder.AppendLine($"    {typeParamConstraint}");
+            }
+            builder.AppendLine("        =>");
+            builder.AppendLine($"            (await unionTask.ConfigureAwait(false))");
+            builder.AppendLine($"                .Match{member.Identifier}(");
+            builder.AppendLine($"                    {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine($"                    @else");
+            builder.AppendLine("                );");
+            builder.AppendLine();
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>
+    /// public static async TaskType MatchSpecificAsync<T1, T2, ...>(
+    ///     this Task<Parent1.Parent2.UnionType<T1, T2, ...>> unionTask,
+    ///     System.Action<Parent1.Parent2.UnionType<T1, T2, ...>.Specific> @specific,
+    ///     System.Action @else
+    /// )
+    /// where T1 : notnull
+    /// where T2 : notnull
+    ///     =>
+    ///         (await unionTask.ConfigureAwait(false))
+    ///             .MatchSpecific(
+    ///                 @specific,
+    ///                 @else
+    ///             );
+    /// </summary>
+    private static string GenerateSpecificMatchAsyncMethodForActions(
+        UnionRecord union,
+        string taskType
+    )
+    {
+        var builder = new StringBuilder();
+
+        foreach (var member in union.Members)
+        {
+            builder.Append($"    public static async {taskType} Match{member.Identifier}Async");
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine("(");
+            builder.Append($"        this {taskType}<");
+            builder.AppendFullUnionName(union);
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine("> unionTask,");
+            builder.Append($"        System.Action<");
+            builder.AppendFullUnionName(union);
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.Append($".{member.Identifier}");
+            builder.AppendLine($"> {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine("        System.Action @else");
+
+            builder.AppendLine($"    )");
+            foreach (var typeParamConstraint in union.TypeParameterConstraints)
+            {
+                builder.AppendLine($"    {typeParamConstraint}");
+            }
+            builder.AppendLine("        =>");
+            builder.AppendLine($"            (await unionTask.ConfigureAwait(false))");
+            builder.AppendLine($"                .Match{member.Identifier}(");
+            builder.AppendLine($"                    {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine($"                    @else");
+            builder.AppendLine("                );");
+            builder.AppendLine();
+        }
 
         return builder.ToString();
     }
