@@ -5,6 +5,9 @@ namespace Dunet.GenerateUnionExtensions;
 
 internal static class UnionExtensionsSource
 {
+    const string task = "System.Threading.Tasks.Task";
+    const string valueTask = "System.Threading.Tasks.ValueTask";
+
     public static string GenerateExtensions(UnionRecord union)
     {
         if (union.Namespace is null)
@@ -32,51 +35,33 @@ internal static class UnionExtensionsSource
         );
         builder.AppendLine("{");
 
-        var taskMethodForFuncs = GenerateMatchAsyncMethodForFuncs(
-            union,
-            "System.Threading.Tasks.Task"
-        );
+        var taskMethodForFuncs = GenerateMatchAsyncMethodForFuncs(union, task);
         builder.AppendLine(taskMethodForFuncs);
 
-        var valueTaskMethodForFuncs = GenerateMatchAsyncMethodForFuncs(
-            union,
-            "System.Threading.Tasks.ValueTask"
-        );
+        var valueTaskMethodForFuncs = GenerateMatchAsyncMethodForFuncs(union, valueTask);
         builder.AppendLine(valueTaskMethodForFuncs);
 
-        var taskMethodForActions = GenerateMatchAsyncMethodForActions(
-            union,
-            "System.Threading.Tasks.Task"
-        );
+        var taskMethodForActions = GenerateMatchAsyncMethodForActions(union, task);
         builder.AppendLine(taskMethodForActions);
 
-        var valueTaskMethodForActions = GenerateMatchAsyncMethodForActions(
-            union,
-            "System.Threading.Tasks.ValueTask"
-        );
+        var valueTaskMethodForActions = GenerateMatchAsyncMethodForActions(union, valueTask);
         builder.AppendLine(valueTaskMethodForActions);
 
-        var specificTaskMethodForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
-            union,
-            "System.Threading.Tasks.Task"
-        );
+        var specificTaskMethodForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(union, task);
         builder.AppendLine(specificTaskMethodForFuncs);
 
         var specificValueTaskMethodForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
             union,
-            "System.Threading.Tasks.ValueTask"
+            valueTask
         );
         builder.AppendLine(specificValueTaskMethodForFuncs);
 
-        var specificTaskMethodForActions = GenerateSpecificMatchAsyncMethodForActions(
-            union,
-            "System.Threading.Tasks.Task"
-        );
+        var specificTaskMethodForActions = GenerateSpecificMatchAsyncMethodForActions(union, task);
         builder.AppendLine(specificTaskMethodForActions);
 
         var specificValueTaskMethodForActions = GenerateSpecificMatchAsyncMethodForActions(
             union,
-            "System.Threading.Tasks.ValueTask"
+            valueTask
         );
         builder.AppendLine(specificValueTaskMethodForActions);
 
