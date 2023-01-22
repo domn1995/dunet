@@ -107,8 +107,8 @@ internal static class UnionRecordSourceBuilder
     )
     {
         // public abstract TMatchOutput Match<TMatchOutput>(
-        //     System.Func<UnionMember1<T1, T2, ...>, TMatchOutput> unionMember1,
-        //     System.Func<UnionMember2<T1, T2, ...>, TMatchOutput> unionMember2,
+        //     System.Func<UnionMember1<T1, T2, ...>, TMatchOutput> @unionMember1,
+        //     System.Func<UnionMember2<T1, T2, ...>, TMatchOutput> @unionMember2,
         //     ...
         // );
         builder.AppendLine("    public abstract TMatchOutput Match<TMatchOutput>(");
@@ -127,8 +127,8 @@ internal static class UnionRecordSourceBuilder
         builder.AppendLine("    );");
 
         // public abstract void Match(
-        //     System.Action<UnionMember1<T1, T2, ...>> unionMember1,
-        //     System.Action<UnionMember2<T1, T2, ...>> unionMember2,
+        //     System.Action<UnionMember1<T1, T2, ...>> @unionMember1,
+        //     System.Action<UnionMember2<T1, T2, ...>> @unionMember2,
         //     ...
         // );
         builder.AppendLine("    public abstract void Match(");
@@ -157,6 +157,10 @@ internal static class UnionRecordSourceBuilder
     {
         foreach (var member in union.Members)
         {
+            // public abstract TMatchOutput MatchSpecific<TMatchOutput>(
+            //     System.Func<Specific<T1, T2, ...>, TMatchOutput> @specific,
+            //     System.Func<TMatchOutput> @else
+            // );
             builder.AppendLine(
                 $"    public abstract TMatchOutput Match{member.Identifier}<TMatchOutput>("
             );
@@ -171,6 +175,10 @@ internal static class UnionRecordSourceBuilder
 
         foreach (var member in union.Members)
         {
+            // public abstract void MatchSpecific(
+            //     System.Action<Specific<T1, T2, ...>> @specific,
+            //     System.Action @else
+            // );
             builder.AppendLine($"    public abstract void Match{member.Identifier}(");
             builder.Append($"        System.Action<{member.Identifier}");
             builder.AppendTypeParams(member.TypeParameters);
@@ -190,6 +198,11 @@ internal static class UnionRecordSourceBuilder
         UnionRecordMember member
     )
     {
+        // public override TMatchOutput Match<TMatchOutput>(
+        //     System.Func<UnionMember1<T1, T2, ...>, TMatchOutput> @unionMember1,
+        //     System.Func<UnionMember2<T1, T2, ...>, TMatchOutput> @unionMember2,
+        //     ...
+        // ) => unionMemberX(this);
         builder.AppendLine("        public override TMatchOutput Match<TMatchOutput>(");
         for (int i = 0; i < union.Members.Count; ++i)
         {
@@ -205,7 +218,11 @@ internal static class UnionRecordSourceBuilder
         }
         builder.AppendLine($"        ) => {member.Identifier.ToMethodParameterCase()}(this);");
 
-        // Action match method.
+        // public override void Match(
+        //     System.Action<UnionMember1<T1, T2, ...>> @unionMember1,
+        //     System.Action<UnionMember2<T1, T2, ...>> @unionMember2,
+        //     ...
+        // ) => unionMemberX(this);
         builder.AppendLine("        public override void Match(");
         for (int i = 0; i < union.Members.Count; ++i)
         {
@@ -230,7 +247,11 @@ internal static class UnionRecordSourceBuilder
         UnionRecordMember member
     )
     {
-        // Specific func match methods.
+        // public override TMatchOutput MatchMemberX<TMatchOutput>(
+        //     System.Func<UnionMember1<T1, T2, ...>, TMatchOutput> @unionMemberX,
+        //     System.Func<TMatchOutput> @else,
+        //     ...
+        // ) => unionMemberX(this);
         foreach (var specificMember in union.Members)
         {
             builder.AppendLine(
@@ -253,7 +274,11 @@ internal static class UnionRecordSourceBuilder
             }
         }
 
-        // Specific action match methods.
+        // public override void MatchMemberX(
+        //     System.Action<UnionMember1<T1, T2, ...>> @unionMemberX,
+        //     System.Action @else,
+        //     ...
+        // ) => unionMemberX(this);
         foreach (var specificMember in union.Members)
         {
             builder.AppendLine($"        public override void Match{specificMember.Identifier}(");

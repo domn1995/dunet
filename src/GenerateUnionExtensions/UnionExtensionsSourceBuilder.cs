@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Dunet.GenerateUnionExtensions;
 
-internal static class UnionExtensionsSource
+internal static class UnionExtensionsSourceBuilder
 {
     const string task = "System.Threading.Tasks.Task";
     const string valueTask = "System.Threading.Tasks.ValueTask";
