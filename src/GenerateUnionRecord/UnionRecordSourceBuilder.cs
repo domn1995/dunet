@@ -2,7 +2,7 @@
 
 namespace Dunet.GenerateUnionRecord;
 
-internal static class UnionRecordSource
+internal static class UnionRecordSourceBuilder
 {
     public static string GenerateRecord(UnionRecord union)
     {
@@ -35,13 +35,8 @@ internal static class UnionRecordSource
         builder.AppendLine($"    private {union.Name}() {{}}");
         builder.AppendLine();
 
-        var abstractMatchMethods = GenerateAbstractMatchMethods(union);
-        builder.AppendLine(abstractMatchMethods);
-        builder.AppendLine();
-
-        var abstractSpecificMatchMethods = GenerateAbstractSpecificMatchMethods(union);
-        builder.AppendLine(abstractSpecificMatchMethods);
-        builder.AppendLine();
+        builder.AppendAbstractMatchMethods(union);
+        builder.AppendAbstractSpecificMatchMethods(union);
 
         if (SupportsImplicitConversions(union))
         {
@@ -65,15 +60,8 @@ internal static class UnionRecordSource
             builder.AppendLine();
             builder.AppendLine("    {");
 
-            var matchMethodImplementations = GenerateMatchMethodImplementationsForMember(
-                union,
-                member
-            );
-            builder.AppendLine(matchMethodImplementations);
-
-            var specificMatchMethodImplementations =
-                GenerateSpecificMatchMethodImplementationsForMember(union, member);
-            builder.AppendLine(specificMatchMethodImplementations);
+            builder.AppendMatchMethodImplementationsForMember(union, member);
+            builder.AppendSpecificMatchMethodImplementationsForMember(union, member);
         }
 
         builder.AppendLine("}");
@@ -113,10 +101,16 @@ internal static class UnionRecordSource
             && membersHaveUniqueParameterTypes();
     }
 
-    private static string GenerateAbstractMatchMethods(UnionRecord union)
+    private static StringBuilder AppendAbstractMatchMethods(
+        this StringBuilder builder,
+        UnionRecord union
+    )
     {
-        var builder = new StringBuilder();
-
+        // public abstract TMatchOutput Match<TMatchOutput>(
+        //     System.Func<UnionMember1<T1, T2, ...>, TMatchOutput> unionMember1,
+        //     System.Func<UnionMember2<T1, T2, ...>, TMatchOutput> unionMember2,
+        //     ...
+        // );
         builder.AppendLine("    public abstract TMatchOutput Match<TMatchOutput>(");
         for (int i = 0; i < union.Members.Count; ++i)
         {
@@ -132,7 +126,11 @@ internal static class UnionRecordSource
         }
         builder.AppendLine("    );");
 
-        // Action match method.
+        // public abstract void Match(
+        //     System.Action<UnionMember1<T1, T2, ...>> unionMember1,
+        //     System.Action<UnionMember2<T1, T2, ...>> unionMember2,
+        //     ...
+        // );
         builder.AppendLine("    public abstract void Match(");
         for (int i = 0; i < union.Members.Count; ++i)
         {
@@ -147,14 +145,16 @@ internal static class UnionRecordSource
             builder.AppendLine();
         }
         builder.AppendLine("    );");
+        builder.AppendLine();
 
-        return builder.ToString();
+        return builder;
     }
 
-    private static string GenerateAbstractSpecificMatchMethods(UnionRecord union)
+    private static StringBuilder AppendAbstractSpecificMatchMethods(
+        this StringBuilder builder,
+        UnionRecord union
+    )
     {
-        var builder = new StringBuilder();
-
         foreach (var member in union.Members)
         {
             builder.AppendLine(
@@ -179,16 +179,17 @@ internal static class UnionRecordSource
             builder.AppendLine("    );");
         }
 
-        return builder.ToString();
+        builder.AppendLine();
+
+        return builder;
     }
 
-    private static string GenerateMatchMethodImplementationsForMember(
+    private static StringBuilder AppendMatchMethodImplementationsForMember(
+        this StringBuilder builder,
         UnionRecord union,
         UnionRecordMember member
     )
     {
-        var builder = new StringBuilder();
-
         builder.AppendLine("        public override TMatchOutput Match<TMatchOutput>(");
         for (int i = 0; i < union.Members.Count; ++i)
         {
@@ -220,16 +221,15 @@ internal static class UnionRecordSource
         }
         builder.AppendLine($"        ) => {member.Identifier.ToMethodParameterCase()}(this);");
 
-        return builder.ToString();
+        return builder;
     }
 
-    private static string GenerateSpecificMatchMethodImplementationsForMember(
+    private static StringBuilder AppendSpecificMatchMethodImplementationsForMember(
+        this StringBuilder builder,
         UnionRecord union,
         UnionRecordMember member
     )
     {
-        var builder = new StringBuilder();
-
         // Specific func match methods.
         foreach (var specificMember in union.Members)
         {
@@ -275,6 +275,6 @@ internal static class UnionRecordSource
         builder.AppendLine("    }");
         builder.AppendLine();
 
-        return builder.ToString();
+        return builder;
     }
 }

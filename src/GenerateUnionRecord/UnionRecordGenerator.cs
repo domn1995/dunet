@@ -59,7 +59,7 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                 return;
             }
 
-            var union = UnionRecordSource.GenerateRecord(unionRecord);
+            var union = UnionRecordSourceBuilder.GenerateRecord(unionRecord);
             context.AddSource(
                 $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
                 SourceText.From(union, Encoding.UTF8)
@@ -72,7 +72,7 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
 
             if (unionRecord.SupportsAsyncMatchExtensionMethods())
             {
-                var matchExtensions = UnionExtensionsSource.GenerateExtensions(unionRecord);
+                var matchExtensions = UnionExtensionsSourceBuilder.GenerateExtensions(unionRecord);
                 context.AddSource(
                     $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.g.cs",
                     SourceText.From(matchExtensions, Encoding.UTF8)
