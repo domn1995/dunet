@@ -56,17 +56,17 @@ internal static class UnionExtensionsSource
         );
         builder.AppendLine(valueTaskMethodForActions);
 
-        var specificTaskMethodsForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
+        var specificTaskMethodForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
             union,
             "System.Threading.Tasks.Task"
         );
-        builder.AppendLine(specificTaskMethodsForFuncs);
+        builder.AppendLine(specificTaskMethodForFuncs);
 
-        var specificValueTaskMethodsForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
+        var specificValueTaskMethodForFuncs = GenerateSpecificMatchAsyncMethodForFuncs(
             union,
             "System.Threading.Tasks.ValueTask"
         );
-        builder.AppendLine(specificValueTaskMethodsForFuncs);
+        builder.AppendLine(specificValueTaskMethodForFuncs);
 
         builder.AppendLine("}");
         builder.AppendLine("#pragma warning restore 1591");
