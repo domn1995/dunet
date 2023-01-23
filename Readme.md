@@ -24,7 +24,9 @@ partial record Shape
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
 }
+```
 
+```cs
 // 4. Use the union members.
 var shape = new Shape.Rectangle(3, 4);
 var area = shape.Match(
@@ -42,7 +44,7 @@ Use generics for more advanced union types. For example, an option monad:
 ```cs
 // 1. Import the namespace.
 using Dunet;
-// Optional: use aliasing for more terse code.
+// Optional: use static import for more terse code.
 using static Option<int>;
 
 // 2. Add the `Union` attribute to a partial record.
@@ -53,7 +55,9 @@ partial record Option<T>
     partial record Some(T Value);
     partial record None();
 }
+```
 
+```cs
 // 4. Use the union members.
 Option<int> ParseInt(string? value) =>
     int.TryParse(value, out var number)
@@ -79,14 +83,14 @@ Console.WriteLine(output); // "12345".
 
 ## Implicit Conversion Support
 
-Dunet generates implicit conversions between union member values and the union type
-if your union meets all of the following conditions:
+Dunet generates implicit conversions between union member values and the union  
+type if your union meets all of the following conditions:
 
 - All members contain only a single parameter.
 - All parameters are a different type.
 - No parameters are an interface type.
 
-For example, consider a `Result` union type that represents success
+For example, consider a `Result` union type that represents success  
 as a `double` and failure as an `Exception`:
 
 ```cs
@@ -100,7 +104,9 @@ partial record Result
     partial record Success(double Value);
     partial record Failure(Exception Error);
 }
+```
 
+```cs
 // 3. Return union member values directly.
 Result Divide(double numerator, double denominator)
 {
@@ -125,7 +131,8 @@ Console.WriteLine(output); // "Cannot divide by zero!"
 
 ## Async Match Support
 
-Dunet generates a `MatchAsync()` extension method for all `Task<T>` and `ValueTask<T>` where `T` is a union type. For example:
+Dunet generates a `MatchAsync()` extension method for all `Task<T>` and  
+`ValueTask<T>` where `T` is a union type. For example:
 
 ```cs
 // Choice.cs
@@ -160,17 +167,66 @@ static async Task<Choice> AskAsync()
 }
 
 // 4. Asynchronously match any union `Task` or `ValueTask`.
-var response = await AskAsync().MatchAsync(yes => "Yes!!!", no => $"No, {no.Reason}");
+var response = await AskAsync()
+    .MatchAsync(
+        yes => "Yes!!!",
+        no => $"No, {no.Reason}"
+    );
 
-Console.WriteLine(response); // Prints "No, because I don't wanna!" after 1 second.
+// Prints "No, because I don't wanna!" after 1 second.
+Console.WriteLine(response);
 ```
 
 > **Note**:
 > `MatchAsync()` can only be generated for namespaced unions.
 
+## Match on Specific Union Member
+
+Dunet generates specific match methods for each union member. This is useful  
+when unwrapping a union and you only care about transforming a single variant.  
+For example:
+
+```cs
+[Union]
+partial record Shape
+{
+    partial record Point(int X, int Y);
+    partial record Line(double Length);
+    partial record Rectangle(double Length, double Width);
+    partial record Sphere(double Radius);
+}
+```
+
+```cs
+public static bool IsZeroDimensional(this Shape shape) =>
+    shape.MatchPoint(
+        point => true,
+        () => false
+    );
+
+public static bool IsOneDimensional(this Shape shape) =>
+    shape.MatchLine(
+        line => true,
+        () => false
+    );
+
+public static bool IsTwoDimensional(this Shape shape) =>
+    shape.MatchRectangle(
+        rectangle => true,
+        () => false
+    );
+
+public static bool IsThreeDimensional(this Shape shape) =>
+    shape.MatchSphere(
+        sphere => true,
+        () => false
+    );
+```
+
 ## Nested Union Support
 
-To declare a union nested within a class or record, the class or record must be `partial`. For example:
+To declare a union nested within a class or record, the class or record must  
+be `partial`. For example:
 
 ```cs
 // This type declaration must be partial.
@@ -188,7 +244,9 @@ public partial class Parent1
         }
     }
 }
+```
 
+```cs
 // Access union members like any other nested type.
 var member1 = new Parent1.Parent2.Nested.Member1();
 ```
