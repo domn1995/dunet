@@ -1,9 +1,6 @@
-﻿using Dunet.Test.Compiler;
-using Dunet.Test.Runtime;
+﻿namespace Dunet.Test.GenerateUnionRecord;
 
-namespace Dunet.Test.GenerateUnionRecord;
-
-public class MatchMethodTests : UnionRecordTests
+public sealed class MatchMethodTests
 {
     [Fact]
     public void CanUseUnionTypesInDedicatedMatchMethod()
@@ -29,9 +26,10 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
     }
@@ -68,10 +66,11 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
@@ -109,10 +108,11 @@ partial record Keyword
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
         var actualKeyword = result.Assembly?.ExecuteStaticMethod<string>("GetKeyword");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualKeyword.Should().Be(expectedKeyword);

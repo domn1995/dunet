@@ -1,6 +1,6 @@
 ﻿namespace Dunet.Test.GenerateUnionRecord;
 
-public class GenerationTests : UnionRecordTests
+public sealed class GenerationTests
 {
     [Fact]
     public void UnionMembersExtendUnionType()
@@ -23,9 +23,10 @@ partial record QueryState
 """;
 
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -52,9 +53,10 @@ partial record QueryState
 """;
 
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -75,9 +77,10 @@ partial record Single
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -96,9 +99,10 @@ var dummy = 1;
 partial record Empty;
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -122,9 +126,10 @@ partial record Result
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -164,9 +169,10 @@ var success = new Result.Success(new Data("foo"));
 var failure = new Result.Failure(new Exception("bar"));
 """;
         // Act.
-        var result = Compile.ToAssembly(dataCs, resultCs, programCs);
+        var result = Compiler.Compile(dataCs, resultCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }

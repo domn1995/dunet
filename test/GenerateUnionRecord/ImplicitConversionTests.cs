@@ -1,6 +1,6 @@
 ﻿namespace Dunet.Test.GenerateUnionRecord;
 
-public class ImplicitConversionTests : UnionRecordTests
+public sealed class ImplicitConversionTests
 {
     [Fact]
     public void UnionMemberInnerValuesAreAssignableToUnionType()
@@ -20,9 +20,10 @@ partial record Result
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -48,9 +49,10 @@ partial record Result
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -73,9 +75,10 @@ partial record Result<T>
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -99,9 +102,10 @@ partial record Result<TFailure, TSuccess>
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -126,7 +130,8 @@ partial record Result<T>
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        using var scope = new AssertionScope();
+        var result = Compiler.Compile(programCs);
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();

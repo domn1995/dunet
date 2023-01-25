@@ -1,12 +1,9 @@
-﻿using Dunet.Test.Compiler;
-using Dunet.Test.Runtime;
-
-namespace Dunet.Test.GenerateUnionRecord;
+﻿namespace Dunet.Test.GenerateUnionRecord;
 
 /// <summary>
 /// Tests the correctness of match methods that don't return anything.
 /// </summary>
-public class ActionMatchMethodTests : UnionRecordTests
+public sealed class ActionMatchMethodTests
 {
     [Fact]
     public void CanUseUnionTypesInActionMatchMethod()
@@ -34,9 +31,10 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
     }
@@ -72,10 +70,11 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
@@ -126,10 +125,11 @@ partial record Option<T>
 """;
 
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
         var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetResult");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedOutput);
@@ -167,10 +167,11 @@ partial record Result<TFailure, TSuccess>
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
         var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);

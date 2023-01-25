@@ -1,20 +1,22 @@
-﻿using Dunet.UnionAttributeGeneration;
+﻿using Dunet.GenerateUnionRecord;
+using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;
 
-namespace Dunet.Test.Compiler;
+namespace Dunet.Test.Compilation;
 
-public class Compile
+/// <summary>
+/// Enables compilation of C# source code with Dunet source generation.
+/// </summary>
+internal sealed class Compiler
 {
     private static readonly IIncrementalGenerator unionAttributeGenerator =
         new UnionAttributeGenerator();
 
-    private readonly IIncrementalGenerator generator;
+    private static readonly IIncrementalGenerator unionGenerator = new UnionRecordGenerator();
 
-    public Compile(IIncrementalGenerator generator) => this.generator = generator;
-
-    public CompilationResult ToAssembly(params string[] sources)
+    public static CompilationResult Compile(params string[] sources)
     {
         var baseCompilation = CreateCompilation(sources);
         var (outputCompilation, compilationDiagnostics, generationDiagnostics) = RunGenerator(
@@ -41,7 +43,7 @@ public class Compile
         );
     }
 
-    private static Compilation CreateCompilation(params string[] sources) =>
+    private static Microsoft.CodeAnalysis.Compilation CreateCompilation(params string[] sources) =>
         CSharpCompilation.Create(
             "compilation",
             sources.Select(source => CSharpSyntaxTree.ParseText(source)),
@@ -52,10 +54,10 @@ public class Compile
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
 
-    private GenerationResult RunGenerator(Compilation compilation)
+    private static GenerationResult RunGenerator(Microsoft.CodeAnalysis.Compilation compilation)
     {
         CSharpGeneratorDriver
-            .Create(generator, unionAttributeGenerator)
+            .Create(unionGenerator, unionAttributeGenerator)
             .RunGeneratorsAndUpdateCompilation(
                 compilation,
                 out var outputCompilation,

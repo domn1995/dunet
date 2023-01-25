@@ -3,7 +3,7 @@
 /// <summary>
 /// Tests the unions are properly generated when their definitions are nested within other classes.
 /// </summary>
-public class NestedGenerationTests : UnionRecordTests
+public sealed class NestedGenerationTests
 {
     [Fact]
     public void CanReturnNestedMember()
@@ -36,9 +36,10 @@ public partial class Parent
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -80,9 +81,10 @@ public partial class Parent1
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -129,9 +131,10 @@ var foo = Parent1.Parent2.Parent3.Foo();
 var bar = Parent1.Parent2.Parent3.Bar();
 """;
         // Act.
-        var result = Compile.ToAssembly(nestedCs, programCs);
+        var result = Compiler.Compile(nestedCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -180,9 +183,10 @@ public partial class Parent1
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }

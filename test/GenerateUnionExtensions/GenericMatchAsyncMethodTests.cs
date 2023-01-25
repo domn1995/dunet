@@ -1,16 +1,13 @@
-﻿using Dunet.Test.Compiler;
-using Dunet.Test.Runtime;
+﻿namespace Dunet.Test.GenerateUnionExtensions;
 
-namespace Dunet.Test.GenerateUnionExtensions;
-
-public class GenericMatchAsyncMethodTests : UnionRecordTests
+public sealed class GenericMatchAsyncMethodTests
 {
     [Theory]
     [InlineData("Task", "new Option<int>.Some(1)", 1)]
     [InlineData("ValueTask", "new Option<int>.Some(2)", 2)]
-    [InlineData("Task", "new Option<int>.None()", 0)]
-    [InlineData("ValueTask", "new Option<int>.None()", 0)]
-    public async Task GenericMatchAsyncCallsCorrectFunctionArgument(
+    [InlineData("Task", "new Option<int>.None()", -1)]
+    [InlineData("ValueTask", "new Option<int>.None()", -1)]
+    public void GenericMatchAsyncCallsCorrectFunctionArgument(
         string taskType,
         string optionDeclaration,
         int expectedValue
@@ -42,13 +39,14 @@ async static {{taskType}}<Option<int>> GetOptionAsync()
 
 async static Task<int> GetValueAsync() =>
     await GetOptionAsync()
-        .MatchAsync(some => some.Value, none => 0);
+        .MatchAsync(some => some.Value, none => -1);
 """;
         // Act.
-        var result = Compile.ToAssembly(optionCs, programCs);
-        var value = await result.Assembly!.ExecuteStaticAsyncMethod<int>("GetValueAsync");
+        var result = Compiler.Compile(optionCs, programCs);
+        var value = result.Assembly?.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         value.Should().Be(expectedValue);
@@ -57,9 +55,9 @@ async static Task<int> GetValueAsync() =>
     [Theory]
     [InlineData("Task", "new Option<int>.Some(1)", 1)]
     [InlineData("ValueTask", "new Option<int>.Some(2)", 2)]
-    [InlineData("Task", "new Option<int>.None()", 0)]
-    [InlineData("ValueTask", "new Option<int>.None()", 0)]
-    public async Task GenericMatchAsyncCallsCorrectActionArgument(
+    [InlineData("Task", "new Option<int>.None()", -1)]
+    [InlineData("ValueTask", "new Option<int>.None()", -1)]
+    public void GenericMatchAsyncCallsCorrectActionArgument(
         string taskType,
         string optionDeclaration,
         int expectedValue
@@ -95,14 +93,14 @@ async static Task<int> GetValueAsync()
     await GetOptionAsync()
         .MatchAsync(
             some => { value = some.Value; },
-            none => { value = 0; }
+            none => { value = -1; }
         );
     return value;
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(optionCs, programCs);
-        var value = await result.Assembly!.ExecuteStaticAsyncMethod<int>("GetValueAsync");
+        var result = Compiler.Compile(optionCs, programCs);
+        var value = result.Assembly?.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
@@ -115,7 +113,7 @@ async static Task<int> GetValueAsync()
     [InlineData("ValueTask", "new Result<string, double>.Success(1d)", "1")]
     [InlineData("Task", """new Result<string, double>.Failure("Error!")""", "Error!")]
     [InlineData("ValueTask", """new Result<string, double>.Failure("Error!")""", "Error!")]
-    public async Task MultiGenericMatchAsyncCallsCorrectFunctionArgument(
+    public void MultiGenericMatchAsyncCallsCorrectFunctionArgument(
         string taskType,
         string resultDeclaration,
         string expectedValue
@@ -153,8 +151,8 @@ async static Task<string> GetValueAsync() =>
 ";
 
         // Act.
-        var result = Compile.ToAssembly(resultCs, programCs);
-        var value = await result.Assembly!.ExecuteStaticAsyncMethod<string>("GetValueAsync");
+        var result = Compiler.Compile(resultCs, programCs);
+        var value = result.Assembly?.ExecuteStaticAsyncMethod<string>("GetValueAsync");
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
@@ -167,7 +165,7 @@ async static Task<string> GetValueAsync() =>
     [InlineData("ValueTask", "new Result<string, double>.Success(1d)", "1")]
     [InlineData("Task", """new Result<string, double>.Failure("Error!")""", "Error!")]
     [InlineData("ValueTask", """new Result<string, double>.Failure("Error!")""", "Error!")]
-    public async Task MultiGenericMatchAsyncCallsCorrectActionArgument(
+    public void MultiGenericMatchAsyncCallsCorrectActionArgument(
         string taskType,
         string resultDeclaration,
         string expectedValue
@@ -211,10 +209,11 @@ async static Task<string> GetValueAsync()
 """;
 
         // Act.
-        var result = Compile.ToAssembly(resultCs, programCs);
-        var value = await result.Assembly!.ExecuteStaticAsyncMethod<string>("GetValueAsync");
+        var result = Compiler.Compile(resultCs, programCs);
+        var value = result.Assembly?.ExecuteStaticAsyncMethod<string>("GetValueAsync");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         value.Should().Be(expectedValue);
