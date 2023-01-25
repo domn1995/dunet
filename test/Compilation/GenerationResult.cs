@@ -1,11 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
-using System.Reflection;
 
-namespace Dunet.Test.Compiler;
+namespace Dunet.Test.Compilation;
 
-public record CompilationResult(
-    Assembly? Assembly,
+/// <summary>
+/// Represents the result of running a C# source generator on a compilation.
+/// </summary>
+internal sealed record GenerationResult(
+    Microsoft.CodeAnalysis.Compilation Compilation,
     ImmutableArray<Diagnostic> CompilationDiagnostics,
     ImmutableArray<Diagnostic> GenerationDiagnostics
 )
@@ -19,6 +21,4 @@ public record CompilationResult(
         GenerationDiagnostics
             .Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
             .ToImmutableArray();
-
-    public bool Success => Assembly is not null;
 }

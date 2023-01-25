@@ -1,10 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
+using System.Reflection;
 
-namespace Dunet.Test.Compiler;
+namespace Dunet.Test.Compilation;
 
-public record GenerationResult(
-    Compilation Compilation,
+/// <summary>
+/// Represents the result of compiling C# source code.
+/// </summary>
+internal sealed record CompilationResult(
+    Assembly? Assembly,
     ImmutableArray<Diagnostic> CompilationDiagnostics,
     ImmutableArray<Diagnostic> GenerationDiagnostics
 )
