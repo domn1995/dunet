@@ -1,8 +1,6 @@
-﻿using Dunet.Test.Runtime;
+﻿namespace Dunet.Test.GenerateUnionRecord;
 
-namespace Dunet.Test.GenerateUnionRecord;
-
-public class SwitchExpressionTests : UnionRecordTests
+public sealed class SwitchExpressionTests
 {
     [Fact]
     public void CanUseUnionTypesInSwitchExpression()
@@ -30,9 +28,10 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
     }
@@ -68,10 +67,11 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetActualArea");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);

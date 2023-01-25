@@ -1,6 +1,6 @@
 ﻿namespace Dunet.Test.GenerateUnionExtensions;
 
-public class GenerationTests : UnionRecordTests
+public sealed class GenerationTests
 {
     [Theory]
     [InlineData("Task")]
@@ -41,9 +41,10 @@ async static {{taskType}}<Shape> GetShapeAsync()
 """;
 
         // Act.
-        var result = Compile.ToAssembly(shapeCs, programCs);
+        var result = Compiler.Compile(shapeCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
     }
@@ -88,9 +89,10 @@ async static {{taskType}}<Shape> GetShapeAsync()
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(shapeCs, programCs);
+        var result = Compiler.Compile(shapeCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
     }
@@ -127,14 +129,14 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(source);
+        var result = Compiler.Compile(source);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.
+        using var scope = new AssertionScope();
         errorMessages
             .Should()
-            .HaveCount(1)
-            .And.Contain(
+            .ContainSingle(
                 $"'{taskType}<Shape>' does not contain a definition for 'MatchAsync' and no accessible extension method "
                     + $"'MatchAsync' accepting a first argument of type '{taskType}<Shape>' could be found (are you missing a "
                     + "using directive or an assembly reference?)"
@@ -172,14 +174,14 @@ async {{taskType}}<Empty> GetEmptyAsync() => (null as Empty)!;
 """;
 
         // Act.
-        var result = Compile.ToAssembly(emptyCs, source);
+        var result = Compiler.Compile(emptyCs, source);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.
+        using var scope = new AssertionScope();
         errorMessages
             .Should()
-            .HaveCount(1)
-            .And.Contain(
+            .ContainSingle(
                 $"'{taskType}<Empty>' does not contain a definition for 'MatchAsync' and no accessible extension method "
                     + $"'MatchAsync' accepting a first argument of type '{taskType}<Empty>' could be found (are you missing a "
                     + "using directive or an assembly reference?)"

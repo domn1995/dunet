@@ -2,24 +2,35 @@
 
 namespace Dunet.Test.Runtime;
 
-public static class AssemblyExtensions
+/// <summary>
+/// Provides extension methods for executing methods within an assembly.
+/// </summary>
+/// <remarks>
+/// This helps Dunet ensure that match methods are working correctly.
+/// </remarks>
+internal static class AssemblyExtensions
 {
-    public static T ExecuteStaticMethod<T>(this Assembly assembly, string methodName)
-    {
-        var method = assembly.DefinedTypes
-            .SelectMany(type => type.DeclaredMethods)
-            .Single(method => method.Name.Contains(methodName));
-        return (T)method?.Invoke(null, null)!;
-    }
+    public static T? ExecuteStaticMethod<T>(this Assembly assembly, string methodName)
+        where T : notnull =>
+        (T?)
+            assembly.DefinedTypes
+                .SelectMany(type => type.DeclaredMethods)
+                .FirstOrDefault(method => method.Name.Contains(methodName))
+                ?.Invoke(null, null);
 
-    public static async Task<T> ExecuteStaticAsyncMethod<T>(
-        this Assembly assembly,
-        string methodName
-    )
+    public static T? ExecuteStaticAsyncMethod<T>(this Assembly assembly, string methodName)
+        where T : notnull
     {
-        var method = assembly.DefinedTypes
-            .SelectMany(type => type.DeclaredMethods)
-            .Single(method => method.Name.Contains(methodName));
-        return await (Task<T>)method?.Invoke(null, null)!;
+        var task =
+            assembly.DefinedTypes
+                .SelectMany(type => type.DeclaredMethods)
+                .FirstOrDefault(method => method.Name.Contains(methodName))
+                ?.Invoke(null, null) as Task<T>;
+
+        return task switch
+        {
+            not null => task.GetAwaiter().GetResult(),
+            _ => default,
+        };
     }
 }

@@ -1,15 +1,13 @@
-﻿using Dunet.Test.Runtime;
+﻿namespace Dunet.Test.GenerateUnionExtensions;
 
-namespace Dunet.Test.GenerateUnionExtensions;
-
-public class GenericGenerationTests : UnionRecordTests
+public sealed class GenericGenerationTests
 {
     [Theory]
     [InlineData("Task", "new Option<int>.Some(1)", 1)]
     [InlineData("ValueTask", "new Option<int>.Some(1)", 1)]
     [InlineData("Task", "new Option<int>.None()", 0)]
     [InlineData("ValueTask", "new Option<int>.None()", 0)]
-    public async Task SupportsAsyncMatchFunctionsForUnionsWithSingleTypeParameter(
+    public void SupportsAsyncMatchFunctionsForUnionsWithSingleTypeParameter(
         string taskType,
         string optionDeclaration,
         int expectedValue
@@ -40,10 +38,11 @@ async static {taskType}<Option<int>> GetOptionAsync() =>
 """;
 
         // Act.
-        var result = Compile.ToAssembly(optionCs, programCs);
-        var value = await result.Assembly!.ExecuteStaticAsyncMethod<int>("GetValueAsync");
+        var result = Compiler.Compile(optionCs, programCs);
+        var value = result.Assembly?.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
         value.Should().Be(expectedValue);
@@ -52,9 +51,9 @@ async static {taskType}<Option<int>> GetOptionAsync() =>
     [Theory]
     [InlineData("Task", "new Option<int>.Some(1)", 1)]
     [InlineData("ValueTask", "new Option<int>.Some(1)", 1)]
-    [InlineData("Task", "new Option<int>.None()", 0)]
-    [InlineData("ValueTask", "new Option<int>.None()", 0)]
-    public async Task SupportsAsyncMatchActionsForUnionsWithSingleTypeParameter(
+    [InlineData("Task", "new Option<int>.None()", -1)]
+    [InlineData("ValueTask", "new Option<int>.None()", -1)]
+    public void SupportsAsyncMatchActionsForUnionsWithSingleTypeParameter(
         string taskType,
         string optionDeclaration,
         int expectedValue
@@ -83,7 +82,7 @@ async static Task<int> GetValueAsync()
     await GetOptionAsync()
         .MatchAsync(
             some => { value = some.Value; },
-            none => { value = 0; }
+            none => { value = -1; }
         );
     return value;
 }
@@ -93,10 +92,11 @@ async static {{taskType}}<Option<int>> GetOptionAsync() =>
 """;
 
         // Act.
-        var result = Compile.ToAssembly(optionCs, programCs);
-        var value = await result.Assembly!.ExecuteStaticAsyncMethod<int>("GetValueAsync");
+        var result = Compiler.Compile(optionCs, programCs);
+        var value = result.Assembly?.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
         value.Should().Be(expectedValue);

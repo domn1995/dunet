@@ -1,6 +1,6 @@
 namespace Dunet.Test.GenerateUnionRecord;
 
-public class NamespaceTests : UnionRecordTests
+public sealed class NamespaceTests
 {
     [Fact]
     public void CanReferenceUnionTypesFromSeparateNamespace()
@@ -36,9 +36,10 @@ public static class Program
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(iShapeCs, programCs);
+        var result = Compiler.Compile(iShapeCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -70,9 +71,10 @@ public static class Program
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -96,9 +98,10 @@ partial record Shape
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -131,9 +134,10 @@ namespace Test
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -165,9 +169,10 @@ public static class Program
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -206,9 +211,10 @@ public static class Program
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(iShapeCs, programCs);
+        var result = Compiler.Compile(iShapeCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -248,9 +254,10 @@ public static class Program
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(iShapeCs, programCs);
+        var result = Compiler.Compile(iShapeCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -291,9 +298,10 @@ Bar.Result error = new Bar.Result.Error();
 """;
 
         // Act.
-        var result = Compile.ToAssembly(resultCs, otherResultCs, programCs);
+        var result = Compiler.Compile(resultCs, otherResultCs, programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }

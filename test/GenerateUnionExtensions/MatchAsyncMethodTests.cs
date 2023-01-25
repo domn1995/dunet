@@ -1,9 +1,6 @@
-﻿using Dunet.Test.Compiler;
-using Dunet.Test.Runtime;
+﻿namespace Dunet.Test.GenerateUnionExtensions;
 
-namespace Dunet.Test.GenerateUnionExtensions;
-
-public class MatchAsyncMethodTests : UnionRecordTests
+public sealed class MatchAsyncMethodTests
 {
     [Theory]
     [InlineData("Task", "new Shape.Rectangle(3, 4)", 12d)]
@@ -12,7 +9,7 @@ public class MatchAsyncMethodTests : UnionRecordTests
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", 4d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", 4d)]
-    public async Task MatchAsyncCallsCorrectFunctionArgument(
+    public void MatchAsyncCallsCorrectFunctionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -53,10 +50,11 @@ async static Task<double> GetAreaAsync() =>
 """;
 
         // Act.
-        var result = Compile.ToAssembly(shapeCs, programCs);
-        var actualArea = await result.Assembly!.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
+        var result = Compiler.Compile(shapeCs, programCs);
+        var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
@@ -69,7 +67,7 @@ async static Task<double> GetAreaAsync() =>
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", 4d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", 4d)]
-    public async Task MatchAsyncCallsCorrectActionArgument(
+    public void MatchAsyncCallsCorrectActionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -114,10 +112,11 @@ async static Task<double> GetAreaAsync()
 """;
 
         // Act.
-        var result = Compile.ToAssembly(shapeCs, programCs);
-        var actualArea = await result.Assembly!.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
+        var result = Compiler.Compile(shapeCs, programCs);
+        var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
@@ -130,11 +129,11 @@ async static Task<double> GetAreaAsync()
     [InlineData("ValueTask", "new Keyword.Base()", "base")]
     [InlineData("Task", "new Keyword.Null()", "null")]
     [InlineData("ValueTask", "new Keyword.Null()", "null")]
-    public async Task CanMatchAsyncOnUnionMembersNamedAfterKeywords(
-    string taskType,
-    string keywordDeclaration,
-    string expectedKeyword
-)
+    public void CanMatchAsyncOnUnionMembersNamedAfterKeywords(
+        string taskType,
+        string keywordDeclaration,
+        string expectedKeyword
+    )
     {
         // Arrange.
         const string keywordCs = """
@@ -175,13 +174,13 @@ async static Task<string> GetValueAsync()
 """;
 
         // Act.
-        var result = Compile.ToAssembly(keywordCs, programCs);
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
-        var actualKeyword = await result.Assembly!.ExecuteStaticAsyncMethod<string>("GetValueAsync");
-
+        var result = Compiler.Compile(keywordCs, programCs);
+        var actualKeyword = result.Assembly?.ExecuteStaticAsyncMethod<string>("GetValueAsync");
 
         // Assert.
+        using var scope = new AssertionScope();
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationErrors.Should().BeEmpty();
         actualKeyword.Should().Be(expectedKeyword);
     }
 }

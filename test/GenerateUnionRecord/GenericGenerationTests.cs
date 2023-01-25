@@ -1,8 +1,6 @@
-﻿using Dunet.Test.Runtime;
+﻿namespace Dunet.Test.GenerateUnionRecord;
 
-namespace Dunet.Test.GenerateUnionRecord;
-
-public class GenericGenerationTests : UnionRecordTests
+public sealed class GenericGenerationTests
 {
     [Fact]
     public void UnionTypeMayHaveGenericParameter()
@@ -21,9 +19,10 @@ partial record Option<T>
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
@@ -45,10 +44,11 @@ partial record Option
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.
+        using var scope = new AssertionScope();
         result.Assembly.Should().BeNull();
         result.CompilationErrors.Should().NotBeEmpty();
     }
@@ -95,10 +95,11 @@ partial record Option<T>
 """;
 
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
         var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetResult");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedOutput);
@@ -131,10 +132,11 @@ partial record Result<TFailure, TSuccess>
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
         var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");
 
         // Assert.
+        using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);
@@ -157,10 +159,11 @@ partial record Result<TFailure, TSuccess> where TFailure : Exception
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.
+        using var scope = new AssertionScope();
         result.Assembly.Should().BeNull();
         errorMessages
             .Should()
@@ -191,10 +194,11 @@ partial record Result<TFailure, TSuccess>
 }
 """;
         // Act.
-        var result = Compile.ToAssembly(programCs);
+        var result = Compiler.Compile(programCs);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.
+        using var scope = new AssertionScope();
         result.Assembly.Should().BeNull();
         errorMessages
             .Should()
