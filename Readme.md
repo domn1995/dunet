@@ -83,15 +83,13 @@ Console.WriteLine(output); // "12345".
 
 ## Implicit Conversion Support
 
-Dunet generates implicit conversions between union member values and the union  
-type if your union meets all of the following conditions:
+Dunet generates implicit conversions between union member values and the union type if your union meets all of the following conditions:
 
 - All members contain only a single parameter.
 - All parameters are a different type.
 - No parameters are an interface type.
 
-For example, consider a `Result` union type that represents success  
-as a `double` and failure as an `Exception`:
+For example, consider a `Result` union type that represents success as a `double` and failure as an `Exception`:
 
 ```cs
 // 1. Import the namespace.
@@ -131,8 +129,7 @@ Console.WriteLine(output); // "Cannot divide by zero!"
 
 ## Async Match Support
 
-Dunet generates a `MatchAsync()` extension method for all `Task<T>` and  
-`ValueTask<T>` where `T` is a union type. For example:
+Dunet generates a `MatchAsync()` extension method for all `Task<T>` and `ValueTask<T>` where `T` is a union type. For example:
 
 ```cs
 // Choice.cs
@@ -182,9 +179,7 @@ Console.WriteLine(response);
 
 ## Match on Specific Union Member
 
-Dunet generates specific match methods for each union member. This is useful  
-when unwrapping a union and you only care about transforming a single variant.  
-For example:
+Dunet generates specific match methods for each union member. This is useful when unwrapping a union and you only care about transforming a single variant. For example:
 
 ```cs
 [Union]
@@ -223,10 +218,35 @@ public static bool IsThreeDimensional(this Shape shape) =>
     );
 ```
 
+## Pretty Print Union Variants
+
+To control how union variants are printed with their `ToString()` methods, override and seal the union declaration's `ToString()` method. For example:
+
+```cs
+[Union]
+public partial record QueryResult<T>
+{
+    public partial record Ok(T Value);
+    public partial record NotFound;
+    public partial record Unauthorized;
+
+    public sealed override string ToString() =>
+        Match(
+            ok => ok.Value.ToString(),
+            entityNotFound => "Not found.",
+            unauthorizedAccess => "Unauthorized access."
+        );
+}
+```
+
+> **Note**:
+> You must seal the `ToString()` override to prevent the compiler from synthesizing a custom `ToString()` method for each variant.
+>
+> More info: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#built-in-formatting-for-display
+
 ## Nested Union Support
 
-To declare a union nested within a class or record, the class or record must  
-be `partial`. For example:
+To declare a union nested within a class or record, the class or record must be `partial`. For example:
 
 ```cs
 // This type declaration must be partial.
