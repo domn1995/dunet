@@ -14,7 +14,7 @@ internal sealed class Compiler
     private static readonly IIncrementalGenerator unionAttributeGenerator =
         new UnionAttributeGenerator();
 
-    private static readonly IIncrementalGenerator unionGenerator = new UnionRecordGenerator();
+    private static readonly IIncrementalGenerator unionGenerator = new UnionGenerator();
 
     public static CompilationResult Compile(params string[] sources)
     {

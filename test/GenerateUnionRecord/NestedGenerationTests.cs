@@ -6,7 +6,7 @@
 public sealed class NestedGenerationTests
 {
     [Fact]
-    public void CanReturnNestedMember()
+    public void CanReturnNestedVariant()
     {
         // Arrange.
         var programCs = """
@@ -20,18 +20,18 @@ public partial class Parent
     [Union]
     public partial record Nested
     {
-        public partial record Member1;
-        public partial record Member2;
+        public partial record Variant1;
+        public partial record Variant2;
     }
 
     public static Nested Foo()
     {
-        return new Nested.Member1();
+        return new Nested.Variant1();
     }
 
     public static Nested Bar()
     {
-        return new Nested.Member2();
+        return new Nested.Variant2();
     }
 }
 """;
@@ -45,7 +45,7 @@ public partial class Parent
     }
 
     [Fact]
-    public void CanReturnDeeplyNestedMember()
+    public void CanReturnDeeplyNestedVariant()
     {
         // Arrange.
         var programCs = """
@@ -63,18 +63,18 @@ public partial class Parent1
             [Union]
             public partial record Nested
             {
-                public partial record Member1;
-                public partial record Member2;
+                public partial record Variant1;
+                public partial record Variant2;
             }
 
             public static Nested Foo()
             {
-                return new Nested.Member1();
+                return new Nested.Variant1();
             }
 
             public static Nested Bar()
             {
-                return new Nested.Member2();
+                return new Nested.Variant2();
             }
         }
     }
@@ -90,7 +90,7 @@ public partial class Parent1
     }
 
     [Fact]
-    public void CanReturnDeeplyNestedMemberFromOtherNamespace()
+    public void CanReturnDeeplyNestedVariantFromOtherNamespace()
     {
         var nestedCs = """
 using Dunet;
@@ -106,18 +106,18 @@ public partial class Parent1
             [Union]
             public partial record Nested
             {
-                public partial record Member1;
-                public partial record Member2;
+                public partial record Variant1;
+                public partial record Variant2;
             }
 
             public static Nested Foo()
             {
-                return new Nested.Member1();
+                return new Nested.Variant1();
             }
 
             public static Nested Bar()
             {
-                return new Nested.Member2();
+                return new Nested.Variant2();
             }
         }
     }
@@ -140,7 +140,7 @@ var bar = Parent1.Parent2.Parent3.Bar();
     }
 
     [Fact]
-    public void CanReturnMultipleDeeplyNestedUnionMembers()
+    public void CanReturnMultipleDeeplyNestedUnionVariants()
     {
         // Arrange.
         var programCs = """
@@ -158,25 +158,25 @@ public partial class Parent1
             [Union]
             public partial record Nested1
             {
-                public partial record Member1;
-                public partial record Member2;
+                public partial record Variant1;
+                public partial record Variant2;
             }
 
             [Union]
             public partial record Nested2
             {
-                public partial record Member1;
-                public partial record Member2;
+                public partial record Variant1;
+                public partial record Variant2;
             }
 
             public static Nested1 Foo()
             {
-                return new Nested1.Member1();
+                return new Nested1.Variant1();
             }
 
             public static Nested2 Bar()
             {
-                return new Nested2.Member1();
+                return new Nested2.Variant1();
             }
         }
     }

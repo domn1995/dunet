@@ -28,7 +28,7 @@ partial record Option<T>
     }
 
     [Fact]
-    public void UnionMemberMayNotHaveGenericParameter()
+    public void UnionVariantMayNotHaveGenericParameter()
     {
         var programCs = """
 using Dunet;

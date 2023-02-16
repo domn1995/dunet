@@ -129,7 +129,7 @@ async static Task<double> GetAreaAsync()
     [InlineData("ValueTask", "new Keyword.Base()", "base")]
     [InlineData("Task", "new Keyword.Null()", "null")]
     [InlineData("ValueTask", "new Keyword.Null()", "null")]
-    public void CanMatchAsyncOnUnionMembersNamedAfterKeywords(
+    public void CanMatchAsyncOnUnionVariantsNamedAfterKeywords(
         string taskType,
         string keywordDeclaration,
         string expectedKeyword

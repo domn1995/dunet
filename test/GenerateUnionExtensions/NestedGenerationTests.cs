@@ -3,10 +3,10 @@
 public sealed class NestedGenerationTests
 {
     [Theory]
-    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Member1()", 1)]
-    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Member1()", 1)]
-    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Member2()", 2)]
-    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Member2()", 2)]
+    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Variant1()", 1)]
+    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Variant1()", 1)]
+    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Variant2()", 2)]
+    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Variant2()", 2)]
     public void CanUseMatchAsyncFunctionsOnMethodsThatReturnNestedUnions(
         string taskType,
         string unionDeclaration,
@@ -28,8 +28,8 @@ public partial class Parent1
             [Union]
             public partial record Nested
             {
-                public partial record Member1;
-                public partial record Member2;
+                public partial record Variant1;
+                public partial record Variant2;
             }
         }
     }
@@ -40,7 +40,7 @@ using System.Threading.Tasks;
 using NestedTests;
 
 async static Task<int> GetValueAsync() =>
-    await GetNestedAsync().MatchAsync(member1 => 1, member2 => 2);
+    await GetNestedAsync().MatchAsync(variant1 => 1, variant2 => 2);
 
 async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
 {
@@ -61,10 +61,10 @@ async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
     }
 
     [Theory]
-    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Member1()", 1)]
-    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Member1()", 1)]
-    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Member2()", 2)]
-    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Member2()", 2)]
+    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Variant1()", 1)]
+    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Variant1()", 1)]
+    [InlineData("Task", "new Parent1.Parent2.Parent3.Nested.Variant2()", 2)]
+    [InlineData("ValueTask", "new Parent1.Parent2.Parent3.Nested.Variant2()", 2)]
     public void CanUseMatchAsyncActionsOnMethodsThatReturnNestedUnions(
         string taskType,
         string unionDeclaration,
@@ -86,8 +86,8 @@ public partial class Parent1
             [Union]
             public partial record Nested
             {
-                public partial record Member1;
-                public partial record Member2;
+                public partial record Variant1;
+                public partial record Variant2;
             }
         }
     }
@@ -102,8 +102,8 @@ async static Task<int> GetValueAsync()
     var value = 0;
     await GetNestedAsync()
         .MatchAsync(
-            member1 => { value = 1; },
-            member2 => { value = 2; }
+            variant1 => { value = 1; },
+            variant2 => { value = 2; }
         );
     return value;
 }

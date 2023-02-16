@@ -2,20 +2,27 @@
 
 namespace Dunet.GenerateUnionRecord;
 
-internal sealed record UnionRecord(
+internal sealed record UnionDeclaration(
     List<string> Imports,
     string? Namespace,
     Accessibility Accessibility,
     string Name,
     List<TypeParameter> TypeParameters,
     List<TypeParameterConstraint> TypeParameterConstraints,
-    List<UnionRecordMember> Members,
+    List<VariantDeclaration> Variants,
     Stack<ParentType> ParentTypes
 )
 {
     // Extension methods cannot be generated for a union declared in a top level program (no namespace).
-    // It also doesn't make sense to generate Match extensions if there are no members to match aginst.
-    public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Members.Count > 0;
+    // It also doesn't make sense to generate Match extensions if there are no variants to match aginst.
+    public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Variants.Count > 0;
+}
+
+internal sealed record VariantDeclaration
+{
+    public required string Identifier { get; init; }
+    public required List<TypeParameter> TypeParameters { get; init; }
+    public required List<Property> Properties { get; init; }
 }
 
 internal sealed record TypeParameter(string Identifier)

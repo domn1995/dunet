@@ -9,7 +9,7 @@ using System.Text;
 namespace Dunet.GenerateUnionRecord;
 
 [Generator]
-public sealed class UnionRecordGenerator : IIncrementalGenerator
+public sealed class UnionGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -59,7 +59,7 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
                 return;
             }
 
-            var union = UnionRecordSourceBuilder.GenerateRecord(unionRecord);
+            var union = UnionSourceBuilder.Build(unionRecord);
             context.AddSource(
                 $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
                 SourceText.From(union, Encoding.UTF8)
@@ -81,7 +81,7 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
         }
     }
 
-    private static IEnumerable<UnionRecord> GetCodeToGenerate(
+    private static IEnumerable<UnionDeclaration> GetCodeToGenerate(
         Compilation compilation,
         IEnumerable<RecordDeclarationSyntax> declarations,
         CancellationToken cancellation
@@ -109,17 +109,17 @@ public sealed class UnionRecordGenerator : IIncrementalGenerator
             var @namespace = recordSymbol.GetNamespace();
             var typeParameters = declaration.GetTypeParameters();
             var typeParameterConstraints = declaration.GetTypeParameterConstraints();
-            var unionRecordMembers = declaration.GetNestedRecordDeclarations(semanticModel);
+            var variants = declaration.GetNestedRecordDeclarations(semanticModel);
             var parentTypes = declaration.GetParentTypes(semanticModel);
 
-            yield return new UnionRecord(
+            yield return new UnionDeclaration(
                 Imports: imports.ToList(),
                 Namespace: @namespace,
                 Accessibility: recordSymbol.DeclaredAccessibility,
                 Name: recordSymbol.Name,
                 TypeParameters: typeParameters?.ToList() ?? new(),
                 TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
-                Members: unionRecordMembers.ToList(),
+                Variants: variants.ToList(),
                 ParentTypes: parentTypes
             );
         }

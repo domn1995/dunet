@@ -3,7 +3,7 @@
 public sealed class ImplicitConversionTests
 {
     [Fact]
-    public void UnionMemberInnerValuesAreAssignableToUnionType()
+    public void UnionVariantIsAssignableToUnionType()
     {
         var programCs = """
 using Dunet;
@@ -29,7 +29,7 @@ partial record Result
     }
 
     [Fact]
-    public void UnionMemberInnerValueSubclassesAreAssignableToUnionType()
+    public void UnionVariantPropertyTypeSubclassIsAssignableToUnionType()
     {
         var programCs = """
 using Dunet;
@@ -58,7 +58,7 @@ partial record Result
     }
 
     [Fact]
-    public void UnionMemberGenericInnerValueIsAssignableToUnionType()
+    public void UnionVariantGenericPropertyIsAssignableToUnionType()
     {
         var programCs = """
 using Dunet;
@@ -84,7 +84,7 @@ partial record Result<T>
     }
 
     [Fact]
-    public void UnionMemberMultipleGenericInnerValuesAreAssignableToUnionType()
+    public void VariantOfMultiGenericUnionIsAssignableToUnionType()
     {
         var programCs = """
 using Dunet;
@@ -111,7 +111,7 @@ partial record Result<TFailure, TSuccess>
     }
 
     [Fact]
-    public void ImplicitConversionsAreNotCreatedForInterfaceMembers()
+    public void ImplicitConversionIsNotCreatedForVariantWithInterfaceProperty()
     {
         var programCs = """
 using Dunet;

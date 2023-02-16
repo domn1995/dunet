@@ -19,7 +19,7 @@ using Dunet;
 [Union]
 partial record Shape
 {
-    // 3. Define the union members as inner partial records.
+    // 3. Define the union variants as inner partial records.
     partial record Circle(double Radius);
     partial record Rectangle(double Length, double Width);
     partial record Triangle(double Base, double Height);
@@ -27,7 +27,7 @@ partial record Shape
 ```
 
 ```cs
-// 4. Use the union members.
+// 4. Use the union variants.
 var shape = new Shape.Rectangle(3, 4);
 var area = shape.Match(
     circle => 3.14 * circle.Radius * circle.Radius,
@@ -37,7 +37,7 @@ var area = shape.Match(
 Console.WriteLine(area); // "12"
 ```
 
-## Generics Support
+## Generics
 
 Use generics for more advanced union types. For example, an option monad:
 
@@ -58,7 +58,7 @@ partial record Option<T>
 ```
 
 ```cs
-// 4. Use the union members.
+// 4. Use the union variants.
 Option<int> ParseInt(string? value) =>
     int.TryParse(value, out var number)
         ? new Some(number)
@@ -81,13 +81,13 @@ output = GetOutput(result);
 Console.WriteLine(output); // "12345".
 ```
 
-## Implicit Conversion Support
+## Implicit Conversions
 
-Dunet generates implicit conversions between union member values and the union type if your union meets all of the following conditions:
+Dunet generates implicit conversions between union variants and the union type if your union meets all of the following conditions:
 
-- All members contain only a single parameter.
-- All parameters are a different type.
-- No parameters are an interface type.
+- All variants contain a single property.
+- Each variant's property is unique within the union.
+- No property is an interface type.
 
 For example, consider a `Result` union type that represents success as a `double` and failure as an `Exception`:
 
@@ -95,7 +95,7 @@ For example, consider a `Result` union type that represents success as a `double
 // 1. Import the namespace.
 using Dunet;
 
-// 2. Define a union type with single unique member values:
+// 2. Define a union type with a single unique variant property:
 [Union]
 partial record Result
 {
@@ -105,7 +105,7 @@ partial record Result
 ```
 
 ```cs
-// 3. Return union member values directly.
+// 3. Return union variants directly.
 Result Divide(double numerator, double denominator)
 {
     if (denominator is 0d)
@@ -127,7 +127,7 @@ var output = result.Match(
 Console.WriteLine(output); // "Cannot divide by zero!"
 ```
 
-## Async Match Support
+## Async Match
 
 Dunet generates a `MatchAsync()` extension method for all `Task<T>` and `ValueTask<T>` where `T` is a union type. For example:
 
@@ -177,9 +177,9 @@ Console.WriteLine(response);
 > **Note**:
 > `MatchAsync()` can only be generated for namespaced unions.
 
-## Match on Specific Union Member
+## Specific Match
 
-Dunet generates specific match methods for each union member. This is useful when unwrapping a union and you only care about transforming a single variant. For example:
+Dunet generates specific match methods for each union variant. This is useful when unwrapping a union and you only care about transforming a single variant. For example:
 
 ```cs
 [Union]
@@ -218,7 +218,7 @@ public static bool IsThreeDimensional(this Shape shape) =>
     );
 ```
 
-## Pretty Print Union Variants
+## Pretty Print
 
 To control how union variants are printed with their `ToString()` methods, override and seal the union declaration's `ToString()` method. For example:
 
@@ -244,7 +244,56 @@ public partial record QueryResult<T>
 >
 > More info: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record#built-in-formatting-for-display
 
-## Nested Union Support
+## Shared Properties
+
+To create a property shared by all variants, add it to the union declaration. For example, the following code requires all union variants to initialize the `StatusCode` property. This makes `StatusCode` available to anyone with a reference to `HttpResponse` without having to match.
+
+```cs
+[Union]
+public partial record HttpResponse
+{
+    public partial record Success;
+    public partial record Error(string Message);
+
+    // 1. All variants shall have a status code.
+    public required int StatusCode { get; init; }
+}
+```
+
+```cs
+using var client = new HttpClient();
+var response = await CreateUserAsync(client, "John", "Smith");
+
+// 2. The `StatusCode` property is available at the union level.
+var statusCode = response.StatusCode;
+
+public static async Task<HttpResponse> CreateUserAsync(
+    HttpClient client, string firstName, string lastName
+)
+{
+    using var response = await client.PostJsonAsync(
+        "/users",
+        new { firstName, lastName }
+    );
+
+    var content = await response.Content.ReadAsStringAsync();
+
+    if (!response.IsSuccessStatusCode)
+    {
+        return new Error(content)
+        {
+            StatusCode = (int)response.StatusCode,
+        };
+    }
+
+    return new HttpResponse.Success
+    {
+        StatusCode = (int)response.StatusCode,
+    };
+}
+```
+
+## Nest Unions
 
 To declare a union nested within a class or record, the class or record must be `partial`. For example:
 
@@ -259,16 +308,16 @@ public partial class Parent1
         [Union]
         public partial record Nested
         {
-            public partial record Member1;
-            public partial record Member2;
+            public partial record Variant1;
+            public partial record Variant2;
         }
     }
 }
 ```
 
 ```cs
-// Access union members like any other nested type.
-var member1 = new Parent1.Parent2.Nested.Member1();
+// Access variants like any other nested type.
+var variant1 = new Parent1.Parent2.Nested.Variant1();
 ```
 
 ## Samples

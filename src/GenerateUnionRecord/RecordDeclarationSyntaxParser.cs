@@ -61,7 +61,7 @@ internal static class RecordDeclarationSyntaxParser
     /// <param name="record">This record declaration.</param>
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
     /// <returns>The sequence of nested record declarations, if any. Otherwise, <see langword="null"/>.</returns>
-    public static IEnumerable<UnionRecordMember> GetNestedRecordDeclarations(
+    public static IEnumerable<VariantDeclaration> GetNestedRecordDeclarations(
         this RecordDeclarationSyntax record,
         SemanticModel semanticModel
     ) =>
@@ -70,12 +70,12 @@ internal static class RecordDeclarationSyntaxParser
             .Where(static node => node.IsKind(SyntaxKind.RecordDeclaration))
             .OfType<RecordDeclarationSyntax>()
             .Select(
-                member =>
-                    new UnionRecordMember()
+                nestedRecord =>
+                    new VariantDeclaration()
                     {
-                        Identifier = member.Identifier.ToString(),
-                        TypeParameters = member.GetTypeParameters()?.ToList() ?? new(),
-                        Properties = member.GetProperties(semanticModel)?.ToList() ?? new()
+                        Identifier = nestedRecord.Identifier.ToString(),
+                        TypeParameters = nestedRecord.GetTypeParameters()?.ToList() ?? new(),
+                        Properties = nestedRecord.GetProperties(semanticModel)?.ToList() ?? new()
                     }
             );
 
@@ -132,12 +132,7 @@ internal static class RecordDeclarationSyntaxParser
     {
         var parent = declaration.Parent;
 
-        if (parent is null)
-        {
-            return;
-        }
-
-        if (!parent.IsClassOrRecordDeclaration())
+        if (parent?.IsClassOrRecordDeclaration() is not true)
         {
             return;
         }

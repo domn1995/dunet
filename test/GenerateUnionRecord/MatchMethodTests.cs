@@ -80,7 +80,7 @@ partial record Shape
     [InlineData("Keyword keyword = new Keyword.New();", "new")]
     [InlineData("Keyword keyword = new Keyword.Base();", "base")]
     [InlineData("Keyword keyword = new Keyword.Null();", "null")]
-    public void CanMatchOnUnionMembersNamedAfterKeywords(
+    public void CanMatchOnUnionVariantsNamedAfterKeywords(
         string keywordDeclaration,
         string expectedKeyword
     )
