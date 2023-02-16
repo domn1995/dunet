@@ -8,7 +8,7 @@ internal static class UnionExtensionsSourceBuilder
     const string task = "System.Threading.Tasks.Task";
     const string valueTask = "System.Threading.Tasks.ValueTask";
 
-    public static string GenerateExtensions(UnionRecord union)
+    public static string GenerateExtensions(UnionDeclaration union)
     {
         if (union.Namespace is null)
         {
@@ -40,7 +40,7 @@ internal static class UnionExtensionsSourceBuilder
 
     private static StringBuilder AppendExtensionClassDeclaration(
         this StringBuilder builder,
-        UnionRecord union
+        UnionDeclaration union
     ) =>
         builder.AppendLine(
             $"{union.Accessibility.ToKeyword()} static class {union.Name}MatchExtensions"
@@ -48,7 +48,7 @@ internal static class UnionExtensionsSourceBuilder
 
     private static StringBuilder AppendUsingStatements(
         this StringBuilder builder,
-        UnionRecord union
+        UnionDeclaration union
     )
     {
         foreach (var import in union.Imports)
@@ -61,7 +61,7 @@ internal static class UnionExtensionsSourceBuilder
 
     private static StringBuilder AppendMatchAsyncMethodForFuncs(
         this StringBuilder builder,
-        UnionRecord union,
+        UnionDeclaration union,
         string taskType
     )
     {
@@ -74,15 +74,15 @@ internal static class UnionExtensionsSourceBuilder
         builder.AppendTypeParams(union.TypeParameters);
         builder.AppendLine("> unionTask,");
 
-        for (int i = 0; i < union.Members.Count; ++i)
+        for (int i = 0; i < union.Variants.Count; ++i)
         {
-            var member = union.Members[i];
+            var variant = union.Variants[i];
             builder.Append($"        System.Func<");
             builder.AppendFullUnionName(union);
             builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($".{member.Identifier}");
-            builder.Append($", TMatchOutput> {member.Identifier.ToMethodParameterCase()}");
-            if (i < union.Members.Count - 1)
+            builder.Append($".{variant.Identifier}");
+            builder.Append($", TMatchOutput> {variant.Identifier.ToMethodParameterCase()}");
+            if (i < union.Variants.Count - 1)
             {
                 builder.Append(",");
             }
@@ -96,11 +96,11 @@ internal static class UnionExtensionsSourceBuilder
         }
         builder.AppendLine($"    => (await unionTask.ConfigureAwait(false)).Match(");
 
-        for (int i = 0; i < union.Members.Count; ++i)
+        for (int i = 0; i < union.Variants.Count; ++i)
         {
-            var member = union.Members[i];
-            builder.Append($"            {member.Identifier.ToMethodParameterCase()}");
-            if (i < union.Members.Count - 1)
+            var variant = union.Variants[i];
+            builder.Append($"            {variant.Identifier.ToMethodParameterCase()}");
+            if (i < union.Variants.Count - 1)
             {
                 builder.Append(",");
             }
@@ -114,7 +114,7 @@ internal static class UnionExtensionsSourceBuilder
 
     private static StringBuilder AppendMatchAsyncMethodForActions(
         this StringBuilder builder,
-        UnionRecord union,
+        UnionDeclaration union,
         string taskType
     )
     {
@@ -126,15 +126,15 @@ internal static class UnionExtensionsSourceBuilder
         builder.AppendTypeParams(union.TypeParameters);
         builder.AppendLine("> unionTask,");
 
-        for (int i = 0; i < union.Members.Count; ++i)
+        for (int i = 0; i < union.Variants.Count; ++i)
         {
-            var member = union.Members[i];
+            var variant = union.Variants[i];
             builder.Append($"        System.Action<");
             builder.AppendFullUnionName(union);
             builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($".{member.Identifier}");
-            builder.Append($"> {member.Identifier.ToMethodParameterCase()}");
-            if (i < union.Members.Count - 1)
+            builder.Append($".{variant.Identifier}");
+            builder.Append($"> {variant.Identifier.ToMethodParameterCase()}");
+            if (i < union.Variants.Count - 1)
             {
                 builder.Append(",");
             }
@@ -148,11 +148,11 @@ internal static class UnionExtensionsSourceBuilder
         }
         builder.AppendLine($"    => (await unionTask.ConfigureAwait(false)).Match(");
 
-        for (int i = 0; i < union.Members.Count; ++i)
+        for (int i = 0; i < union.Variants.Count; ++i)
         {
-            var member = union.Members[i];
-            builder.Append($"            {member.Identifier.ToMethodParameterCase()}");
-            if (i < union.Members.Count - 1)
+            var variant = union.Variants[i];
+            builder.Append($"            {variant.Identifier.ToMethodParameterCase()}");
+            if (i < union.Variants.Count - 1)
             {
                 builder.Append(",");
             }
@@ -181,14 +181,14 @@ internal static class UnionExtensionsSourceBuilder
     /// </summary>
     private static StringBuilder AppendSpecificMatchAsyncMethodForFuncs(
         this StringBuilder builder,
-        UnionRecord union,
+        UnionDeclaration union,
         string taskType
     )
     {
-        foreach (var member in union.Members)
+        foreach (var variant in union.Variants)
         {
             builder.Append(
-                $"    public static async {taskType}<TMatchOutput> Match{member.Identifier}Async"
+                $"    public static async {taskType}<TMatchOutput> Match{variant.Identifier}Async"
             );
             var methodTypeParams = union.TypeParameters.Append(new("TMatchOutput")).ToList();
             builder.AppendTypeParams(methodTypeParams);
@@ -200,8 +200,8 @@ internal static class UnionExtensionsSourceBuilder
             builder.Append($"        System.Func<");
             builder.AppendFullUnionName(union);
             builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($".{member.Identifier}");
-            builder.AppendLine($", TMatchOutput> {member.Identifier.ToMethodParameterCase()},");
+            builder.Append($".{variant.Identifier}");
+            builder.AppendLine($", TMatchOutput> {variant.Identifier.ToMethodParameterCase()},");
             builder.AppendLine("        System.Func<TMatchOutput> @else");
 
             builder.AppendLine($"    )");
@@ -211,8 +211,10 @@ internal static class UnionExtensionsSourceBuilder
             }
             builder.AppendLine("        =>");
             builder.AppendLine($"            (await unionTask.ConfigureAwait(false))");
-            builder.AppendLine($"                .Match{member.Identifier}(");
-            builder.AppendLine($"                    {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine($"                .Match{variant.Identifier}(");
+            builder.AppendLine(
+                $"                    {variant.Identifier.ToMethodParameterCase()},"
+            );
             builder.AppendLine($"                    @else");
             builder.AppendLine("                );");
         }
@@ -237,13 +239,13 @@ internal static class UnionExtensionsSourceBuilder
     /// </summary>
     private static StringBuilder AppendSpecificMatchAsyncMethodForActions(
         this StringBuilder builder,
-        UnionRecord union,
+        UnionDeclaration union,
         string taskType
     )
     {
-        foreach (var member in union.Members)
+        foreach (var variant in union.Variants)
         {
-            builder.Append($"    public static async {taskType} Match{member.Identifier}Async");
+            builder.Append($"    public static async {taskType} Match{variant.Identifier}Async");
             builder.AppendTypeParams(union.TypeParameters);
             builder.AppendLine("(");
             builder.Append($"        this {taskType}<");
@@ -253,8 +255,8 @@ internal static class UnionExtensionsSourceBuilder
             builder.Append($"        System.Action<");
             builder.AppendFullUnionName(union);
             builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($".{member.Identifier}");
-            builder.AppendLine($"> {member.Identifier.ToMethodParameterCase()},");
+            builder.Append($".{variant.Identifier}");
+            builder.AppendLine($"> {variant.Identifier.ToMethodParameterCase()},");
             builder.AppendLine("        System.Action @else");
 
             builder.AppendLine($"    )");
@@ -264,8 +266,10 @@ internal static class UnionExtensionsSourceBuilder
             }
             builder.AppendLine("        =>");
             builder.AppendLine($"            (await unionTask.ConfigureAwait(false))");
-            builder.AppendLine($"                .Match{member.Identifier}(");
-            builder.AppendLine($"                    {member.Identifier.ToMethodParameterCase()},");
+            builder.AppendLine($"                .Match{variant.Identifier}(");
+            builder.AppendLine(
+                $"                    {variant.Identifier.ToMethodParameterCase()},"
+            );
             builder.AppendLine($"                    @else");
             builder.AppendLine("                );");
         }

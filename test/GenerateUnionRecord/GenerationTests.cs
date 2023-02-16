@@ -3,7 +3,7 @@
 public sealed class GenerationTests
 {
     [Fact]
-    public void UnionMembersExtendUnionType()
+    public void UnionVariantsExtendUnionType()
     {
         // Arrange.
         var programCs = """
@@ -32,7 +32,7 @@ partial record QueryState
     }
 
     [Fact]
-    public void UnionMemberTypesMayBeEmpty()
+    public void UnionVariantsMayHaveNoProperties()
     {
         // Arrange.
         var programCs = """
@@ -62,18 +62,18 @@ partial record QueryState
     }
 
     [Fact]
-    public void UnionMayContainSingleType()
+    public void UnionMayContainSingleVariant()
     {
         // Arrange.
         var programCs = """
 using Dunet;
 
-var single = new Single.OnlyMember();
+var single = new Single.OnlyVariant();
 
 [Union]
 partial record Single
 {
-    partial record OnlyMember();
+    partial record OnlyVariant();
 }
 """;
         // Act.
@@ -108,7 +108,7 @@ partial record Empty;
     }
 
     [Fact]
-    public void UnionTypeMayHaveComplexMembers()
+    public void UnionTypeMayHaveComplexVariants()
     {
         // Arrange.
         var programCs = """
@@ -135,7 +135,7 @@ partial record Result
     }
 
     [Fact]
-    public void UnionTypeMayHaveComplexMembersFromOtherNamespace()
+    public void UnionTypeMayHaveComplexVariantsFromOtherNamespace()
     {
         // Arrange.
         var dataCs = """

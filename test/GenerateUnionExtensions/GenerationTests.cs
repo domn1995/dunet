@@ -147,7 +147,7 @@ partial record Shape
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
-    public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoMembers(string taskType)
+    public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoVariants(string taskType)
     {
         // Arrange.
         var emptyCs = """

@@ -26,7 +26,7 @@ internal static class StringBuilderExtensions
     /// </summary>
     /// <param name="builder">The string builder to append to.</param>
     /// <param name="union">The union to append the full name of.</param>
-    public static void AppendFullUnionName(this StringBuilder builder, UnionRecord union)
+    public static void AppendFullUnionName(this StringBuilder builder, UnionDeclaration union)
     {
         var parentTypes = string.Join(".", union.ParentTypes);
         builder.Append(parentTypes);
