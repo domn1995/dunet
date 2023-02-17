@@ -1,4 +1,4 @@
-﻿namespace Dunet.Test.GenerateUnionRecord;
+﻿namespace Dunet.Test.UnionGeneration;
 
 /// <summary>
 /// Tests the correctness of match methods that don't return anything.

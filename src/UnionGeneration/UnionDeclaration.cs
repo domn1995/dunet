@@ -20,30 +20,31 @@ internal sealed record UnionDeclaration(
 
     public bool SupportsImplicitConversions()
     {
-        var allVariantsHaveSingleProperty = () =>
+        var allVariantsHaveSingleParameter = () =>
             Variants.All(static variant => variant.Parameters.Count is 1);
 
-        var allVariantsHaveNoInterfaceParameters = () =>
+        var noVariantHasInterfaceParameter = () =>
             Variants
                 .SelectMany(static variant => variant.Parameters)
-                .All(static property => !property.Type.IsInterface);
+                .All(static parameter => !parameter.Type.IsInterface);
 
-        var allVariantsHaveUniquePropertyTypes = () =>
+        var allVariantsParameterTypesAreDifferent = () =>
         {
-            var allPropertyTypes = Variants
+            var allParameterTypes = Variants
                 .SelectMany(static variant => variant.Parameters)
-                .Select(static property => property.Type);
-            var allPropertyTypesCount = allPropertyTypes.Count();
-            var uniquePropertyTypesCount = allPropertyTypes.Distinct().Count();
-            return allPropertyTypesCount == uniquePropertyTypesCount;
+                .Select(static parameter => parameter.Type.Identifier);
+            var numAllParameterTypes = allParameterTypes.Count();
+            var numUniqueParameterTypes = allParameterTypes.Distinct().Count();
+            return numAllParameterTypes == numUniqueParameterTypes;
         };
 
-        var hasNoRequiredProperties = () => !Properties.Any(property => property.IsRequired);
+        var unionHasNoRequiredProperties = () =>
+            !Properties.Any(static property => property.IsRequired);
 
-        return allVariantsHaveSingleProperty()
-            && allVariantsHaveNoInterfaceParameters()
-            && allVariantsHaveUniquePropertyTypes()
-            && hasNoRequiredProperties();
+        return allVariantsHaveSingleParameter()
+            && noVariantHasInterfaceParameter()
+            && allVariantsParameterTypesAreDifferent()
+            && unionHasNoRequiredProperties();
     }
 }
 

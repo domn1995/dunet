@@ -1,4 +1,4 @@
-﻿namespace Dunet.Test.GenerateUnionRecord;
+﻿namespace Dunet.Test.UnionGeneration;
 
 public sealed class GenericGenerationTests
 {

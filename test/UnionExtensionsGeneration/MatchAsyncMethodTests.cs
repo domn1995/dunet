@@ -1,4 +1,4 @@
-﻿namespace Dunet.Test.GenerateUnionExtensions;
+﻿namespace Dunet.Test.UnionExtensionsGeneration;
 
 public sealed class MatchAsyncMethodTests
 {

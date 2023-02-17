@@ -1,4 +1,4 @@
-﻿namespace Dunet.Test.GenerateUnionRecord;
+﻿namespace Dunet.Test.UnionGeneration;
 
 /// <summary>
 /// Tests the unions are properly generated when their definitions are nested within other classes.

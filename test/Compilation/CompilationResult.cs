@@ -15,11 +15,11 @@ internal sealed record CompilationResult(
 {
     public ImmutableArray<Diagnostic> CompilationErrors =>
         CompilationDiagnostics
-            .Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
+            .Where(static diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
             .ToImmutableArray();
 
     public ImmutableArray<Diagnostic> GenerationErrors =>
         GenerationDiagnostics
-            .Where(diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
+            .Where(static diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
             .ToImmutableArray();
 }
