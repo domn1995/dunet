@@ -38,7 +38,7 @@ internal static class UnionSourceBuilder
         builder.AppendAbstractMatchMethods(union);
         builder.AppendAbstractSpecificMatchMethods(union);
 
-        if (SupportsImplicitConversions(union))
+        if (union.SupportsImplicitConversions())
         {
             foreach (var variant in union.Variants)
             {
@@ -74,34 +74,6 @@ internal static class UnionSourceBuilder
         builder.AppendLine("#pragma warning restore 1591");
 
         return builder.ToString();
-    }
-
-    private static bool SupportsImplicitConversions(UnionDeclaration union)
-    {
-        var allVariantsHaveSingleProperty = () =>
-            union.Variants.All(static variant => variant.PrimaryProperties.Count is 1);
-
-        var allVariantsHaveNoInterfaceParameters = () =>
-            union.Variants
-                .SelectMany(static variant => variant.PrimaryProperties)
-                .All(static property => !property.Type.IsInterface);
-
-        var allVariantsHaveUniquePropertyTypes = () =>
-        {
-            var allPropertyTypes = union.Variants
-                .SelectMany(static variant => variant.PrimaryProperties)
-                .Select(static property => property.Type);
-            var allPropertyTypesCount = allPropertyTypes.Count();
-            var uniquePropertyTypesCount = allPropertyTypes.Distinct().Count();
-            return allPropertyTypesCount == uniquePropertyTypesCount;
-        };
-
-        var hasNoRequiredProperties = () => !union.Properties.Any(property => property.IsRequired);
-
-        return allVariantsHaveSingleProperty()
-            && allVariantsHaveNoInterfaceParameters()
-            && allVariantsHaveUniquePropertyTypes()
-            && hasNoRequiredProperties();
     }
 
     private static StringBuilder AppendAbstractMatchMethods(
