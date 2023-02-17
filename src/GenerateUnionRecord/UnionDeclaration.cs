@@ -10,19 +10,48 @@ internal sealed record UnionDeclaration(
     List<TypeParameter> TypeParameters,
     List<TypeParameterConstraint> TypeParameterConstraints,
     List<VariantDeclaration> Variants,
-    Stack<ParentType> ParentTypes
+    Stack<ParentType> ParentTypes,
+    List<Property> Properties
 )
 {
     // Extension methods cannot be generated for a union declared in a top level program (no namespace).
     // It also doesn't make sense to generate Match extensions if there are no variants to match aginst.
     public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Variants.Count > 0;
+
+    public bool SupportsImplicitConversions()
+    {
+        var allVariantsHaveSingleProperty = () =>
+            Variants.All(static variant => variant.Parameters.Count is 1);
+
+        var allVariantsHaveNoInterfaceParameters = () =>
+            Variants
+                .SelectMany(static variant => variant.Parameters)
+                .All(static property => !property.Type.IsInterface);
+
+        var allVariantsHaveUniquePropertyTypes = () =>
+        {
+            var allPropertyTypes = Variants
+                .SelectMany(static variant => variant.Parameters)
+                .Select(static property => property.Type);
+            var allPropertyTypesCount = allPropertyTypes.Count();
+            var uniquePropertyTypesCount = allPropertyTypes.Distinct().Count();
+            return allPropertyTypesCount == uniquePropertyTypesCount;
+        };
+
+        var hasNoRequiredProperties = () => !Properties.Any(property => property.IsRequired);
+
+        return allVariantsHaveSingleProperty()
+            && allVariantsHaveNoInterfaceParameters()
+            && allVariantsHaveUniquePropertyTypes()
+            && hasNoRequiredProperties();
+    }
 }
 
 internal sealed record VariantDeclaration
 {
     public required string Identifier { get; init; }
     public required List<TypeParameter> TypeParameters { get; init; }
-    public required List<Property> Properties { get; init; }
+    public required List<Parameter> Parameters { get; init; }
 }
 
 internal sealed record TypeParameter(string Identifier)
@@ -30,7 +59,11 @@ internal sealed record TypeParameter(string Identifier)
     public override string ToString() => Identifier;
 }
 
-internal sealed record Property(PropertyType Type, string Identifier);
+internal sealed record Parameter(ParameterType Type, string Identifier);
+
+internal sealed record Property(PropertyType Type, string Identifier, bool IsRequired);
+
+internal sealed record ParameterType(string Identifier, bool IsInterface);
 
 internal sealed record PropertyType(string Identifier, bool IsInterface);
 

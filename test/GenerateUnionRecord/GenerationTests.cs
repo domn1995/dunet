@@ -176,4 +176,35 @@ var failure = new Result.Failure(new Exception("bar"));
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void UnionTypeMayHaveRequiredProperties()
+    {
+        // Arrange.
+        var programCs = """
+using Dunet;
+using System;
+
+Result result1 = new Result.Success(Guid.NewGuid()) { Name = "Success" };
+Result result2 = new Result.Failure(new Exception("Boom!")) { Name = "Failure" };
+
+var result1Name = result1.Name;
+var result2Name = result2.Name;
+
+[Union]
+partial record Result
+{
+    public required string Name { get; init; }
+    partial record Success(Guid Id);
+    partial record Failure(Exception Error);
+}
+""";
+        // Act.
+        var result = Compiler.Compile(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }

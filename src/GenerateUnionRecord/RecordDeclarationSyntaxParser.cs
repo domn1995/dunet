@@ -35,25 +35,51 @@ internal static class RecordDeclarationSyntaxParser
         );
 
     /// <summary>
-    /// Gets the properties within this record declaration.
+    /// Gets the parameters in this record's primary constructor.
     /// </summary>
     /// <param name="record">This record declaration.</param>
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
-    /// <returns>The sequence of properties, if any. Otherwise, <see langword="null"/>.</returns>
-    public static IEnumerable<Property>? GetProperties(
+    /// <returns>The sequence of parameters, if any. Otherwise, <see langword="null"/>.</returns>
+    public static IEnumerable<Parameter>? GetParameters(
         this RecordDeclarationSyntax record,
         SemanticModel semanticModel
     ) =>
         record.ParameterList?.Parameters.Select(
             parameter =>
-                new Property(
-                    Type: new PropertyType(
+                new Parameter(
+                    Type: new ParameterType(
                         Identifier: parameter.Type?.ToString() ?? "",
                         IsInterface: parameter.Type.IsInterfaceType(semanticModel)
                     ),
                     Identifier: parameter.Identifier.ToString()
                 )
         );
+
+    /// <summary>
+    /// Gets the properties declared in this record.
+    /// </summary>
+    /// <param name="record">This record declaration.</param>
+    /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
+    /// <returns>The sequence of properties.</returns>
+    public static IEnumerable<Property> GetProperties(
+        this RecordDeclarationSyntax record,
+        SemanticModel semanticModel
+    ) =>
+        record.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Select(
+                propertyDeclaration =>
+                    new Property(
+                        Type: new PropertyType(
+                            Identifier: propertyDeclaration.Type.ToString(),
+                            IsInterface: propertyDeclaration.Type.IsInterfaceType(semanticModel)
+                        ),
+                        Identifier: propertyDeclaration.Identifier.ToString(),
+                        IsRequired: propertyDeclaration.Modifiers.Any(
+                            modifier => modifier.Value is "required"
+                        )
+                    )
+            );
 
     /// <summary>
     /// Gets the record declarations within this record declaration.
@@ -75,7 +101,7 @@ internal static class RecordDeclarationSyntaxParser
                     {
                         Identifier = nestedRecord.Identifier.ToString(),
                         TypeParameters = nestedRecord.GetTypeParameters()?.ToList() ?? new(),
-                        Properties = nestedRecord.GetProperties(semanticModel)?.ToList() ?? new()
+                        Parameters = nestedRecord.GetParameters(semanticModel)?.ToList() ?? new()
                     }
             );
 

@@ -111,6 +111,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
             var typeParameterConstraints = declaration.GetTypeParameterConstraints();
             var variants = declaration.GetNestedRecordDeclarations(semanticModel);
             var parentTypes = declaration.GetParentTypes(semanticModel);
+            var properties = declaration.GetProperties(semanticModel);
 
             yield return new UnionDeclaration(
                 Imports: imports.ToList(),
@@ -120,7 +121,8 @@ public sealed class UnionGenerator : IIncrementalGenerator
                 TypeParameters: typeParameters?.ToList() ?? new(),
                 TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
                 Variants: variants.ToList(),
-                ParentTypes: parentTypes
+                ParentTypes: parentTypes,
+                Properties: properties.ToList()
             );
         }
     }
