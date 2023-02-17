@@ -85,9 +85,10 @@ Console.WriteLine(output); // "12345".
 
 Dunet generates implicit conversions between union variants and the union type if your union meets all of the following conditions:
 
+- The union has no required properties.
 - All variants contain a single property.
 - Each variant's property is unique within the union.
-- No property is an interface type.
+- No variant's property is an interface type.
 
 For example, consider a `Result` union type that represents success as a `double` and failure as an `Exception`:
 
