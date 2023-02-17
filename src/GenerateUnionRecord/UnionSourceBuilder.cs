@@ -45,7 +45,7 @@ internal static class UnionSourceBuilder
                 builder.Append($"    public static implicit operator {union.Name}");
                 builder.AppendTypeParams(union.TypeParameters);
                 builder.AppendLine(
-                    $"({variant.Properties[0].Type.Identifier} value) => new {variant.Identifier}(value);"
+                    $"({variant.PrimaryProperties[0].Type.Identifier} value) => new {variant.Identifier}(value);"
                 );
             }
             builder.AppendLine();
@@ -79,26 +79,29 @@ internal static class UnionSourceBuilder
     private static bool SupportsImplicitConversions(UnionDeclaration union)
     {
         var allVariantsHaveSingleProperty = () =>
-            union.Variants.All(static variant => variant.Properties.Count is 1);
+            union.Variants.All(static variant => variant.PrimaryProperties.Count is 1);
 
         var allVariantsHaveNoInterfaceParameters = () =>
             union.Variants
-                .SelectMany(static variant => variant.Properties)
+                .SelectMany(static variant => variant.PrimaryProperties)
                 .All(static property => !property.Type.IsInterface);
 
         var allVariantsHaveUniquePropertyTypes = () =>
         {
             var allPropertyTypes = union.Variants
-                .SelectMany(static variant => variant.Properties)
+                .SelectMany(static variant => variant.PrimaryProperties)
                 .Select(static property => property.Type);
             var allPropertyTypesCount = allPropertyTypes.Count();
             var uniquePropertyTypesCount = allPropertyTypes.Distinct().Count();
             return allPropertyTypesCount == uniquePropertyTypesCount;
         };
 
+        var hasNoRequiredProperties = () => !union.Properties.Any(property => property.IsRequired);
+
         return allVariantsHaveSingleProperty()
             && allVariantsHaveNoInterfaceParameters()
-            && allVariantsHaveUniquePropertyTypes();
+            && allVariantsHaveUniquePropertyTypes()
+            && hasNoRequiredProperties();
     }
 
     private static StringBuilder AppendAbstractMatchMethods(
