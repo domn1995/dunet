@@ -45,7 +45,7 @@ internal static class UnionSourceBuilder
                 builder.Append($"    public static implicit operator {union.Name}");
                 builder.AppendTypeParams(union.TypeParameters);
                 builder.AppendLine(
-                    $"({variant.PrimaryProperties[0].Type.Identifier} value) => new {variant.Identifier}(value);"
+                    $"({variant.Parameters[0].Type.Identifier} value) => new {variant.Identifier}(value);"
                 );
             }
             builder.AppendLine();
