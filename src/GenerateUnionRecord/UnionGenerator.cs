@@ -122,7 +122,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
                 TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
                 Variants: variants.ToList(),
                 ParentTypes: parentTypes,
-                Properties: properties?.ToList() ?? new()
+                Properties: properties.ToList()
             );
         }
     }

@@ -60,8 +60,8 @@ internal static class RecordDeclarationSyntaxParser
     /// </summary>
     /// <param name="record">This record declaration.</param>
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
-    /// <returns>The sequence of properties, if any. Otherwise, <see langword="null"/>.</returns>
-    public static IEnumerable<Property>? GetProperties(
+    /// <returns>The sequence of properties.</returns>
+    public static IEnumerable<Property> GetProperties(
         this RecordDeclarationSyntax record,
         SemanticModel semanticModel
     ) =>
