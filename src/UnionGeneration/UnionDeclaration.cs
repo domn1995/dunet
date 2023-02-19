@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Dunet.GenerateUnionRecord;
+namespace Dunet.UnionGeneration;
 
 internal sealed record UnionDeclaration(
     List<string> Imports,

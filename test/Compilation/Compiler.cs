@@ -1,4 +1,4 @@
-﻿using Dunet.GenerateUnionRecord;
+﻿using Dunet.UnionGeneration;
 using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
