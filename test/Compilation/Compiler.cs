@@ -1,4 +1,4 @@
-﻿using Dunet.GenerateUnionRecord;
+﻿using Dunet.UnionGeneration;
 using Dunet.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -46,7 +46,7 @@ internal sealed class Compiler
     private static Microsoft.CodeAnalysis.Compilation CreateCompilation(params string[] sources) =>
         CSharpCompilation.Create(
             "compilation",
-            sources.Select(source => CSharpSyntaxTree.ParseText(source)),
+            sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
             new[]
             {
                 MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location)

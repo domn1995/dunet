@@ -1,7 +1,7 @@
-﻿using Dunet.GenerateUnionRecord;
+﻿using Dunet.UnionGeneration;
 using System.Text;
 
-namespace Dunet.GenerateUnionExtensions;
+namespace Dunet.UnionExtensionsGeneration;
 
 internal static class UnionExtensionsSourceBuilder
 {

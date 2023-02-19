@@ -1,4 +1,4 @@
-﻿using Dunet.GenerateUnionExtensions;
+﻿using Dunet.UnionExtensionsGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Text;
 
-namespace Dunet.GenerateUnionRecord;
+namespace Dunet.UnionGeneration;
 
 [Generator]
 public sealed class UnionGenerator : IIncrementalGenerator

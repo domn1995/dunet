@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Dunet.GenerateUnionRecord;
+namespace Dunet.UnionGeneration;
 
 /// <summary>
 /// Retrieves semantic information from record declarations.

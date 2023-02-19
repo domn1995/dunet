@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Dunet.GenerateUnionRecord;
+namespace Dunet.UnionGeneration;
 
 internal static class UnionSourceBuilder
 {

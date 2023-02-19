@@ -23,8 +23,7 @@ internal static class SyntaxExtensions
         };
 
     public static bool IsDecoratedRecord(this SyntaxNode node) =>
-        node is RecordDeclarationSyntax recordDeclaration
-        && recordDeclaration.AttributeLists.Count > 0;
+        node is RecordDeclarationSyntax { AttributeLists.Count: > 0 };
 
     public static bool IsImporting(this UsingDirectiveSyntax import, string name) =>
         import.Name.ToString() == name;

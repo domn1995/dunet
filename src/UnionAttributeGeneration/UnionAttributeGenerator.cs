@@ -7,8 +7,7 @@ namespace Dunet.UnionAttributeGeneration;
 [Generator]
 public sealed class UnionAttributeGenerator : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
-    {
+    public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterPostInitializationOutput(
             ctx =>
                 ctx.AddSource(
@@ -16,5 +15,4 @@ public sealed class UnionAttributeGenerator : IIncrementalGenerator
                     SourceText.From(UnionAttributeSource.SourceCode, Encoding.UTF8)
                 )
         );
-    }
 }
