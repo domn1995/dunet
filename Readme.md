@@ -234,8 +234,8 @@ public partial record QueryResult<T>
     public sealed override string ToString() =>
         Match(
             ok => ok.Value.ToString(),
-            entityNotFound => "Not found.",
-            unauthorizedAccess => "Unauthorized access."
+            notFound => "Not found.",
+            unauthorized => "Unauthorized access."
         );
 }
 ```
@@ -281,13 +281,13 @@ public static async Task<HttpResponse> CreateUserAsync(
 
     if (!response.IsSuccessStatusCode)
     {
-        return new Error(content)
+        return new HttpResponse.Error(content)
         {
             StatusCode = (int)response.StatusCode,
         };
     }
 
-    return new HttpResponse.Success
+    return new HttpResponse.Success()
     {
         StatusCode = (int)response.StatusCode,
     };
