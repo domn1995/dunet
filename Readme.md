@@ -255,7 +255,6 @@ public partial record HttpResponse
 {
     public partial record Success;
     public partial record Error(string Message);
-
     // 1. All variants shall have a status code.
     public required int StatusCode { get; init; }
 }
@@ -294,6 +293,48 @@ public static async Task<HttpResponse> CreateUserAsync(
 }
 ```
 
+## Stateful Matching
+
+To reduce memory allocations, use the `Match` overload that accepts a generic state parameter as its first argument. This allows your match parameter lambdas to be `static` but still flow state through:
+
+```cs
+using Dunet;
+using static Expression;
+
+var environment = new Dictionary<string, int>()
+{
+    ["a"] = 1,
+    ["b"] = 2,
+    ["c"] = 3,
+};
+
+var expression = new Add(new Variable("a"), new Multiply(new Number(2), new Variable("b")));
+var result = Evaluate(environment, expression);
+
+Console.WriteLine(result); // "5"
+
+static int Evaluate(Dictionary<string, int> env, Expression exp) =>
+    exp.Match(
+        // 1. Pass your state "container" as the first parameter.
+        state: env,
+        // 2. Use static lambdas for each variant's match method.
+        static (_, number) => number.Value,
+        // 3. Reference the state as the first argument of each lambda.
+        static (state, add) => Evaluate(state, add.Left) + Evaluate(state, add.Right),
+        static (state, mul) => Evaluate(state, mul.Left) * Evaluate(state, mul.Right),
+        static (state, var) => state[var.Value]
+    );
+
+[Union]
+public partial record Expression
+{
+    public partial record Number(int Value);
+    public partial record Add(Expression Left, Expression Right);
+    public partial record Multiply(Expression Left, Expression Right);
+    public partial record Variable(string Value);
+}
+```
+
 ## Nest Unions
 
 To declare a union nested within a class or record, the class or record must be `partial`. For example:
@@ -328,3 +369,4 @@ var variant1 = new Parent1.Parent2.Nested.Variant1();
 - [Option Monad](./samples/OptionMonad/Program.cs)
 - [Web Client](./samples/PokemonClient/PokeClient.cs)
 - [Recursive Expressions](./samples/ExpressionCalculator/Program.cs)
+- [Recursive Expressions with Stateful Matching](./samples/ExpressionCalculatorWithState/Program.cs)
