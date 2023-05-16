@@ -14,38 +14,14 @@
         <PackageReadmeFile>Readme.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/domn1995/dunet</RepositoryUrl>
         <PackageTags>source; generator; discriminated; union; functional; tagged;</PackageTags>
-        <AssemblyVersion>1.7.2</AssemblyVersion>
-        <FileVersion>1.7.2</FileVersion>
+        <AssemblyVersion>1.8.0</AssemblyVersion>
+        <FileVersion>1.8.0</FileVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReleaseNotes>1.7.2-pre1 - Make Dunet attribute internal to prevent clashing in project references.
-1.7.1 - Disables implicit conversions when union has a required property.
-1.7.0 - Match on specific union variant.
-1.6.0 - Support generator cancellation.
-1.5.0 - Support async Action match functions.
-1.4.2 - Disables implicit conversions when union variant is an interface type.
-1.4.1 - Disable CS1591 in generated code.
-1.4.0 - Support Action match functions.
-1.3.0 - Async match methods.
-1.2.0 - Support nested union declarations.
-1.1.0 - Add implicit conversions for union variants.
-1.0.2 - Support multiple unions with the same name.
-1.0.1 - Configure Dunet as development dependency.
-1.0.0 - Production release.
-0.5.0 - Generate dedicated match method on union records.
-0.4.0 - Add support for declaring a union with records.
-0.3.0 - Support complex types in union variants.
-0.2.2 - Add source generator DLL to package.
-0.2.1 - Update readme.
-0.2.0 - Generate dedicated match method.
-0.1.3 - Add support for declaring unions inside top level programs.
-0.1.2 - Simplify generated source.
-0.1.1 - Support any number of interfaces.
-0.1.0 - Initial release.
-        </PackageReleaseNotes>
+        <PackageReleaseNotes>https://github.com/domn1995/dunet/releases</PackageReleaseNotes>
         <RepositoryType>git</RepositoryType>
         <PackageIcon>favicon.png</PackageIcon>
         <SignAssembly>False</SignAssembly>
-        <Version>1.7.2-pre1</Version>
+        <Version>1.8.0</Version>
         <NeutralLanguage>en</NeutralLanguage>
         <DevelopmentDependency>true</DevelopmentDependency>
         <NoWarn>$(NoWarn);NU5128</NoWarn>
