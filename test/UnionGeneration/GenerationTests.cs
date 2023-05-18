@@ -207,4 +207,33 @@ partial record Result
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void UnionInheritsBaseConstructor()
+    {
+        // Arrange.
+        string programCs = """
+using Dunet;
+using System;
+
+var dog = new Animal.Dog();
+var cat = new Animal.Cat();
+
+public record Entity(Guid Id);
+
+[Union]
+abstract partial record Animal(Guid Id) : Entity(Id)
+{
+    partial record Dog() : Animal(Guid.NewGuid());
+    partial record Cat() : Animal(Guid.NewGuid());
+}
+""";
+        // Act.
+        var result = Compiler.Compile(programCs);
+
+        // Assert.
+        using AssertionScope scope = new();
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }

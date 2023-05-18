@@ -32,7 +32,10 @@ internal static class UnionSourceBuilder
         builder.AppendTypeParams(union.TypeParameters);
         builder.AppendLine();
         builder.AppendLine("{");
-        builder.AppendLine($"    private {union.Name}() {{}}");
+        if (!union.IsAbstract)
+        {
+            builder.AppendLine($"    private {union.Name}() {{}}");
+        }
         builder.AppendLine();
 
         builder.AppendAbstractMatchMethods(union);

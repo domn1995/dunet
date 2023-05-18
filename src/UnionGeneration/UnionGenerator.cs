@@ -118,6 +118,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
                 Namespace: @namespace,
                 Accessibility: recordSymbol.DeclaredAccessibility,
                 Name: recordSymbol.Name,
+                IsAbstract: recordSymbol.IsAbstract,
                 TypeParameters: typeParameters?.ToList() ?? new(),
                 TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
                 Variants: variants.ToList(),

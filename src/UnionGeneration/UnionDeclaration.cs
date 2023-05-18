@@ -7,6 +7,7 @@ internal sealed record UnionDeclaration(
     string? Namespace,
     Accessibility Accessibility,
     string Name,
+    bool IsAbstract,
     List<TypeParameter> TypeParameters,
     List<TypeParameterConstraint> TypeParameterConstraints,
     List<VariantDeclaration> Variants,
