@@ -26,7 +26,7 @@ public partial record struct Result<TErr, TOk>
 
     public static implicit operator Result<TErr, TOk>(TErr error) => Prelude.Err(error);
 
-    public TOut Match<TOut>(Func<Err, TOut> err, Func<Ok, TOut> ok) =>
+    public readonly TOut Match<TOut>(Func<Err, TOut> err, Func<Ok, TOut> ok) =>
         type switch
         {
             ResultType.Err => err(this.err),

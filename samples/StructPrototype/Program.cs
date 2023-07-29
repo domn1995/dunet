@@ -5,7 +5,7 @@ while (true)
     Console.Write("Enter a shape (c, r, t): ");
     var shapeInput = Console.ReadLine();
     var shape = InputParser.ParseShape(shapeInput);
-    var area = shape.Match(some => Calculator.Area(some.Value), () => 0);
+    var area = shape.Match(some => Calculator.Area(some.Value), (none) => 0);
     Console.WriteLine($"Area = {area}");
 
     Console.WriteLine("Enter a numerator: ");
