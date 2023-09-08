@@ -15,7 +15,7 @@ internal sealed record UnionDeclaration(
 )
 {
     // Extension methods cannot be generated for a union declared in a top level program (no namespace).
-    // It also doesn't make sense to generate Match extensions if there are no variants to match aginst.
+    // It also doesn't make sense to generate Match extensions if there are no variants to match against.
     public bool SupportsAsyncMatchExtensionMethods() => Namespace is not null && Variants.Count > 0;
 
     public bool SupportsImplicitConversions()
