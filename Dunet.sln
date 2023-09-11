@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpressionCalculator", "sam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCalculatorWithState", "samples\ExpressionCalculatorWithState\ExpressionCalculatorWithState.csproj", "{943A33D0-FAC8-44B2-9D20-205CA415F940}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dunet.Benchmark", "benchmark\Dunet.Benchmark\Dunet.Benchmark.csproj", "{44A04A62-D495-4450-8C15-2BD67DF5159A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{943A33D0-FAC8-44B2-9D20-205CA415F940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{943A33D0-FAC8-44B2-9D20-205CA415F940}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{943A33D0-FAC8-44B2-9D20-205CA415F940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44A04A62-D495-4450-8C15-2BD67DF5159A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44A04A62-D495-4450-8C15-2BD67DF5159A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44A04A62-D495-4450-8C15-2BD67DF5159A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44A04A62-D495-4450-8C15-2BD67DF5159A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,10 +23,10 @@ public sealed class UnionGenerator : IIncrementalGenerator
 
         var compilation = context.CompilationProvider.Combine(targets);
 
-        context.RegisterSourceOutput(
-            compilation,
-            static (spc, source) => Execute(source.Left, source.Right, spc)
-        );
+        var parsedModel = compilation.Select(static (x, token) => Parse(x.Left, x.Right, token));
+        var splitModel = parsedModel.SelectMany(static (result, _) => result);
+        
+        context.RegisterSourceOutput(splitModel, Emit);
     }
 
     private static RecordDeclarationSyntax? GetGenerationTarget(GeneratorSyntaxContext context) =>
@@ -35,55 +35,37 @@ public sealed class UnionGenerator : IIncrementalGenerator
             ? record
             : null;
 
-    private static void Execute(
-        Compilation compilation,
-        ImmutableArray<RecordDeclarationSyntax> recordDeclarations,
-        SourceProductionContext context
-    )
+    private static void Emit(SourceProductionContext context, UnionDeclaration unionRecord)
     {
-        if (recordDeclarations.IsDefaultOrEmpty)
+        if (context.CancellationToken.IsCancellationRequested)
         {
             return;
         }
 
-        var unionRecords = GetCodeToGenerate(
-            compilation,
-            recordDeclarations,
-            context.CancellationToken
+        var union = UnionSourceBuilder.Build(unionRecord);
+        context.AddSource(
+            $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
+            SourceText.From(union, Encoding.UTF8)
         );
 
-        foreach (var unionRecord in unionRecords)
+        if (context.CancellationToken.IsCancellationRequested)
         {
-            if (context.CancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
+            return;
+        }
 
-            var union = UnionSourceBuilder.Build(unionRecord);
+        if (unionRecord.SupportsAsyncMatchExtensionMethods())
+        {
+            var matchExtensions = UnionExtensionsSourceBuilder.GenerateExtensions(unionRecord);
             context.AddSource(
-                $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
-                SourceText.From(union, Encoding.UTF8)
+                $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.g.cs",
+                SourceText.From(matchExtensions, Encoding.UTF8)
             );
-
-            if (context.CancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-            if (unionRecord.SupportsAsyncMatchExtensionMethods())
-            {
-                var matchExtensions = UnionExtensionsSourceBuilder.GenerateExtensions(unionRecord);
-                context.AddSource(
-                    $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.g.cs",
-                    SourceText.From(matchExtensions, Encoding.UTF8)
-                );
-            }
         }
     }
 
-    private static IEnumerable<UnionDeclaration> GetCodeToGenerate(
+    private static IEnumerable<UnionDeclaration> Parse(
         Compilation compilation,
-        IEnumerable<RecordDeclarationSyntax> declarations,
+        ImmutableArray<RecordDeclarationSyntax> declarations,
         CancellationToken cancellation
     )
     {
@@ -114,15 +96,15 @@ public sealed class UnionGenerator : IIncrementalGenerator
             var properties = declaration.GetProperties(semanticModel);
 
             yield return new UnionDeclaration(
-                Imports: imports.ToList(),
+                Imports: imports.ToImmutableEquatableArray(),
                 Namespace: @namespace,
                 Accessibility: recordSymbol.DeclaredAccessibility,
                 Name: recordSymbol.Name,
-                TypeParameters: typeParameters?.ToList() ?? new(),
-                TypeParameterConstraints: typeParameterConstraints?.ToList() ?? new(),
-                Variants: variants.ToList(),
-                ParentTypes: parentTypes,
-                Properties: properties.ToList()
+                TypeParameters: typeParameters?.ToImmutableEquatableArray() ?? ImmutableEquatableArray.Empty<TypeParameter>(),
+                TypeParameterConstraints: typeParameterConstraints?.ToImmutableEquatableArray() ?? ImmutableEquatableArray.Empty<TypeParameterConstraint>(),
+                Variants: variants.ToImmutableEquatableArray(),
+                ParentTypes: parentTypes.ToImmutableEquatableArray(),
+                Properties: properties.ToImmutableEquatableArray()
             );
         }
     }

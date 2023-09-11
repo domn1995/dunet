@@ -27,7 +27,7 @@ internal static class RecordDeclarationSyntaxParser
     /// </summary>
     /// <param name="record">This record declaration.</param>
     /// <returns>The sequence of type parameter constraints, if any. Otherwise, <see langword="null"/>.</returns>
-    public static IEnumerable<TypeParameterConstraint>? GetTypeParameterConstraints(
+    public static IEnumerable<TypeParameterConstraint> GetTypeParameterConstraints(
         this RecordDeclarationSyntax record
     ) =>
         record.ConstraintClauses.Select(
@@ -100,8 +100,8 @@ internal static class RecordDeclarationSyntaxParser
                     new VariantDeclaration()
                     {
                         Identifier = nestedRecord.Identifier.ToString(),
-                        TypeParameters = nestedRecord.GetTypeParameters()?.ToList() ?? new(),
-                        Parameters = nestedRecord.GetParameters(semanticModel)?.ToList() ?? new()
+                        TypeParameters = nestedRecord.GetTypeParameters()?.ToImmutableEquatableArray() ?? ImmutableEquatableArray.Empty<TypeParameter>(),
+                        Parameters = nestedRecord.GetParameters(semanticModel)?.ToImmutableEquatableArray() ?? ImmutableEquatableArray.Empty<Parameter>(),
                     }
             );
 
@@ -165,7 +165,7 @@ internal static class RecordDeclarationSyntaxParser
 
         var parentSymbol = semanticModel.GetDeclaredSymbol(parent);
 
-        // Ignore top level statement synthentic program class.
+        // Ignore top level statement synthetic program class.
         if (parentSymbol?.ToDisplayString() is null or "<top-level-statements-entry-point>")
         {
             return;

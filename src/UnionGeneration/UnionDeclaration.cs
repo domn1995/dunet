@@ -3,15 +3,15 @@
 namespace Dunet.UnionGeneration;
 
 internal sealed record UnionDeclaration(
-    List<string> Imports,
+    ImmutableEquatableArray<string> Imports,
     string? Namespace,
     Accessibility Accessibility,
     string Name,
-    List<TypeParameter> TypeParameters,
-    List<TypeParameterConstraint> TypeParameterConstraints,
-    List<VariantDeclaration> Variants,
-    Stack<ParentType> ParentTypes,
-    List<Property> Properties
+    ImmutableEquatableArray<TypeParameter> TypeParameters,
+    ImmutableEquatableArray<TypeParameterConstraint> TypeParameterConstraints,
+    ImmutableEquatableArray<VariantDeclaration> Variants,
+    ImmutableEquatableArray<ParentType> ParentTypes,
+    ImmutableEquatableArray<Property> Properties
 )
 {
     // Extension methods cannot be generated for a union declared in a top level program (no namespace).
@@ -51,8 +51,8 @@ internal sealed record UnionDeclaration(
 internal sealed record VariantDeclaration
 {
     public required string Identifier { get; init; }
-    public required List<TypeParameter> TypeParameters { get; init; }
-    public required List<Parameter> Parameters { get; init; }
+    public required ImmutableEquatableArray<TypeParameter> TypeParameters { get; init; }
+    public required ImmutableEquatableArray<Parameter> Parameters { get; init; }
 }
 
 internal sealed record TypeParameter(string Identifier)
