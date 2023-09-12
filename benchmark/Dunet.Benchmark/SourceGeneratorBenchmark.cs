@@ -11,7 +11,7 @@ namespace Dunet.Benchmark;
 [InProcess]
 public class SourceGeneratorBenchmarks
 {
-    private const string SourceText =
+    const string sourceText =
         """
         using Dunet;
 
@@ -51,9 +51,9 @@ public class SourceGeneratorBenchmarks
     private GeneratorDriver? _driver;
     private Compilation? _compilation;
 
-    private (Compilation, CSharpGeneratorDriver) Setup(string sourceText)
+    private (Compilation, CSharpGeneratorDriver) Setup(string source)
     {
-        var compilation = CreateCompilation(sourceText);
+        var compilation = CreateCompilation(source);
         if (compilation == null)
             throw new InvalidOperationException("Compilation returned null");
 
@@ -66,12 +66,12 @@ public class SourceGeneratorBenchmarks
     }
 
     [GlobalSetup(Target = nameof(Compile))]
-    public void SetupCompile() => (_compilation, _driver) = Setup(SourceText);
+    public void SetupCompile() => (_compilation, _driver) = Setup(sourceText);
     
     [GlobalSetup(Target = nameof(Cached))]
     public void SetupCached()
     {
-        (_compilation, var driver) = Setup(SourceText);
+        (_compilation, var driver) = Setup(sourceText);
         _driver = driver.RunGenerators(_compilation);
     }
 
