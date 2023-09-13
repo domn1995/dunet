@@ -1,4 +1,12 @@
 <Project>
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
     <Target Name="DotnetToolRestore" BeforeTargets="CoreBuild">
         <Exec Command="dotnet tool restore" />
     </Target>
