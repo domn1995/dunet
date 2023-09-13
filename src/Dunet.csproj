@@ -14,14 +14,14 @@
         <PackageReadmeFile>Readme.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/domn1995/dunet</RepositoryUrl>
         <PackageTags>source; generator; discriminated; union; functional; tagged;</PackageTags>
-        <AssemblyVersion>1.8.0</AssemblyVersion>
-        <FileVersion>1.8.0</FileVersion>
+        <AssemblyVersion>1.9.0</AssemblyVersion>
+        <FileVersion>1.9.0</FileVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReleaseNotes>https://github.com/domn1995/dunet/releases</PackageReleaseNotes>
         <RepositoryType>git</RepositoryType>
         <PackageIcon>favicon.png</PackageIcon>
         <SignAssembly>False</SignAssembly>
-        <Version>1.8.0</Version>
+        <Version>1.9.0</Version>
         <NeutralLanguage>en</NeutralLanguage>
         <DevelopmentDependency>true</DevelopmentDependency>
         <NoWarn>$(NoWarn);NU5128</NoWarn>
