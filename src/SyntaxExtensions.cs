@@ -26,7 +26,7 @@ internal static class SyntaxExtensions
         node is RecordDeclarationSyntax { AttributeLists.Count: > 0 };
 
     public static bool IsImporting(this UsingDirectiveSyntax import, string name) =>
-        import.Name.ToString() == name;
+        import.Name?.ToString() == name;
 
     public static bool IsPartial(this TypeDeclarationSyntax declaration) =>
         declaration.Modifiers.Any(SyntaxKind.PartialKeyword);
