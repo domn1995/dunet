@@ -10,9 +10,32 @@ var triangle = new Triangle(10, 10);
 var shapes = new Shape[] { circle, rectangle, triangle };
 
 var shapesJson = JsonSerializer.Serialize(shapes);
-var deserializedShapes = JsonSerializer.Deserialize<Shape[]>(shapesJson);
-
 Console.WriteLine(shapesJson);
+
+// NOTE: The type discriminator must be the first property.
+var deserializedShapes = JsonSerializer.Deserialize<Shape[]>(
+    //lang=json
+    """
+    [
+        {
+            "$type": "Circle",
+            "radius": 10
+        },
+        {
+            "$type": "Rectangle",
+            "length": 10,
+            "width": 10
+        },
+        {
+            "$type": "Triangle",
+            "base": 10,
+            "height": 10
+        }
+    ]
+    """,
+    // So we recognize camelCase properties.
+    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
+);
 
 foreach (var shape in deserializedShapes!)
 {
