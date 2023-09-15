@@ -219,6 +219,53 @@ public static bool IsThreeDimensional(this Shape shape) =>
     );
 ```
 
+## Serialization/Deserialization
+
+```cs
+using Dunet;
+using System.Text.Json.Serialization;
+
+// Serialization and deserialization can be enabled with the `JsonDerivedType` attribute.
+[Union]
+[JsonDerivedType(typeof(Circle), typeDiscriminator: nameof(Circle))]
+[JsonDerivedType(typeof(Rectangle), typeDiscriminator: nameof(Rectangle))]
+[JsonDerivedType(typeof(Triangle), typeDiscriminator: nameof(Triangle))]
+public partial record Shape
+{
+    public partial record Circle(double Radius);
+    public partial record Rectangle(double Length, double Width);
+    public partial record Triangle(double Base, double Height);
+}
+```
+
+```cs
+using System.Text.Json;
+using static Shape;
+
+var shapes = new Shape[]
+{
+    new Circle(10),
+    new Rectangle(2, 3),
+    new Triangle(2, 1)
+};
+
+var serialized = JsonSerializer.Serialize(shapes);
+
+// NOTE: The type discriminator must be the first property in each object.
+var deserialized = JsonSerializer.Deserialize<Shape[]>(
+    //lang=json
+    """
+    [
+        { "$type": "Circle", "radius": 10 },
+        { "$type": "Rectangle", "length": 2, "width": 3 },
+        { "$type": "Triangle", "base": 2, "height": 1 }
+    ]
+    """,
+    // So we recognize camelCase properties.
+    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
+);
+```
+
 ## Pretty Print
 
 To control how union variants are printed with their `ToString()` methods, override and seal the union declaration's `ToString()` method. For example:
