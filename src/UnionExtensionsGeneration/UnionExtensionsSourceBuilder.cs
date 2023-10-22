@@ -279,18 +279,17 @@ internal static class UnionExtensionsSourceBuilder
     }
 
     /// <summary>
-    /// public static Parent1.Parent2.UnionType<T1, T2, ...>.Specific ToSpecific<T1, T2, ...>(
+    /// public static Parent1.Parent2.UnionType<T1, T2, ...>.Variant UnwrapVariant<T1, T2, ...>(
     ///     this Parent1.Parent2.UnionType<T1, T2, ...> union
     /// )
     /// where T1 : notnull
     /// where T2 : notnull
     /// ...
     ///     =>
-    ///         union.MatchSpecific(
+    ///         union.MatchVariant(
     ///             static value => value,
     ///             () => throw new System.InvalidOperationException(
-    ///                 "Called `UnionType.ToSpecific()` on `Other` value. "
-    ///                     + " To safely unwrap an unknown variant without matching, use `AsVariant()` or `TryVariant()`."
+    ///                 "Called `UnionType.ToSpecific()` on `Other` value."
     ///             )
     ///         );
     /// </summary>
@@ -306,7 +305,7 @@ internal static class UnionExtensionsSourceBuilder
             builder.AppendTypeParams(union.TypeParameters);
             builder.Append($".{variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
-            builder.Append($" To{variant.Identifier}");
+            builder.Append($" Unwrap{variant.Identifier}");
             builder.AppendTypeParams(union.TypeParameters);
             builder.AppendLine("(");
             builder.Append($"        this ");
@@ -327,8 +326,7 @@ internal static class UnionExtensionsSourceBuilder
                 {
                     var actualType = union.GetType().Name;
                     throw new System.InvalidOperationException(
-                        $"Called `{{union.Name}}`.To{{variant.Identifier}}()` on `{actualType}` value. "
-                            + "To safely unwrap an unknown variant without matching, use `As{{variant.Identifier}}()` or `Try{{variant.Identifier}}()`."
+                        $"Called `{{union.Name}}.Unwrap{{variant.Identifier}}()` on `{actualType}` value."
                     );
                 }
             );
