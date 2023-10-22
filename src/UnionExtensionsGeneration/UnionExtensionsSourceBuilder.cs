@@ -33,8 +33,7 @@ internal static class UnionExtensionsSourceBuilder
             .AppendSpecificMatchAsyncMethodForFuncs(union, valueTask)
             .AppendSpecificMatchAsyncMethodForActions(union, task)
             .AppendSpecificMatchAsyncMethodForActions(union, valueTask)
-            .AppendUnsafeToVariantMethods(union)
-            .AppendAsVariantMethods(union)
+            .AppendUnwrapMethods(union)
             .AppendLine("}")
             .AppendLine("#pragma warning restore 1591")
             .ToString();
@@ -295,7 +294,7 @@ internal static class UnionExtensionsSourceBuilder
     ///             )
     ///         );
     /// </summary>
-    private static StringBuilder AppendUnsafeToVariantMethods(
+    private static StringBuilder AppendUnwrapMethods(
         this StringBuilder builder,
         UnionDeclaration union
     )
@@ -335,54 +334,6 @@ internal static class UnionExtensionsSourceBuilder
             );
 """
             );
-        }
-
-        return builder;
-    }
-
-    /// <summary>
-    /// public static Parent1.Parent2.UnionType<T1, T2, ...>.Specific? AsSpecific<T1, T2, ...>(
-    ///     this Parent1.Parent2.UnionType<T1, T2, ...> union
-    /// )
-    /// where T1 : notnull
-    /// where T2 : notnull
-    /// ...
-    ///     =>
-    ///         union.MatchSpecific(
-    ///             static value => value,
-    ///             static () => null
-    ///         );
-    /// </summary>
-    private static StringBuilder AppendAsVariantMethods(
-        this StringBuilder builder,
-        UnionDeclaration union
-    )
-    {
-        foreach (var variant in union.Variants)
-        {
-            builder.Append($"    public static ");
-            builder.AppendFullUnionName(union);
-            builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($".{variant.Identifier}");
-            builder.AppendTypeParams(union.TypeParameters);
-            builder.Append("? ");
-            builder.Append($"As{variant.Identifier}");
-            builder.AppendTypeParams(union.TypeParameters);
-            builder.AppendLine("(");
-            builder.Append($"        this ");
-            builder.AppendFullUnionName(union);
-            builder.AppendTypeParams(union.TypeParameters);
-            builder.AppendLine(" union");
-            builder.AppendLine($"    )");
-            foreach (var typeParamConstraint in union.TypeParameterConstraints)
-            {
-                builder.AppendLine($"    {typeParamConstraint}");
-            }
-            builder.AppendLine("        =>");
-            builder.AppendLine($"            union.Match{variant.Identifier}(");
-            builder.AppendLine($"                static value => value,");
-            builder.AppendLine("                 static () => null");
-            builder.AppendLine("             );");
         }
 
         return builder;
