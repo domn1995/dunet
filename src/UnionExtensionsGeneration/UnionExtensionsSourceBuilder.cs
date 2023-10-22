@@ -34,6 +34,7 @@ internal static class UnionExtensionsSourceBuilder
             .AppendSpecificMatchAsyncMethodForActions(union, task)
             .AppendSpecificMatchAsyncMethodForActions(union, valueTask)
             .AppendUnsafeToVariantMethods(union)
+            .AppendAsVariantMethods(union)
             .AppendLine("}")
             .AppendLine("#pragma warning restore 1591")
             .ToString();
@@ -279,7 +280,7 @@ internal static class UnionExtensionsSourceBuilder
     }
 
     /// <summary>
-    /// public static Parent1.Parent2.UnionType.Specific ToSpecific<T1, T2, ...>(
+    /// public static Parent1.Parent2.UnionType<T1, T2, ...>.Specific ToSpecific<T1, T2, ...>(
     ///     this Parent1.Parent2.UnionType<T1, T2, ...> union
     /// )
     /// where T1 : notnull
@@ -288,7 +289,7 @@ internal static class UnionExtensionsSourceBuilder
     ///     =>
     ///         union.MatchSpecific(
     ///             static value => value,
-    ///             static () => throw new System.InvalidOperationException(
+    ///             () => throw new System.InvalidOperationException(
     ///                 "Called `UnionType.ToSpecific()` on `Other` value. "
     ///                     + " To safely unwrap an unknown variant without matching, use `AsVariant()` or `TryVariant()`."
     ///             )
@@ -303,8 +304,10 @@ internal static class UnionExtensionsSourceBuilder
         {
             builder.Append($"    public static ");
             builder.AppendFullUnionName(union);
-            builder.Append($".{variant.Identifier} ");
-            builder.Append($"To{variant.Identifier}");
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.Append($".{variant.Identifier}");
+            builder.AppendTypeParams(variant.TypeParameters);
+            builder.Append($" To{variant.Identifier}");
             builder.AppendTypeParams(union.TypeParameters);
             builder.AppendLine("(");
             builder.Append($"        this ");
@@ -332,6 +335,54 @@ internal static class UnionExtensionsSourceBuilder
             );
 """
             );
+        }
+
+        return builder;
+    }
+
+    /// <summary>
+    /// public static Parent1.Parent2.UnionType<T1, T2, ...>.Specific? AsSpecific<T1, T2, ...>(
+    ///     this Parent1.Parent2.UnionType<T1, T2, ...> union
+    /// )
+    /// where T1 : notnull
+    /// where T2 : notnull
+    /// ...
+    ///     =>
+    ///         union.MatchSpecific(
+    ///             static value => value,
+    ///             static () => null
+    ///         );
+    /// </summary>
+    private static StringBuilder AppendAsVariantMethods(
+        this StringBuilder builder,
+        UnionDeclaration union
+    )
+    {
+        foreach (var variant in union.Variants)
+        {
+            builder.Append($"    public static ");
+            builder.AppendFullUnionName(union);
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.Append($".{variant.Identifier}");
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.Append("? ");
+            builder.Append($"As{variant.Identifier}");
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine("(");
+            builder.Append($"        this ");
+            builder.AppendFullUnionName(union);
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine(" union");
+            builder.AppendLine($"    )");
+            foreach (var typeParamConstraint in union.TypeParameterConstraints)
+            {
+                builder.AppendLine($"    {typeParamConstraint}");
+            }
+            builder.AppendLine("        =>");
+            builder.AppendLine($"            union.Match{variant.Identifier}(");
+            builder.AppendLine($"                static value => value,");
+            builder.AppendLine("                 static () => null");
+            builder.AppendLine("             );");
         }
 
         return builder;

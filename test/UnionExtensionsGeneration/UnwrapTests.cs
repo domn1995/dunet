@@ -46,25 +46,33 @@ static int GetValue()
     public void CanUseAsVariantMethodToSafelyUnwrapVariant()
     {
         // Arrange.
-        var source = """
+        var unionCs = """
 using Dunet;
+
+namespace Options;
+
+[Union]
+public partial record Option
+{
+    public partial record Some(int Value);
+    public partial record None;
+}
+""";
+
+        var programCs = """
+using Options;
+
+var value = GetValue();
 
 static int? GetValue()
 {
     Option option = new Option.Some(1);
-    return option.AsSome();
-}
-
-[Union]
-partial record Option
-{
-    partial record Some(int Value);
-    partial record None;
+    return option.AsSome()?.Value;
 }
 """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = Compiler.Compile(unionCs, programCs);
         var value = result.Assembly?.ExecuteStaticMethod<int?>("GetValue");
 
         // Assert.
