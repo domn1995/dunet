@@ -33,6 +33,7 @@ internal static class UnionExtensionsSourceBuilder
             .AppendSpecificMatchAsyncMethodForFuncs(union, valueTask)
             .AppendSpecificMatchAsyncMethodForActions(union, task)
             .AppendSpecificMatchAsyncMethodForActions(union, valueTask)
+            .AppendUnsafeToVariantMethods(union)
             .AppendLine("}")
             .AppendLine("#pragma warning restore 1591")
             .ToString();
@@ -272,6 +273,65 @@ internal static class UnionExtensionsSourceBuilder
             );
             builder.AppendLine($"                    @else");
             builder.AppendLine("                );");
+        }
+
+        return builder;
+    }
+
+    /// <summary>
+    /// public static Parent1.Parent2.UnionType.Specific ToSpecific<T1, T2, ...>(
+    ///     this Parent1.Parent2.UnionType<T1, T2, ...> union
+    /// )
+    /// where T1 : notnull
+    /// where T2 : notnull
+    /// ...
+    ///     =>
+    ///         union.MatchSpecific(
+    ///             static value => value,
+    ///             static () => throw new System.InvalidOperationException(
+    ///                 "Called `UnionType.ToSpecific()` on `Other` value. "
+    ///                     + " To safely unwrap an unknown variant without matching, use `AsVariant()` or `TryVariant()`."
+    ///             )
+    ///         );
+    /// </summary>
+    private static StringBuilder AppendUnsafeToVariantMethods(
+        this StringBuilder builder,
+        UnionDeclaration union
+    )
+    {
+        foreach (var variant in union.Variants)
+        {
+            builder.Append($"    public static ");
+            builder.AppendFullUnionName(union);
+            builder.Append($".{variant.Identifier} ");
+            builder.Append($"To{variant.Identifier}");
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine("(");
+            builder.Append($"        this ");
+            builder.AppendFullUnionName(union);
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine(" union");
+            builder.AppendLine($"    )");
+            foreach (var typeParamConstraint in union.TypeParameterConstraints)
+            {
+                builder.AppendLine($"    {typeParamConstraint}");
+            }
+            builder.AppendLine("        =>");
+            builder.AppendLine($"            union.Match{variant.Identifier}(");
+            builder.AppendLine($"                static value => value,");
+            builder.AppendLine(
+                $$"""
+                () =>
+                {
+                    var actualType = union.GetType().Name;
+                    throw new System.InvalidOperationException(
+                        $"Called `{{union.Name}}`.To{{variant.Identifier}}()` on `{actualType}` value. "
+                            + "To safely unwrap an unknown variant without matching, use `As{{variant.Identifier}}()` or `Try{{variant.Identifier}}()`."
+                    );
+                }
+            );
+"""
+            );
         }
 
         return builder;

@@ -25,7 +25,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
 
         var parsedModel = compilation.Select(static (x, token) => Parse(x.Left, x.Right, token));
         var splitModel = parsedModel.SelectMany(static (result, _) => result);
-        
+
         context.RegisterSourceOutput(splitModel, Emit);
     }
 
@@ -53,7 +53,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
             return;
         }
 
-        if (unionRecord.SupportsAsyncMatchExtensionMethods())
+        if (unionRecord.SupportsExtensionMethods())
         {
             var matchExtensions = UnionExtensionsSourceBuilder.GenerateExtensions(unionRecord);
             context.AddSource(
@@ -100,7 +100,8 @@ public sealed class UnionGenerator : IIncrementalGenerator
                 Namespace: @namespace,
                 Accessibility: recordSymbol.DeclaredAccessibility,
                 Name: recordSymbol.Name,
-                TypeParameters: typeParameters?.ToImmutableEquatableArray() ?? ImmutableEquatableArray.Empty<TypeParameter>(),
+                TypeParameters: typeParameters?.ToImmutableEquatableArray()
+                    ?? ImmutableEquatableArray.Empty<TypeParameter>(),
                 TypeParameterConstraints: typeParameterConstraints.ToImmutableEquatableArray(),
                 Variants: variants.ToImmutableEquatableArray(),
                 ParentTypes: parentTypes.ToImmutableEquatableArray(),
