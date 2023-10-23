@@ -28,13 +28,13 @@ public partial record Option
 """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
-        var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var compilation = Compiler.Compile(programCs);
+        var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        compilation.CompilationErrors.Should().BeEmpty();
+        compilation.GenerationErrors.Should().BeEmpty();
         value.Should().Be(1);
     }
 
@@ -62,13 +62,13 @@ public partial record Option<T>
 """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
-        var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var compilation = Compiler.Compile(programCs);
+        var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        compilation.CompilationErrors.Should().BeEmpty();
+        compilation.GenerationErrors.Should().BeEmpty();
         value.Should().Be(1);
     }
 
@@ -96,13 +96,13 @@ public partial record Option
 """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
-        var action = () => result.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var compilation = Compiler.Compile(programCs);
+        var action = () => compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        compilation.CompilationErrors.Should().BeEmpty();
+        compilation.GenerationErrors.Should().BeEmpty();
         action
             .Should()
             .Throw<TargetInvocationException>()
