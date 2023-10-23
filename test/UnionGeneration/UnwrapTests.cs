@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Dunet.Test.UnionExtensionsGeneration;
+namespace Dunet.Test.UnionGeneration;
 
 public sealed class UnwrapTests
 {
@@ -8,10 +8,16 @@ public sealed class UnwrapTests
     public void CanUseUnwrapMethodToUnsafelyGetVariantValue()
     {
         // Arrange.
-        var unionCs = """
+        var programCs = """
 using Dunet;
 
-namespace Options;
+var value = GetValue();
+
+static int GetValue()
+{
+    var option = new Option.Some(1);
+    return option.UnwrapSome().Value;
+}
 
 [Union]
 public partial record Option
@@ -21,20 +27,8 @@ public partial record Option
 }
 """;
 
-        var programCs = """
-using Options;
-
-var value = GetValue();
-
-static int GetValue()
-{
-    var option = new Option.Some(1);
-    return option.UnwrapSome().Value;
-}
-""";
-
         // Act.
-        var result = Compiler.Compile(unionCs, programCs);
+        var result = Compiler.Compile(programCs);
         var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
@@ -48,10 +42,16 @@ static int GetValue()
     public void CanUseUnwrapMethodToUnsafelyGetGenericVariantValue()
     {
         // Arrange.
-        var unionCs = """
+        var programCs = """
 using Dunet;
 
-namespace Options;
+var value = GetValue();
+
+static int GetValue()
+{
+    var option = new Option<int>.Some(1);
+    return option.UnwrapSome().Value;
+}
 
 [Union]
 public partial record Option<T>
@@ -61,20 +61,8 @@ public partial record Option<T>
 }
 """;
 
-        var programCs = """
-using Options;
-
-var value = GetValue();
-
-static int GetValue()
-{
-    var option = new Option<int>.Some(1);
-    return option.UnwrapSome().Value;
-}
-""";
-
         // Act.
-        var result = Compiler.Compile(unionCs, programCs);
+        var result = Compiler.Compile(programCs);
         var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
@@ -88,10 +76,16 @@ static int GetValue()
     public void UnwrapMethodThrowsWhenCalledWithWrongUnderlyingValue()
     {
         // Arrange.
-        var unionCs = """
+        var programCs = """
 using Dunet;
 
-namespace Options;
+var value = GetValue();
+
+static int GetValue()
+{
+    var option = new Option.None();
+    return option.UnwrapSome().Value;
+}
 
 [Union]
 public partial record Option
@@ -101,20 +95,8 @@ public partial record Option
 }
 """;
 
-        var programCs = """
-using Options;
-
-var value = GetValue();
-
-static int GetValue()
-{
-    var option = new Option.None();
-    return option.UnwrapSome().Value;
-}
-""";
-
         // Act.
-        var result = Compiler.Compile(unionCs, programCs);
+        var result = Compiler.Compile(programCs);
         var action = () => result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.

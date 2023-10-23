@@ -37,6 +37,7 @@ internal static class UnionSourceBuilder
 
         builder.AppendAbstractMatchMethods(union);
         builder.AppendAbstractSpecificMatchMethods(union);
+        builder.AppendAbstractUnwrapMethods(union);
 
         if (union.SupportsImplicitConversions())
         {
@@ -62,6 +63,8 @@ internal static class UnionSourceBuilder
 
             builder.AppendVariantMatchMethodImplementations(union, variant);
             builder.AppendVariantSpecificMatchMethodImplementations(union, variant);
+            builder.AppendUnwrapMethodImplementations(union, variant);
+            builder.AppendLine("    }");
         }
 
         builder.AppendLine("}");
@@ -471,8 +474,52 @@ internal static class UnionSourceBuilder
             }
         }
 
-        builder.AppendLine("    }");
         builder.AppendLine();
+
+        return builder;
+    }
+
+    private static StringBuilder AppendAbstractUnwrapMethods(
+        this StringBuilder builder,
+        UnionDeclaration union
+    )
+    {
+        foreach (var variant in union.Variants)
+        {
+            // public abstract Variant UnwrapVariant();
+            builder.AppendLine(
+                $"    public abstract {variant.Identifier} Unwrap{variant.Identifier}();"
+            );
+        }
+
+        builder.AppendLine();
+
+        return builder;
+    }
+
+    private static StringBuilder AppendUnwrapMethodImplementations(
+        this StringBuilder builder,
+        UnionDeclaration union,
+        VariantDeclaration variant
+    )
+    {
+        foreach (var specificVariant in union.Variants)
+        {
+            builder.Append(
+                $"        public override {specificVariant.Identifier} Unwrap{specificVariant.Identifier}() => "
+            );
+
+            if (specificVariant.Identifier == variant.Identifier)
+            {
+                builder.AppendLine("this;");
+            }
+            else
+            {
+                builder.AppendLine(
+                    $"throw new System.InvalidOperationException($\"Called `{union.Name}.Unwrap{specificVariant.Identifier}()` on `{variant.Identifier}` value.\");"
+                );
+            }
+        }
 
         return builder;
     }
