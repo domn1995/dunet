@@ -10,8 +10,7 @@ namespace Dunet.Test.Runtime;
 /// </remarks>
 internal static class AssemblyExtensions
 {
-    public static T? ExecuteStaticMethod<T>(this Assembly assembly, string methodName)
-        where T : notnull =>
+    public static T? ExecuteStaticMethod<T>(this Assembly assembly, string methodName) =>
         (T?)
             assembly.DefinedTypes
                 .SelectMany(type => type.DeclaredMethods)
@@ -19,7 +18,6 @@ internal static class AssemblyExtensions
                 ?.Invoke(null, null);
 
     public static T? ExecuteStaticAsyncMethod<T>(this Assembly assembly, string methodName)
-        where T : notnull
     {
         var task =
             assembly.DefinedTypes

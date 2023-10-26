@@ -37,6 +37,7 @@ internal static class UnionSourceBuilder
 
         builder.AppendAbstractMatchMethods(union);
         builder.AppendAbstractSpecificMatchMethods(union);
+        builder.AppendAbstractUnwrapMethods(union);
 
         if (union.SupportsImplicitConversions())
         {
@@ -62,6 +63,8 @@ internal static class UnionSourceBuilder
 
             builder.AppendVariantMatchMethodImplementations(union, variant);
             builder.AppendVariantSpecificMatchMethodImplementations(union, variant);
+            builder.AppendUnwrapMethodImplementations(union, variant);
+            builder.AppendLine("    }");
         }
 
         builder.AppendLine("}");
@@ -218,7 +221,9 @@ internal static class UnionSourceBuilder
             //     System.Func<TState, Specific<T1, T2, ...>, TMatchOutput> @specific,
             //     System.Func<TState, TMatchOutput> @else
             // );
-            builder.AppendLine($"    public abstract TMatchOutput Match{variant.Identifier}<TState, TMatchOutput>(");
+            builder.AppendLine(
+                $"    public abstract TMatchOutput Match{variant.Identifier}<TState, TMatchOutput>("
+            );
             builder.Append($"        TState state");
             builder.AppendLine(union.Variants.Count > 0 ? "," : string.Empty);
             builder.Append($"        System.Func<TState, {variant.Identifier}");
@@ -319,7 +324,9 @@ internal static class UnionSourceBuilder
             }
             builder.AppendLine();
         }
-        builder.AppendLine($"        ) => {variant.Identifier.ToMethodParameterCase()}(state, this);");
+        builder.AppendLine(
+            $"        ) => {variant.Identifier.ToMethodParameterCase()}(state, this);"
+        );
 
         // public override void Match<TState>(
         //     TState state,
@@ -342,7 +349,9 @@ internal static class UnionSourceBuilder
             }
             builder.AppendLine();
         }
-        builder.AppendLine($"        ) => {variant.Identifier.ToMethodParameterCase()}(state, this);");
+        builder.AppendLine(
+            $"        ) => {variant.Identifier.ToMethodParameterCase()}(state, this);"
+        );
 
         return builder;
     }
@@ -425,7 +434,9 @@ internal static class UnionSourceBuilder
             builder.Append("        ) => ");
             if (specificVariant.Identifier == variant.Identifier)
             {
-                builder.AppendLine($"{specificVariant.Identifier.ToMethodParameterCase()}(state, this);");
+                builder.AppendLine(
+                    $"{specificVariant.Identifier.ToMethodParameterCase()}(state, this);"
+                );
             }
             else
             {
@@ -441,7 +452,9 @@ internal static class UnionSourceBuilder
         // ) => unionVariantX(state, this);
         foreach (var specificVariant in union.Variants)
         {
-            builder.AppendLine($"        public override void Match{specificVariant.Identifier}<TState>(");
+            builder.AppendLine(
+                $"        public override void Match{specificVariant.Identifier}<TState>("
+            );
             builder.Append($"        TState state");
             builder.AppendLine(union.Variants.Count > 0 ? "," : string.Empty);
             builder.Append($"            System.Action<TState, {specificVariant.Identifier}");
@@ -451,7 +464,9 @@ internal static class UnionSourceBuilder
             builder.Append("        ) => ");
             if (specificVariant.Identifier == variant.Identifier)
             {
-                builder.AppendLine($"{specificVariant.Identifier.ToMethodParameterCase()}(state, this);");
+                builder.AppendLine(
+                    $"{specificVariant.Identifier.ToMethodParameterCase()}(state, this);"
+                );
             }
             else
             {
@@ -459,8 +474,52 @@ internal static class UnionSourceBuilder
             }
         }
 
-        builder.AppendLine("    }");
         builder.AppendLine();
+
+        return builder;
+    }
+
+    private static StringBuilder AppendAbstractUnwrapMethods(
+        this StringBuilder builder,
+        UnionDeclaration union
+    )
+    {
+        foreach (var variant in union.Variants)
+        {
+            // public abstract Variant UnwrapVariant();
+            builder.AppendLine(
+                $"    public abstract {variant.Identifier} Unwrap{variant.Identifier}();"
+            );
+        }
+
+        builder.AppendLine();
+
+        return builder;
+    }
+
+    private static StringBuilder AppendUnwrapMethodImplementations(
+        this StringBuilder builder,
+        UnionDeclaration union,
+        VariantDeclaration variant
+    )
+    {
+        foreach (var specificVariant in union.Variants)
+        {
+            builder.Append(
+                $"        public override {specificVariant.Identifier} Unwrap{specificVariant.Identifier}() => "
+            );
+
+            if (specificVariant.Identifier == variant.Identifier)
+            {
+                builder.AppendLine("this;");
+            }
+            else
+            {
+                builder.AppendLine(
+                    $"throw new System.InvalidOperationException($\"Called `{union.Name}.Unwrap{specificVariant.Identifier}()` on `{variant.Identifier}` value.\");"
+                );
+            }
+        }
 
         return builder;
     }
