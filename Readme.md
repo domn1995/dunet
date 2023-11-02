@@ -340,9 +340,42 @@ public static async Task<HttpResponse> CreateUserAsync(
 }
 ```
 
+## Unwrapping
+
+To bypass exhaustive matching and access a variant directly, use the variant-specific `Unwrap` methods.
+
+This can be useful if you're sure of the underlying value or if you don't care about a potential exception at runtime.
+
+```cs
+using Dunet;
+
+[Union]
+partial record Option<T>
+{
+    partial record Some(T Value);
+    partial record None;
+}
+```
+
+```cs
+Option<double> option1 = new Option<double>.Some(3.14);
+var some = option.UnwrapSome();
+// You can access `Value` directly here.
+Console.WriteLine(some.Value); // Prints "3.14".
+
+Option<double> option2 = new Option<double>.None();
+// Throws `InvalidOperationException` because the underlying variant is `None`.
+var bad = option.UnwrapSome();
+```
+
+> **Note**:
+> Unwrapping is unsafe. Use only when runtime errors are ok.
+
 ## Stateful Matching
 
-To reduce memory allocations, use the `Match` overload that accepts a generic state parameter as its first argument. This allows your match parameter lambdas to be `static` but still flow state through:
+To reduce memory allocations, use the `Match` overload that accepts a generic state parameter as its first argument.
+
+This allows your match parameter lambdas to be `static` but still flow state through:
 
 ```cs
 using Dunet;
