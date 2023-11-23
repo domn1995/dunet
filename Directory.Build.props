@@ -8,6 +8,6 @@
     </PropertyGroup>
 
     <Target Name="DotnetToolRestore" AfterTargets="BeforeBuild">
-        <Exec Command="dotnet tool restore" />
+        <Exec Command="dotnet tool restore --disable-parallel" />
     </Target>
 </Project>
