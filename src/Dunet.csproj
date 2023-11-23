@@ -3,7 +3,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>11.0</LangVersion>
+        <LangVersion>12.0</LangVersion>
         <IsPublishable>True</IsPublishable>
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -42,7 +42,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
         <PackageReference Include="PolySharp" Version="1.13.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

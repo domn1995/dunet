@@ -7,7 +7,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
-    <Target Name="DotnetToolRestore" BeforeTargets="CoreBuild">
+    <Target Name="DotnetToolRestore" BeforeTargets="Restore">
         <Exec Command="dotnet tool restore" />
     </Target>
 </Project>
