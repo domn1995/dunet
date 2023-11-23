@@ -14,7 +14,10 @@ internal static class StringBuilderExtensions
             return;
         }
 
-        var typeParamList = string.Join(", ", typeParams.Select(typeParam => typeParam.Identifier));
+        var typeParamList = string.Join(
+            ", ",
+            typeParams.Select(static typeParam => typeParam.Identifier)
+        );
 
         builder.Append("<");
         builder.Append(typeParamList);

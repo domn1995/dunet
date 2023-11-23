@@ -1,8 +1,8 @@
-﻿using Dunet.UnionGeneration;
+﻿using System.Reflection;
 using Dunet.UnionAttributeGeneration;
+using Dunet.UnionGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Reflection;
 
 namespace Dunet.Test.Compilation;
 
@@ -47,10 +47,7 @@ internal sealed class Compiler
         CSharpCompilation.Create(
             "compilation",
             sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
-            new[]
-            {
-                MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location)
-            },
+            [MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location)],
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
 

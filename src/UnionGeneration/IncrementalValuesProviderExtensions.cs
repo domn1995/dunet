@@ -15,5 +15,6 @@ internal static class IncrementalValuesProviderExtensions
     /// <returns>A new incremental values provider without <see langword="null"/> values.</returns>
     public static IncrementalValuesProvider<T> Flatten<T>(
         this IncrementalValuesProvider<T?> provider
-    ) where T : notnull => provider.Where(value => value is not null)!;
+    )
+        where T : notnull => provider.Where(static value => value is not null)!;
 }
