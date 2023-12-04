@@ -82,7 +82,7 @@ internal static class RecordDeclarationSyntaxParser
                         Identifier: propertyDeclaration.Identifier.ToString(),
                         IsRequired: propertyDeclaration
                             .Modifiers
-                            .Any(modifier => modifier.Value is "required")
+                            .Any(static modifier => modifier.Value is "required")
                     )
             );
 
