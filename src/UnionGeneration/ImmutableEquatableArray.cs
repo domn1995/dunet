@@ -20,8 +20,7 @@ public static class ImmutableEquatableArray
 /// Provides an immutable list implementation which implements sequence equality.
 /// </summary>
 public sealed class ImmutableEquatableArray<T>(IEnumerable<T> values)
-    : IEquatable<ImmutableEquatableArray<T>>,
-        IReadOnlyList<T>
+    : IEquatable<ImmutableEquatableArray<T>>, IReadOnlyList<T>
     where T : IEquatable<T>
 {
     private readonly T[] _values = values.ToArray();
