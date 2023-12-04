@@ -13,7 +13,7 @@ internal static class IdentifierExtensions
             // - Lowercase the first character to abide by C# style rules for method parameter
             //   casing and prevent collision with its type.
             [var firstCharacter, .. var rest] => $"@{char.ToLowerInvariant(firstCharacter)}{rest}",
-            // If an empty identifier came in, we just return it back and let the caller handle it.
-            [] => identifier,
+            // If anything else came in, we just return it back and let the caller handle it.
+            _ => identifier,
         };
 }
