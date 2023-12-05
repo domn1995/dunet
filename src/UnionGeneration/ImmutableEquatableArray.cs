@@ -10,28 +10,32 @@ public static class ImmutableEquatableArray
     public static ImmutableEquatableArray<T> Empty<T>()
         where T : IEquatable<T> => ImmutableEquatableArray<T>.Empty;
 
-    public static ImmutableEquatableArray<T> ToImmutableEquatableArray<T>(this IEnumerable<T> values)
+    public static ImmutableEquatableArray<T> ToImmutableEquatableArray<T>(
+        this IEnumerable<T> values
+    )
         where T : IEquatable<T> => new(values);
 }
 
 /// <summary>
 /// Provides an immutable list implementation which implements sequence equality.
 /// </summary>
-public sealed class ImmutableEquatableArray<T> : IEquatable<ImmutableEquatableArray<T>>, IReadOnlyList<T>
+public sealed class ImmutableEquatableArray<T>(IEnumerable<T> values)
+    : IEquatable<ImmutableEquatableArray<T>>, IReadOnlyList<T>
     where T : IEquatable<T>
 {
-    public static ImmutableEquatableArray<T> Empty { get; } = new(Array.Empty<T>());
+    private readonly T[] _values = values.ToArray();
 
-    private readonly T[] _values;
+    public static ImmutableEquatableArray<T> Empty { get; } = new([]);
+
     public T this[int index] => _values[index];
-    public int Count => _values.Length;
 
-    public ImmutableEquatableArray(IEnumerable<T> values) => _values = values.ToArray();
+    public int Count => _values.Length;
 
     public bool Equals(ImmutableEquatableArray<T>? other) =>
         other != null && ((ReadOnlySpan<T>)_values).SequenceEqual(other._values);
 
-    public override bool Equals(object? obj) => obj is ImmutableEquatableArray<T> other && Equals(other);
+    public override bool Equals(object? obj) =>
+        obj is ImmutableEquatableArray<T> other && Equals(other);
 
     public override int GetHashCode()
     {
@@ -85,4 +89,3 @@ public sealed class ImmutableEquatableArray<T> : IEquatable<ImmutableEquatableAr
         public readonly T Current => _values[_index];
     }
 }
-

@@ -12,7 +12,8 @@ internal static class AssemblyExtensions
 {
     public static T? ExecuteStaticMethod<T>(this Assembly assembly, string methodName) =>
         (T?)
-            assembly.DefinedTypes
+            assembly
+                .DefinedTypes
                 .SelectMany(type => type.DeclaredMethods)
                 .FirstOrDefault(method => method.Name.Contains(methodName))
                 ?.Invoke(null, null);
@@ -20,7 +21,8 @@ internal static class AssemblyExtensions
     public static T? ExecuteStaticAsyncMethod<T>(this Assembly assembly, string methodName)
     {
         var task =
-            assembly.DefinedTypes
+            assembly
+                .DefinedTypes
                 .SelectMany(type => type.DeclaredMethods)
                 .FirstOrDefault(method => method.Name.Contains(methodName))
                 ?.Invoke(null, null) as Task<T>;
