@@ -1,9 +1,9 @@
-﻿using Dunet.UnionAttributeGeneration;
+﻿using Dunet.Generator.UnionAttributeGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Dunet.UnionGeneration;
+namespace Dunet.Generator.UnionGeneration;
 
 /// <summary>
 /// Retrieves semantic information from record declarations.

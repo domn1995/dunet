@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Dunet.UnionGeneration;
+namespace Dunet.Generator.UnionGeneration;
 
 internal sealed record UnionDeclaration(
     ImmutableEquatableArray<string> Imports,

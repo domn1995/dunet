@@ -6,7 +6,7 @@ namespace Dunet.Test.Runtime;
 /// Provides extension methods for executing methods within an assembly.
 /// </summary>
 /// <remarks>
-/// This helps Dunet ensure that match methods are working correctly.
+/// This helps Dunet.Generator ensure that match methods are working correctly.
 /// </remarks>
 internal static class AssemblyExtensions
 {

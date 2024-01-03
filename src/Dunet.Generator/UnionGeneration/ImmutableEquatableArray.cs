@@ -1,9 +1,6 @@
-﻿namespace Dunet.UnionGeneration;
+﻿using System.Collections;
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+namespace Dunet.Generator.UnionGeneration;
 
 public static class ImmutableEquatableArray
 {

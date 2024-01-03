@@ -9,6 +9,7 @@ public sealed class GenerationTests
     {
         // Arrange.
         const string shapeCs = """
+using System;
 using Dunet;
 
 namespace Shapes;

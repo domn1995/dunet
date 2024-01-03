@@ -1,6 +1,24 @@
 <Project>
+    <Sdk Name="ViHo.PackAsAnalyzer" Version="1.0.1" />
+
     <PropertyGroup>
         <Nullable>enable</Nullable>
+        <Version>1.11.0</Version>
+        <SignAssembly>False</SignAssembly>
+    </PropertyGroup>
+
+    <PropertyGroup Label="Package Attributes">
+        <Authors>domn1995</Authors>
+        <Company />
+        <Description>A simple source generator for discriminated unions in C#.</Description>
+        <PackageProjectUrl>https://github.com/domn1995/dunet</PackageProjectUrl>
+        <PackageReadmeFile>Readme.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/domn1995/dunet</RepositoryUrl>
+        <PackageTags>source; generator; discriminated; union; functional; tagged;</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>https://github.com/domn1995/dunet/releases</PackageReleaseNotes>
+        <RepositoryType>git</RepositoryType>
+        <PackageIcon>favicon.png</PackageIcon>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -10,4 +28,9 @@
     <Target Name="DotnetToolRestore" BeforeTargets="Restore">
         <Exec Command="dotnet tool restore" />
     </Target>
+
+    <ItemGroup Condition=" '$(IsPublishable)' == 'True' ">
+        <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\"/>
+        <None Include="$(MSBuildThisFileDirectory)\favicon.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>

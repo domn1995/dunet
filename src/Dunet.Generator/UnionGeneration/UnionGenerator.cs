@@ -1,12 +1,12 @@
-﻿using Dunet.UnionExtensionsGeneration;
+﻿using System.Collections.Immutable;
+using System.Text;
+using Dunet.Generator.UnionExtensionsGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
-using System.Text;
 
-namespace Dunet.UnionGeneration;
+namespace Dunet.Generator.UnionGeneration;
 
 [Generator]
 public sealed class UnionGenerator : IIncrementalGenerator

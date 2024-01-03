@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Dunet;
+namespace Dunet.Generator;
 
 internal static class SyntaxExtensions
 {
