@@ -1,5 +1,4 @@
-﻿using Dunet.Generator.UnionAttributeGeneration;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -137,7 +136,7 @@ internal static class RecordDeclarationSyntaxParser
             .SelectMany(static attributeListSyntax => attributeListSyntax.Attributes)
             .Select(getDecoratedType)
             .Select(static attributeSymbol => attributeSymbol?.ToDisplayString())
-            .Any(static attributeName => attributeName is UnionAttributeSource.FullyQualifiedName);
+            .Any(static attributeName => attributeName is "Dunet.UnionAttribute");
     }
 
     /// <summary>
