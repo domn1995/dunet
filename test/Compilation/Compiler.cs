@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace Dunet.Test.Compilation;
 
 /// <summary>
-/// Enables compilation of C# source code with Dunet.Generator source generation.
+/// Enables compilation of C# source code with Dunet source generation.
 /// </summary>
 internal sealed class Compiler
 {
