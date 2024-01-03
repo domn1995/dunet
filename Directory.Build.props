@@ -3,7 +3,7 @@
 
     <PropertyGroup>
         <Nullable>enable</Nullable>
-        <Version>1.11.0</Version>
+        <Version>1.10.0</Version>
         <SignAssembly>False</SignAssembly>
     </PropertyGroup>
 
@@ -29,7 +29,7 @@
         <Exec Command="dotnet tool restore" />
     </Target>
 
-    <ItemGroup Condition=" '$(IsPublishable)' == 'True' ">
+    <ItemGroup Condition=" '$(IsPackable)' == 'True' ">
         <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\"/>
         <None Include="$(MSBuildThisFileDirectory)\favicon.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
