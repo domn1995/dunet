@@ -29,7 +29,7 @@
         <Exec Command="dotnet tool restore" />
     </Target>
 
-    <ItemGroup Condition=" '$(IsPackable)' == 'True' ">
+    <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
         <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\"/>
         <None Include="$(MSBuildThisFileDirectory)\favicon.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
