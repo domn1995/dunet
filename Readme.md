@@ -453,7 +453,7 @@ var variant1 = new Parent1.Parent2.Nested.Variant1();
 
 ## Migration
 
-### < 1.11.0 to >= 1.11.0
+### Migrating from versions < 1.11.0 to versions >= 1.11.0
 
 From v1.11.0 this library now contains an assembly reference.
 
