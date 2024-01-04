@@ -1,4 +1,4 @@
-﻿namespace Dunet;
+﻿namespace Dunet.Generator;
 
 internal static class IdentifierExtensions
 {

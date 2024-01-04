@@ -1,9 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Dunet.UnionAttributeGeneration;
-using Dunet.UnionGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;
+using Dunet.Generator.UnionGeneration;
 
 namespace Dunet.Benchmark;
 
@@ -58,9 +57,8 @@ public class SourceGeneratorBenchmarks
             throw new InvalidOperationException("Compilation returned null");
 
         var unionGenerator = new UnionGenerator();
-        var unionAttributeGenerator = new UnionAttributeGenerator();
 
-        var driver = CSharpGeneratorDriver.Create(unionGenerator, unionAttributeGenerator);
+        var driver = CSharpGeneratorDriver.Create(unionGenerator);
         
         return (compilation, driver);
     }
@@ -87,7 +85,12 @@ public class SourceGeneratorBenchmarks
             sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
             new[]
             {
-                MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location)
+                // Resolves to System.Private.CoreLib.dll
+                MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                // Resolves to System.Runtime.dll, which is needed for the Attribute type
+                // Can't use typeof(Attribute).GetTypeInfo().Assembly.Location because it resolves to System.Private.CoreLib.dll
+                MetadataReference.CreateFromFile(AppDomain.CurrentDomain.GetAssemblies().First(f => f.FullName?.Contains("System.Runtime") == true).Location),
+                MetadataReference.CreateFromFile(typeof(UnionAttribute).GetTypeInfo().Assembly.Location)
             },
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );

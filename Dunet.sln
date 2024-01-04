@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet", "src\Dunet.csproj", "{13C0B629-4C48-4C73-AECB-06A476871C5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Generator", "src\Dunet.Generator\Dunet.Generator.csproj", "{13C0B629-4C48-4C73-AECB-06A476871C5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet.Test", "test\Dunet.Test.csproj", "{573E6767-C044-415B-9AD3-A1734B0DD684}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionCalculatorWithState", "samples\ExpressionCalculatorWithState\ExpressionCalculatorWithState.csproj", "{943A33D0-FAC8-44B2-9D20-205CA415F940}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dunet.Benchmark", "benchmark\Dunet.Benchmark\Dunet.Benchmark.csproj", "{44A04A62-D495-4450-8C15-2BD67DF5159A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dunet", "src\Dunet\Dunet.csproj", "{9CC5D86B-26B5-47B5-8305-D099B171B1CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,10 @@ Global
 		{44A04A62-D495-4450-8C15-2BD67DF5159A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44A04A62-D495-4450-8C15-2BD67DF5159A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44A04A62-D495-4450-8C15-2BD67DF5159A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CC5D86B-26B5-47B5-8305-D099B171B1CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CC5D86B-26B5-47B5-8305-D099B171B1CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CC5D86B-26B5-47B5-8305-D099B171B1CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC5D86B-26B5-47B5-8305-D099B171B1CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

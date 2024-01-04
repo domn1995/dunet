@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Dunet.UnionGeneration;
+namespace Dunet.Generator.UnionGeneration;
 
 /// <summary>
 /// Provides extension methods for an <see cref="IncrementalValuesProvider{TValues}"/>.

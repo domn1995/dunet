@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
-using Dunet.UnionAttributeGeneration;
-using Dunet.UnionGeneration;
+using Dunet.Generator.UnionGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -11,9 +10,6 @@ namespace Dunet.Test.Compilation;
 /// </summary>
 internal sealed class Compiler
 {
-    private static readonly IIncrementalGenerator unionAttributeGenerator =
-        new UnionAttributeGenerator();
-
     private static readonly IIncrementalGenerator unionGenerator = new UnionGenerator();
 
     public static CompilationResult Compile(params string[] sources)
@@ -47,14 +43,21 @@ internal sealed class Compiler
         CSharpCompilation.Create(
             "compilation",
             sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
-            [MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location)],
+            [
+                // Resolves to System.Private.CoreLib.dll
+                MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                // Resolves to System.Runtime.dll, which is needed for the Attribute type
+                // Can't use typeof(Attribute).GetTypeInfo().Assembly.Location because it resolves to System.Private.CoreLib.dll
+                MetadataReference.CreateFromFile(AppDomain.CurrentDomain.GetAssemblies().First(f => f.FullName?.Contains("System.Runtime") == true).Location),
+                MetadataReference.CreateFromFile(typeof(UnionAttribute).GetTypeInfo().Assembly.Location)
+            ],
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
 
     private static GenerationResult RunGenerator(Microsoft.CodeAnalysis.Compilation compilation)
     {
         CSharpGeneratorDriver
-            .Create(unionGenerator, unionAttributeGenerator)
+            .Create(unionGenerator)
             .RunGeneratorsAndUpdateCompilation(
                 compilation,
                 out var outputCompilation,

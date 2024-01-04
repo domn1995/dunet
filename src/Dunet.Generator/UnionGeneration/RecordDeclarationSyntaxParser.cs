@@ -1,9 +1,8 @@
-﻿using Dunet.UnionAttributeGeneration;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Dunet.UnionGeneration;
+namespace Dunet.Generator.UnionGeneration;
 
 /// <summary>
 /// Retrieves semantic information from record declarations.
@@ -137,7 +136,7 @@ internal static class RecordDeclarationSyntaxParser
             .SelectMany(static attributeListSyntax => attributeListSyntax.Attributes)
             .Select(getDecoratedType)
             .Select(static attributeSymbol => attributeSymbol?.ToDisplayString())
-            .Any(static attributeName => attributeName is UnionAttributeSource.FullyQualifiedName);
+            .Any(static attributeName => attributeName is "Dunet.UnionAttribute");
     }
 
     /// <summary>
