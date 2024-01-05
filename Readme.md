@@ -450,3 +450,25 @@ var variant1 = new Parent1.Parent2.Nested.Variant1();
 - [Web Client](./samples/PokemonClient/PokeClient.cs)
 - [Recursive Expressions](./samples/ExpressionCalculator/Program.cs)
 - [Recursive Expressions with Stateful Matching](./samples/ExpressionCalculatorWithState/Program.cs)
+
+## Migration
+
+### Migrating from versions < 1.11.0 to versions >= 1.11.0
+
+From v1.11.0 this library now contains an assembly reference.
+
+By default before this `dotnet add package dunet` will have generated:
+```xml
+<PackageReference Include="dunet" Version="1.10.0">
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PrivateAssets>all</PrivateAssets>
+</PackageReference>
+```
+
+When upgrading to dunet v1.11.0, this will need to be simplified to:
+```xml
+<PackageReference Include="dunet" Version="1.11.0" />
+```
+
+Otherwise the assembly will not be included for compilation, leading to build failures when trying to reference
+ the `Dunet` namespace or the `UnionAttribute` class.
