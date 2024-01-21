@@ -10,26 +10,27 @@ public sealed class ActionMatchMethodTests
     {
         // Arrange.
         var source = """
-using Dunet;
+            using Dunet;
 
-Shape shape = new Shape.Rectangle(3, 4);
+            Shape shape = new Shape.Rectangle(3, 4);
 
-shape.Match(
-    circle => DoNothing(),
-    rectangle => DoNothing(),
-    triangle => DoNothing()
-);
+            shape.Match(
+                circle => DoNothing(),
+                rectangle => DoNothing(),
+                triangle => DoNothing()
+            );
 
-void DoNothing() { }
+            void DoNothing() { }
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
 
@@ -47,28 +48,28 @@ partial record Shape
     {
         // Arrange.
         var source = $$"""
-using Dunet;
+            using Dunet;
 
-static double GetArea()
-{
-    double value = 0d;
-    {{shapeDeclaration}}
-    shape.Match(
-        circle => { value = 3.14 * circle.Radius * circle.Radius; },
-        rectangle => { value = rectangle.Length * rectangle.Width; },
-        triangle => { value = triangle.Base * triangle.Height / 2; }
-    );
-    return value;
-}
+            static double GetArea()
+            {
+                double value = 0d;
+                {{shapeDeclaration}}
+                shape.Match(
+                    circle => { value = 3.14 * circle.Radius * circle.Radius; },
+                    rectangle => { value = rectangle.Length * rectangle.Width; },
+                    triangle => { value = triangle.Base * triangle.Height / 2; }
+                );
+                return value;
+            }
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
         // Act.
         var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
@@ -90,39 +91,39 @@ partial record Shape
     )
     {
         var programCs = $$"""
-using Dunet;
-using System.Globalization;
+            using Dunet;
+            using System.Globalization;
 
-static string GetResult()
-{
-    var value = "";
-    Divide().Match(
-        some => value = some.Value.ToString(CultureInfo.InvariantCulture),
-        none => value = "Error: division by zero."
-    );
-    return value;
-};
+            static string GetResult()
+            {
+                var value = "";
+                Divide().Match(
+                    some => value = some.Value.ToString(CultureInfo.InvariantCulture),
+                    none => value = "Error: division by zero."
+                );
+                return value;
+            };
 
-static Option<double> Divide()
-{
-    var dividend = {{dividend}};
-    var divisor = {{divisor}};
+            static Option<double> Divide()
+            {
+                var dividend = {{dividend}};
+                var divisor = {{divisor}};
 
-    if (divisor is 0)
-    {
-        return new Option<double>.None();
-    }
+                if (divisor is 0)
+                {
+                    return new Option<double>.None();
+                }
 
-    return new Option<double>.Some((double)dividend / divisor);
-}
+                return new Option<double>.Some((double)dividend / divisor);
+            }
 
-[Union]
-partial record Option<T>
-{
-    partial record Some(T Value);
-    partial record None();
-}
-""";
+            [Union]
+            partial record Option<T>
+            {
+                partial record Some(T Value);
+                partial record None();
+            }
+            """;
 
         // Act.
         var result = Compiler.Compile(programCs);
@@ -144,28 +145,29 @@ partial record Option<T>
     )
     {
         var programCs = $$"""
-using System;
-using Dunet;
+            using System;
+            using Dunet;
 
-static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
+            static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
 
-static string GetActualMessage()
-{
-    var value = "";
-    DoWork().Match(
-        success => value = success.Value,
-        failure => value = failure.Error.Message
-    );
-    return value;
-}
+            static string GetActualMessage()
+            {
+                var value = "";
+                DoWork().Match(
+                    success => value = success.Value,
+                    failure => value = failure.Error.Message
+                );
+                return value;
+            }
 
-[Union]
-partial record Result<TFailure, TSuccess>
-{
-    partial record Success(TSuccess Value);
-    partial record Failure(TFailure Error);
-}
-""";
+            [Union]
+            partial record Result<TFailure, TSuccess>
+            {
+                partial record Success(TSuccess Value);
+                partial record Failure(TFailure Error);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
         var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");

@@ -13,25 +13,26 @@ public sealed class MatchSpecificUnionValueTests
     {
         // Arrange.
         var source = $$"""
-using Dunet;
+            using Dunet;
 
-static double GetArea()
-{
-    {{shapeDeclaration}}
-    return shape.MatchCircle(
-        circle => 3.14 * circle.Radius * circle.Radius,
-        () => -1
-    );
-}
+            static double GetArea()
+            {
+                {{shapeDeclaration}}
+                return shape.MatchCircle(
+                    circle => 3.14 * circle.Radius * circle.Radius,
+                    () => -1
+                );
+            }
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
@@ -54,27 +55,28 @@ partial record Shape
     {
         // Arrange.
         var source = $$"""
-using Dunet;
+            using Dunet;
 
-static double GetArea()
-{
-    double value = 0d;
-    {{shapeDeclaration}}
-    shape.MatchTriangle(
-        triangle => { value = 0.5 * triangle.Base * triangle.Height; },
-        () => { value = -1; }
-    );
-    return value;
-}
+            static double GetArea()
+            {
+                double value = 0d;
+                {{shapeDeclaration}}
+                shape.MatchTriangle(
+                    triangle => { value = 0.5 * triangle.Base * triangle.Height; },
+                    () => { value = -1; }
+                );
+                return value;
+            }
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");

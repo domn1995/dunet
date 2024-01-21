@@ -8,8 +8,8 @@ while (true)
     var result = ParseInt(input);
 
     var output = result.Match(
-        some => $"You entered the number: {some.Value}",
-        none => "That's not a number!"
+        static some => $"You entered the number: {some.Value}",
+        static none => "That's not a number!"
     );
 
     Console.WriteLine(output);

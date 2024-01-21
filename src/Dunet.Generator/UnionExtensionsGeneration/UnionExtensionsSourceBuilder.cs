@@ -109,9 +109,7 @@ internal static class UnionExtensionsSourceBuilder
             builder.AppendLine();
         }
 
-        builder.AppendLine("        );");
-
-        return builder;
+        return builder.AppendLine("        );");
     }
 
     private static StringBuilder AppendMatchAsyncMethodForActions(
@@ -161,9 +159,7 @@ internal static class UnionExtensionsSourceBuilder
             builder.AppendLine();
         }
 
-        builder.AppendLine("        );");
-
-        return builder;
+        return builder.AppendLine("        );");
     }
 
     /// <summary>

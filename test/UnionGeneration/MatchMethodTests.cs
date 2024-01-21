@@ -7,24 +7,25 @@ public sealed class MatchMethodTests
     {
         // Arrange.
         var source = """
-using Dunet;
+            using Dunet;
 
-Shape shape = new Shape.Rectangle(3, 4);
+            Shape shape = new Shape.Rectangle(3, 4);
 
-var area = shape.Match(
-    circle => 3.14 * circle.Radius * circle.Radius,
-    rectangle => rectangle.Length * rectangle.Width,
-    triangle => triangle.Base * triangle.Height / 2
-);
+            var area = shape.Match(
+                circle => 3.14 * circle.Radius * circle.Radius,
+                rectangle => rectangle.Length * rectangle.Width,
+                triangle => triangle.Base * triangle.Height / 2
+            );
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
 
@@ -45,26 +46,27 @@ partial record Shape
     {
         // Arrange.
         var source = $$"""
-using Dunet;
+            using Dunet;
 
-static double GetArea()
-{
-    {{shapeDeclaration}}
-    return shape.Match(
-        circle => 3.14 * circle.Radius * circle.Radius,
-        rectangle => rectangle.Length * rectangle.Width,
-        triangle => triangle.Base * triangle.Height / 2
-    );
-}
+            static double GetArea()
+            {
+                {{shapeDeclaration}}
+                return shape.Match(
+                    circle => 3.14 * circle.Radius * circle.Radius,
+                    rectangle => rectangle.Length * rectangle.Width,
+                    triangle => triangle.Base * triangle.Height / 2
+                );
+            }
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
@@ -87,26 +89,27 @@ partial record Shape
     {
         // Arrange.
         var source = $$"""
-using Dunet;
+            using Dunet;
 
-static string GetKeyword()
-{
-    {{keywordDeclaration}}
-    return keyword.Match(
-        @new => "new",
-        @base => "base",
-        @null => "null"
-    );
-}
+            static string GetKeyword()
+            {
+                {{keywordDeclaration}}
+                return keyword.Match(
+                    @new => "new",
+                    @base => "base",
+                    @null => "null"
+                );
+            }
 
-[Union]
-partial record Keyword
-{
-    partial record New;
-    partial record Base;
-    partial record Null;
-}
-""";
+            [Union]
+            partial record Keyword
+            {
+                partial record New;
+                partial record Base;
+                partial record Null;
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
         var actualKeyword = result.Assembly?.ExecuteStaticMethod<string>("GetKeyword");

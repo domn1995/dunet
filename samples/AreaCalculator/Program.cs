@@ -11,9 +11,9 @@ Console.WriteLine($"Triangle area: {GetArea(triangle)}");
 
 static double GetArea(Shape shape) =>
     shape.Match(
-        circle => Math.PI * circle.Radius * circle.Radius,
-        rectangle => rectangle.Length * rectangle.Width,
-        triangle => triangle.Base * triangle.Height / 2
+        static circle => Math.PI * circle.Radius * circle.Radius,
+        static rectangle => rectangle.Length * rectangle.Width,
+        static triangle => triangle.Base * triangle.Height / 2
     );
 
 [Union]

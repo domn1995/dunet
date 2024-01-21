@@ -9,23 +9,23 @@ public sealed class UnwrapTests
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var value = GetValue();
+            var value = GetValue();
 
-static int GetValue()
-{
-    var option = new Option.Some(1);
-    return option.UnwrapSome().Value;
-}
+            static int GetValue()
+            {
+                var option = new Option.Some(1);
+                return option.UnwrapSome().Value;
+            }
 
-[Union]
-public partial record Option
-{
-    public partial record Some(int Value);
-    public partial record None;
-}
-""";
+            [Union]
+            public partial record Option
+            {
+                public partial record Some(int Value);
+                public partial record None;
+            }
+            """;
 
         // Act.
         var compilation = Compiler.Compile(programCs);
@@ -43,23 +43,23 @@ public partial record Option
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var value = GetValue();
+            var value = GetValue();
 
-static int GetValue()
-{
-    var option = new Option<int>.Some(1);
-    return option.UnwrapSome().Value;
-}
+            static int GetValue()
+            {
+                var option = new Option<int>.Some(1);
+                return option.UnwrapSome().Value;
+            }
 
-[Union]
-public partial record Option<T>
-{
-    public partial record Some(T Value);
-    public partial record None;
-}
-""";
+            [Union]
+            public partial record Option<T>
+            {
+                public partial record Some(T Value);
+                public partial record None;
+            }
+            """;
 
         // Act.
         var compilation = Compiler.Compile(programCs);
@@ -77,23 +77,23 @@ public partial record Option<T>
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var value = GetValue();
+            var value = GetValue();
 
-static int GetValue()
-{
-    var option = new Option.None();
-    return option.UnwrapSome().Value;
-}
+            static int GetValue()
+            {
+                var option = new Option.None();
+                return option.UnwrapSome().Value;
+            }
 
-[Union]
-public partial record Option
-{
-    public partial record Some(int Value);
-    public partial record None;
-}
-""";
+            [Union]
+            public partial record Option
+            {
+                public partial record Some(int Value);
+                public partial record None;
+            }
+            """;
 
         // Act.
         var compilation = Compiler.Compile(programCs);

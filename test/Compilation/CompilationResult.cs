@@ -1,6 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 namespace Dunet.Test.Compilation;
 

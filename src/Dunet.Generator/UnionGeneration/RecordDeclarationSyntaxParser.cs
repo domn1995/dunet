@@ -18,8 +18,7 @@ internal static class RecordDeclarationSyntaxParser
         this RecordDeclarationSyntax record
     ) =>
         record
-            .TypeParameterList
-            ?.Parameters
+            .TypeParameterList?.Parameters
             .Select(static typeParam => new TypeParameter(typeParam.Identifier.ToString()));
 
     /// <summary>
@@ -30,9 +29,9 @@ internal static class RecordDeclarationSyntaxParser
     public static IEnumerable<TypeParameterConstraint> GetTypeParameterConstraints(
         this RecordDeclarationSyntax record
     ) =>
-        record
-            .ConstraintClauses
-            .Select(static constraint => new TypeParameterConstraint(constraint.ToString()));
+        record.ConstraintClauses.Select(static constraint => new TypeParameterConstraint(
+            constraint.ToString()
+        ));
 
     /// <summary>
     /// Gets the parameters in this record's primary constructor.
@@ -45,18 +44,14 @@ internal static class RecordDeclarationSyntaxParser
         SemanticModel semanticModel
     ) =>
         record
-            .ParameterList
-            ?.Parameters
-            .Select(
-                parameter =>
-                    new Parameter(
-                        Type: new ParameterType(
-                            Identifier: parameter.Type?.ToString() ?? "",
-                            IsInterface: parameter.Type.IsInterfaceType(semanticModel)
-                        ),
-                        Identifier: parameter.Identifier.ToString()
-                    )
-            );
+            .ParameterList?.Parameters
+            .Select(parameter => new Parameter(
+                Type: new ParameterType(
+                    Identifier: parameter.Type?.ToString() ?? "",
+                    IsInterface: parameter.Type.IsInterfaceType(semanticModel)
+                ),
+                Identifier: parameter.Identifier.ToString()
+            ));
 
     /// <summary>
     /// Gets the properties declared in this record.
@@ -69,21 +64,17 @@ internal static class RecordDeclarationSyntaxParser
         SemanticModel semanticModel
     ) =>
         record
-            .Members
-            .OfType<PropertyDeclarationSyntax>()
-            .Select(
-                propertyDeclaration =>
-                    new Property(
-                        Type: new PropertyType(
-                            Identifier: propertyDeclaration.Type.ToString(),
-                            IsInterface: propertyDeclaration.Type.IsInterfaceType(semanticModel)
-                        ),
-                        Identifier: propertyDeclaration.Identifier.ToString(),
-                        IsRequired: propertyDeclaration
-                            .Modifiers
-                            .Any(static modifier => modifier.Value is "required")
-                    )
-            );
+            .Members.OfType<PropertyDeclarationSyntax>()
+            .Select(propertyDeclaration => new Property(
+                Type: new PropertyType(
+                    Identifier: propertyDeclaration.Type.ToString(),
+                    IsInterface: propertyDeclaration.Type.IsInterfaceType(semanticModel)
+                ),
+                Identifier: propertyDeclaration.Identifier.ToString(),
+                IsRequired: propertyDeclaration.Modifiers.Any(static modifier =>
+                    modifier.Value is "required"
+                )
+            ));
 
     /// <summary>
     /// Gets the record declarations within this record declaration.
@@ -99,19 +90,16 @@ internal static class RecordDeclarationSyntaxParser
             .DescendantNodes()
             .Where(static node => node.IsKind(SyntaxKind.RecordDeclaration))
             .OfType<RecordDeclarationSyntax>()
-            .Select(
-                nestedRecord =>
-                    new VariantDeclaration()
-                    {
-                        Identifier = nestedRecord.Identifier.ToString(),
-                        TypeParameters =
-                            nestedRecord.GetTypeParameters()?.ToImmutableEquatableArray()
-                            ?? ImmutableEquatableArray.Empty<TypeParameter>(),
-                        Parameters =
-                            nestedRecord.GetParameters(semanticModel)?.ToImmutableEquatableArray()
-                            ?? ImmutableEquatableArray.Empty<Parameter>(),
-                    }
-            );
+            .Select(nestedRecord => new VariantDeclaration()
+            {
+                Identifier = nestedRecord.Identifier.ToString(),
+                TypeParameters =
+                    nestedRecord.GetTypeParameters()?.ToImmutableEquatableArray()
+                    ?? ImmutableEquatableArray.Empty<TypeParameter>(),
+                Parameters =
+                    nestedRecord.GetParameters(semanticModel)?.ToImmutableEquatableArray()
+                    ?? ImmutableEquatableArray.Empty<Parameter>(),
+            });
 
     /// <summary>
     /// Determines whether this record declaration is decorated by this library's marker attribute:
@@ -132,8 +120,7 @@ internal static class RecordDeclarationSyntaxParser
             semanticModel.GetSymbolInfo(attributeSyntax).Symbol?.ContainingType;
 
         return record
-            .AttributeLists
-            .SelectMany(static attributeListSyntax => attributeListSyntax.Attributes)
+            .AttributeLists.SelectMany(static attributeListSyntax => attributeListSyntax.Attributes)
             .Select(getDecoratedType)
             .Select(static attributeSymbol => attributeSymbol?.ToDisplayString())
             .Any(static attributeName => attributeName is "Dunet.UnionAttribute");

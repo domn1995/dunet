@@ -6,18 +6,19 @@ public sealed class GenericGenerationTests
     public void UnionTypeMayHaveGenericParameter()
     {
         var programCs = """
-using Dunet;
+            using Dunet;
 
-Option<int> some = new Option<int>.Some(1);
-Option<int> none = new Option<int>.None();
+            Option<int> some = new Option<int>.Some(1);
+            Option<int> none = new Option<int>.None();
 
-[Union]
-partial record Option<T>
-{
-    partial record Some(T Value);
-    partial record None();
-}
-""";
+            [Union]
+            partial record Option<T>
+            {
+                partial record Some(T Value);
+                partial record None();
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 
@@ -31,18 +32,19 @@ partial record Option<T>
     public void UnionVariantMayNotHaveGenericParameter()
     {
         var programCs = """
-using Dunet;
+            using Dunet;
 
-Option some = new Option.Some<int>(1);
-Option none = new Option.None();
+            Option some = new Option.Some<int>(1);
+            Option none = new Option.None();
 
-[Union]
-partial record Option
-{
-    partial record Some<T>(T Value);
-    partial record None();
-}
-""";
+            [Union]
+            partial record Option
+            {
+                partial record Some<T>(T Value);
+                partial record None();
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
@@ -63,36 +65,36 @@ partial record Option
     )
     {
         var programCs = $$"""
-using Dunet;
-using System.Globalization;
+            using Dunet;
+            using System.Globalization;
 
-static string GetResult() => Divide() switch
-{
-    Option<double>.Some some => some.Value.ToString(CultureInfo.InvariantCulture),
-    Option<double>.None none => "Error: division by zero.",
-    _ => throw new System.InvalidOperationException(),
-};
+            static string GetResult() => Divide() switch
+            {
+                Option<double>.Some some => some.Value.ToString(CultureInfo.InvariantCulture),
+                Option<double>.None none => "Error: division by zero.",
+                _ => throw new System.InvalidOperationException(),
+            };
 
-static Option<double> Divide()
-{
-    var dividend = {{dividend}};
-    var divisor = {{divisor}};
+            static Option<double> Divide()
+            {
+                var dividend = {{dividend}};
+                var divisor = {{divisor}};
 
-    if (divisor is 0)
-    {
-        return new Option<double>.None();
-    }
+                if (divisor is 0)
+                {
+                    return new Option<double>.None();
+                }
 
-    return new Option<double>.Some((double)dividend / divisor);
-}
+                return new Option<double>.Some((double)dividend / divisor);
+            }
 
-[Union]
-partial record Option<T>
-{
-    partial record Some(T Value);
-    partial record None();
-}
-""";
+            [Union]
+            partial record Option<T>
+            {
+                partial record Some(T Value);
+                partial record None();
+            }
+            """;
 
         // Act.
         var result = Compiler.Compile(programCs);
@@ -114,23 +116,24 @@ partial record Option<T>
     )
     {
         var programCs = $$"""
-using System;
-using Dunet;
+            using System;
+            using Dunet;
 
-static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
+            static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
 
-static string GetActualMessage() => DoWork().Match(
-    success => success.Value,
-    failure => failure.Error.Message
-);
+            static string GetActualMessage() => DoWork().Match(
+                success => success.Value,
+                failure => failure.Error.Message
+            );
 
-[Union]
-partial record Result<TFailure, TSuccess>
-{
-    partial record Success(TSuccess Value);
-    partial record Failure(TFailure Error);
-}
-""";
+            [Union]
+            partial record Result<TFailure, TSuccess>
+            {
+                partial record Success(TSuccess Value);
+                partial record Failure(TFailure Error);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
         var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");
@@ -146,18 +149,19 @@ partial record Result<TFailure, TSuccess>
     public void SupportsGenericTypeParameterConstraints()
     {
         var programCs = """
-using System;
-using Dunet;
+            using System;
+            using Dunet;
 
-var result = new Result<string, string>.Success("Can't do this.");
+            var result = new Result<string, string>.Success("Can't do this.");
 
-[Union]
-partial record Result<TFailure, TSuccess> where TFailure : Exception
-{
-    partial record Success(TSuccess Value);
-    partial record Failure(TFailure Error);
-}
-""";
+            [Union]
+            partial record Result<TFailure, TSuccess> where TFailure : Exception
+            {
+                partial record Success(TSuccess Value);
+                partial record Failure(TFailure Error);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
@@ -178,21 +182,22 @@ partial record Result<TFailure, TSuccess> where TFailure : Exception
     public void SupportsMultipleGenericTypeParameterConstraints()
     {
         var programCs = $$"""
-using System;
-using Dunet;
+            using System;
+            using Dunet;
 
-var result1 = new Result<string, string>.Success("Can't do this.");
-var result2 = new Result<Exception, int>.Success(0);
+            var result1 = new Result<string, string>.Success("Can't do this.");
+            var result2 = new Result<Exception, int>.Success(0);
 
-[Union]
-partial record Result<TFailure, TSuccess>
-    where TFailure : notnull, Exception
-    where TSuccess : class
-{
-    partial record Success(TSuccess Value);
-    partial record Failure(TFailure Error);
-}
-""";
+            [Union]
+            partial record Result<TFailure, TSuccess>
+                where TFailure : notnull, Exception
+                where TSuccess : class
+            {
+                partial record Success(TSuccess Value);
+                partial record Failure(TFailure Error);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());

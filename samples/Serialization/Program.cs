@@ -1,6 +1,6 @@
-﻿using Dunet;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Dunet;
 using static Shape;
 
 var circle = new Circle(10);
@@ -33,7 +33,7 @@ var deserializedShapes = JsonSerializer.Deserialize<Shape[]>(
         }
     ]
     """,
-    // So we recognize camelCase properties.
+    // So we recognize camel case properties.
     new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
 );
 

@@ -15,39 +15,40 @@ public sealed class NestedGenerationTests
     {
         // Arrange.
         var nestedCs = """
-using Dunet;
+            using Dunet;
 
-namespace NestedTests;
+            namespace NestedTests;
 
-public partial class Parent1
-{
-    public partial class Parent2
-    {
-        public partial class Parent3
-        {
-            [Union]
-            public partial record Nested
+            public partial class Parent1
             {
-                public partial record Variant1;
-                public partial record Variant2;
+                public partial class Parent2
+                {
+                    public partial class Parent3
+                    {
+                        [Union]
+                        public partial record Nested
+                        {
+                            public partial record Variant1;
+                            public partial record Variant2;
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-""";
+            """;
+
         var programCs = $$"""
-using System.Threading.Tasks;
-using NestedTests;
+            using System.Threading.Tasks;
+            using NestedTests;
 
-async static Task<int> GetValueAsync() =>
-    await GetNestedAsync().MatchAsync(variant1 => 1, variant2 => 2);
+            async static Task<int> GetValueAsync() =>
+                await GetNestedAsync().MatchAsync(variant1 => 1, variant2 => 2);
 
-async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
-{
-    await Task.Delay(0);
-    return {{unionDeclaration}};
-}
-""";
+            async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
+            {
+                await Task.Delay(0);
+                return {{unionDeclaration}};
+            }
+            """;
 
         // Act.
         var result = Compiler.Compile(nestedCs, programCs);
@@ -73,47 +74,47 @@ async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
     {
         // Arrange.
         var nestedCs = """
-using Dunet;
+            using Dunet;
 
-namespace NestedTests;
+            namespace NestedTests;
 
-public partial class Parent1
-{
-    public partial class Parent2
-    {
-        public partial class Parent3
-        {
-            [Union]
-            public partial record Nested
+            public partial class Parent1
             {
-                public partial record Variant1;
-                public partial record Variant2;
+                public partial class Parent2
+                {
+                    public partial class Parent3
+                    {
+                        [Union]
+                        public partial record Nested
+                        {
+                            public partial record Variant1;
+                            public partial record Variant2;
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-""";
+            """;
         var programCs = $$"""
-using System.Threading.Tasks;
-using NestedTests;
+            using System.Threading.Tasks;
+            using NestedTests;
 
-async static Task<int> GetValueAsync()
-{
-    var value = 0;
-    await GetNestedAsync()
-        .MatchAsync(
-            variant1 => { value = 1; },
-            variant2 => { value = 2; }
-        );
-    return value;
-}
+            async static Task<int> GetValueAsync()
+            {
+                var value = 0;
+                await GetNestedAsync()
+                    .MatchAsync(
+                        variant1 => { value = 1; },
+                        variant2 => { value = 2; }
+                    );
+                return value;
+            }
 
-async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
-{
-    await Task.Delay(0);
-    return {{unionDeclaration}};
-}
-""";
+            async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
+            {
+                await Task.Delay(0);
+                return {{unionDeclaration}};
+            }
+            """;
 
         // Act.
         var result = Compiler.Compile(nestedCs, programCs);

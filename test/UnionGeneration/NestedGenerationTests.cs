@@ -10,31 +10,32 @@ public sealed class NestedGenerationTests
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var foo = Parent.Foo();
-var bar = Parent.Bar();
+            var foo = Parent.Foo();
+            var bar = Parent.Bar();
 
-public partial class Parent
-{
-    [Union]
-    public partial record Nested
-    {
-        public partial record Variant1;
-        public partial record Variant2;
-    }
+            public partial class Parent
+            {
+                [Union]
+                public partial record Nested
+                {
+                    public partial record Variant1;
+                    public partial record Variant2;
+                }
 
-    public static Nested Foo()
-    {
-        return new Nested.Variant1();
-    }
+                public static Nested Foo()
+                {
+                    return new Nested.Variant1();
+                }
 
-    public static Nested Bar()
-    {
-        return new Nested.Variant2();
-    }
-}
-""";
+                public static Nested Bar()
+                {
+                    return new Nested.Variant2();
+                }
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 
@@ -49,37 +50,38 @@ public partial class Parent
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var foo = Parent1.Parent2.Parent3.Foo();
-var bar = Parent1.Parent2.Parent3.Bar();
+            var foo = Parent1.Parent2.Parent3.Foo();
+            var bar = Parent1.Parent2.Parent3.Bar();
 
-public partial class Parent1
-{
-    public partial class Parent2
-    {
-        public partial class Parent3
-        {
-            [Union]
-            public partial record Nested
+            public partial class Parent1
             {
-                public partial record Variant1;
-                public partial record Variant2;
-            }
+                public partial class Parent2
+                {
+                    public partial class Parent3
+                    {
+                        [Union]
+                        public partial record Nested
+                        {
+                            public partial record Variant1;
+                            public partial record Variant2;
+                        }
 
-            public static Nested Foo()
-            {
-                return new Nested.Variant1();
-            }
+                        public static Nested Foo()
+                        {
+                            return new Nested.Variant1();
+                        }
 
-            public static Nested Bar()
-            {
-                return new Nested.Variant2();
+                        public static Nested Bar()
+                        {
+                            return new Nested.Variant2();
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-""";
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 
@@ -92,44 +94,46 @@ public partial class Parent1
     [Fact]
     public void CanReturnDeeplyNestedVariantFromOtherNamespace()
     {
-        var nestedCs = """
-using Dunet;
-
-namespace NestedTests;
-
-public partial class Parent1
-{
-    public partial class Parent2
-    {
-        public partial class Parent3
-        {
-            [Union]
-            public partial record Nested
-            {
-                public partial record Variant1;
-                public partial record Variant2;
-            }
-
-            public static Nested Foo()
-            {
-                return new Nested.Variant1();
-            }
-
-            public static Nested Bar()
-            {
-                return new Nested.Variant2();
-            }
-        }
-    }
-}
-""";
         // Arrange.
-        var programCs = """
-using NestedTests;
+        var nestedCs = """
+            using Dunet;
 
-var foo = Parent1.Parent2.Parent3.Foo();
-var bar = Parent1.Parent2.Parent3.Bar();
-""";
+            namespace NestedTests;
+
+            public partial class Parent1
+            {
+                public partial class Parent2
+                {
+                    public partial class Parent3
+                    {
+                        [Union]
+                        public partial record Nested
+                        {
+                            public partial record Variant1;
+                            public partial record Variant2;
+                        }
+
+                        public static Nested Foo()
+                        {
+                            return new Nested.Variant1();
+                        }
+
+                        public static Nested Bar()
+                        {
+                            return new Nested.Variant2();
+                        }
+                    }
+                }
+            }
+            """;
+
+        var programCs = """
+            using NestedTests;
+
+            var foo = Parent1.Parent2.Parent3.Foo();
+            var bar = Parent1.Parent2.Parent3.Bar();
+            """;
+
         // Act.
         var result = Compiler.Compile(nestedCs, programCs);
 
@@ -144,44 +148,45 @@ var bar = Parent1.Parent2.Parent3.Bar();
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var foo = Parent1.Parent2.Parent3.Foo();
-var bar = Parent1.Parent2.Parent3.Bar();
+            var foo = Parent1.Parent2.Parent3.Foo();
+            var bar = Parent1.Parent2.Parent3.Bar();
 
-public partial class Parent1
-{
-    public partial class Parent2
-    {
-        public partial class Parent3
-        {
-            [Union]
-            public partial record Nested1
+            public partial class Parent1
             {
-                public partial record Variant1;
-                public partial record Variant2;
-            }
+                public partial class Parent2
+                {
+                    public partial class Parent3
+                    {
+                        [Union]
+                        public partial record Nested1
+                        {
+                            public partial record Variant1;
+                            public partial record Variant2;
+                        }
 
-            [Union]
-            public partial record Nested2
-            {
-                public partial record Variant1;
-                public partial record Variant2;
-            }
+                        [Union]
+                        public partial record Nested2
+                        {
+                            public partial record Variant1;
+                            public partial record Variant2;
+                        }
 
-            public static Nested1 Foo()
-            {
-                return new Nested1.Variant1();
-            }
+                        public static Nested1 Foo()
+                        {
+                            return new Nested1.Variant1();
+                        }
 
-            public static Nested2 Bar()
-            {
-                return new Nested2.Variant1();
+                        public static Nested2 Bar()
+                        {
+                            return new Nested2.Variant1();
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-""";
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 

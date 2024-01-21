@@ -13,8 +13,8 @@ public sealed class UnionGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var targets = context.SyntaxProvider
-            .CreateSyntaxProvider(
+        var targets = context
+            .SyntaxProvider.CreateSyntaxProvider(
                 predicate: static (node, _) => node.IsDecoratedRecord(),
                 transform: static (ctx, _) => GetGenerationTarget(ctx)
             )

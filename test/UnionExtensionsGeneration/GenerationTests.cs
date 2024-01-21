@@ -9,36 +9,36 @@ public sealed class GenerationTests
     {
         // Arrange.
         const string shapeCs = """
-using Dunet;
+            using Dunet;
 
-namespace Shapes;
+            namespace Shapes;
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
 
         var programCs = $$"""
-using System.Threading.Tasks;
-using Shapes;
+            using System.Threading.Tasks;
+            using Shapes;
 
-var area = await GetShapeAsync()
-    .MatchAsync(
-        circle => 3.14 * circle.Radius * circle.Radius,
-        rectangle => rectangle.Length * rectangle.Width,
-        triangle => triangle.Base * triangle.Height / 2
-    );
+            var area = await GetShapeAsync()
+                .MatchAsync(
+                    circle => 3.14 * circle.Radius * circle.Radius,
+                    rectangle => rectangle.Length * rectangle.Width,
+                    triangle => triangle.Base * triangle.Height / 2
+                );
 
-async static {{taskType}}<Shape> GetShapeAsync()
-{
-    await Task.Delay(0);
-    return new Shape.Rectangle(3, 4);
-}
-""";
+            async static {{taskType}}<Shape> GetShapeAsync()
+            {
+                await Task.Delay(0);
+                return new Shape.Rectangle(3, 4);
+            }
+            """;
 
         // Act.
         var result = Compiler.Compile(shapeCs, programCs);
@@ -56,38 +56,39 @@ async static {{taskType}}<Shape> GetShapeAsync()
     {
         // Arrange.
         const string shapeCs = """
-using Dunet;
+            using Dunet;
 
-namespace Shapes;
+            namespace Shapes;
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
 
         var programCs = $$"""
-using System.Threading.Tasks;
-using Shapes;
+            using System.Threading.Tasks;
+            using Shapes;
 
-await GetShapeAsync()
-    .MatchAsync(
-        circle => DoNothing(),
-        rectangle => DoNothing(),
-        triangle => DoNothing()
-    );
+            await GetShapeAsync()
+                .MatchAsync(
+                    circle => DoNothing(),
+                    rectangle => DoNothing(),
+                    triangle => DoNothing()
+                );
 
-void DoNothing() { }
+            void DoNothing() { }
 
-async static {{taskType}}<Shape> GetShapeAsync()
-{
-    await Task.Delay(0);
-    return new Shape.Rectangle(3, 4);
-}
-""";
+            async static {{taskType}}<Shape> GetShapeAsync()
+            {
+                await Task.Delay(0);
+                return new Shape.Rectangle(3, 4);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(shapeCs, programCs);
 
@@ -104,30 +105,31 @@ async static {{taskType}}<Shape> GetShapeAsync()
     {
         // Arrange.
         var source = $$"""
-using System.Threading.Tasks;
-using Dunet;
+            using System.Threading.Tasks;
+            using Dunet;
 
-var area = await GetShapeAsync()
-    .MatchAsync(
-        circle => 3.14 * circle.Radius * circle.Radius,
-        rectangle => rectangle.Length * rectangle.Width,
-        triangle => triangle.Base * triangle.Height / 2
-    );
+            var area = await GetShapeAsync()
+                .MatchAsync(
+                    circle => 3.14 * circle.Radius * circle.Radius,
+                    rectangle => rectangle.Length * rectangle.Width,
+                    triangle => triangle.Base * triangle.Height / 2
+                );
 
-async static {{taskType}}<Shape> GetShapeAsync()
-{
-    await Task.Delay(0);
-    return new Shape.Rectangle(3, 4);
-}
+            async static {{taskType}}<Shape> GetShapeAsync()
+            {
+                await Task.Delay(0);
+                return new Shape.Rectangle(3, 4);
+            }
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
@@ -151,27 +153,27 @@ partial record Shape
     {
         // Arrange.
         var emptyCs = """
-using Dunet;
+            using Dunet;
 
-namespace EmptyTest;
+            namespace EmptyTest;
 
-[Union]
-partial record Empty;
-""";
+            [Union]
+            partial record Empty;
+            """;
 
         var source = $$"""
-using System.Threading.Tasks;
-using EmptyTest;
+            using System.Threading.Tasks;
+            using EmptyTest;
 
-var empty = await GetEmptyAsync()
-    .MatchAsync(
-        circle => 3.14 * circle.Radius * circle.Radius,
-        rectangle => rectangle.Length * rectangle.Width,
-        triangle => triangle.Base * triangle.Height / 2
-    );
+            var empty = await GetEmptyAsync()
+                .MatchAsync(
+                    circle => 3.14 * circle.Radius * circle.Radius,
+                    rectangle => rectangle.Length * rectangle.Width,
+                    triangle => triangle.Base * triangle.Height / 2
+                );
 
-async {{taskType}}<Empty> GetEmptyAsync() => (null as Empty)!;
-""";
+            async {{taskType}}<Empty> GetEmptyAsync() => (null as Empty)!;
+            """;
 
         // Act.
         var result = Compiler.Compile(emptyCs, source);

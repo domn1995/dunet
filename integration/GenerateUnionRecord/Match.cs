@@ -1,5 +1,5 @@
-﻿using Dunet.Integration.GenerateUnionRecord.Unions;
-using System.Globalization;
+﻿using System.Globalization;
+using Dunet.Integration.GenerateUnionRecord.Unions;
 
 namespace Dunet.Integration.GenerateUnionRecord;
 

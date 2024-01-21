@@ -39,7 +39,7 @@ internal sealed class Compiler
         );
     }
 
-    private static Microsoft.CodeAnalysis.Compilation CreateCompilation(params string[] sources) =>
+    private static CSharpCompilation CreateCompilation(params string[] sources) =>
         CSharpCompilation.Create(
             "compilation",
             sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
@@ -48,8 +48,17 @@ internal sealed class Compiler
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 // Resolves to System.Runtime.dll, which is needed for the Attribute type
                 // Can't use typeof(Attribute).GetTypeInfo().Assembly.Location because it resolves to System.Private.CoreLib.dll
-                MetadataReference.CreateFromFile(AppDomain.CurrentDomain.GetAssemblies().First(f => f.FullName?.Contains("System.Runtime") == true).Location),
-                MetadataReference.CreateFromFile(typeof(UnionAttribute).GetTypeInfo().Assembly.Location)
+                MetadataReference.CreateFromFile(
+                    AppDomain
+                        .CurrentDomain.GetAssemblies()
+                        .First(static assembly =>
+                            assembly.FullName?.Contains("System.Runtime") is true
+                        )
+                        .Location
+                ),
+                MetadataReference.CreateFromFile(
+                    typeof(UnionAttribute).GetTypeInfo().Assembly.Location
+                )
             ],
             new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
