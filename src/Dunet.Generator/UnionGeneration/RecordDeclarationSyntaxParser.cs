@@ -14,12 +14,12 @@ internal static class RecordDeclarationSyntaxParser
     /// </summary>
     /// <param name="record">This record declaration.</param>
     /// <returns>The sequence of type parameters, if any. Otherwise, <see langword="null"/>.</returns>
-    public static IEnumerable<TypeParameter>? GetTypeParameters(
+    public static IEnumerable<TypeParameter> GetTypeParameters(
         this RecordDeclarationSyntax record
     ) =>
         record
             .TypeParameterList?.Parameters
-            .Select(static typeParam => new TypeParameter(typeParam.Identifier.ToString()));
+            .Select(static typeParam => new TypeParameter(typeParam.Identifier.ToString())) ?? [];
 
     /// <summary>
     /// Gets the type parameter constraints of this record declaration.
@@ -39,7 +39,7 @@ internal static class RecordDeclarationSyntaxParser
     /// <param name="record">This record declaration.</param>
     /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
     /// <returns>The sequence of parameters, if any. Otherwise, <see langword="null"/>.</returns>
-    public static IEnumerable<Parameter>? GetParameters(
+    public static IEnumerable<Parameter> GetParameters(
         this RecordDeclarationSyntax record,
         SemanticModel semanticModel
     ) =>
@@ -51,7 +51,7 @@ internal static class RecordDeclarationSyntaxParser
                     IsInterface: parameter.Type.IsInterfaceType(semanticModel)
                 ),
                 Identifier: parameter.Identifier.ToString()
-            ));
+            )) ?? [];
 
     /// <summary>
     /// Gets the properties declared in this record.
@@ -93,12 +93,8 @@ internal static class RecordDeclarationSyntaxParser
             .Select(nestedRecord => new VariantDeclaration()
             {
                 Identifier = nestedRecord.Identifier.ToString(),
-                TypeParameters =
-                    nestedRecord.GetTypeParameters()?.ToImmutableEquatableArray()
-                    ?? ImmutableEquatableArray.Empty<TypeParameter>(),
-                Parameters =
-                    nestedRecord.GetParameters(semanticModel)?.ToImmutableEquatableArray()
-                    ?? ImmutableEquatableArray.Empty<Parameter>(),
+                TypeParameters = nestedRecord.GetTypeParameters().ToImmutableEquatableArray(),
+                Parameters = nestedRecord.GetParameters(semanticModel).ToImmutableEquatableArray()
             });
 
     /// <summary>

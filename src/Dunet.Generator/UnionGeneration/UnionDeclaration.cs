@@ -32,9 +32,8 @@ internal sealed record UnionDeclaration(
         {
             var allParameterTypes = Variants
                 .SelectMany(static variant => variant.Parameters)
-                .Select(static parameter => parameter.Type.Identifier)
-                .ToList();
-            var numAllParameterTypes = allParameterTypes.Count;
+                .Select(static parameter => parameter.Type.Identifier);
+            var numAllParameterTypes = allParameterTypes.Count();
             var numUniqueParameterTypes = allParameterTypes.Distinct().Count();
             return numAllParameterTypes == numUniqueParameterTypes;
         };

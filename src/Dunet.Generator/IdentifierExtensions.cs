@@ -7,8 +7,7 @@ internal static class IdentifierExtensions
         {
             // If the identifier starts with '@', it's impossible to collide with a keyword, so we
             // can just return it.
-            ['@', .. _]
-                => identifier,
+            var s when s.StartsWith("@") => identifier,
             // If it's any other character:
             // - Prepend '@' to prevent keyword conflicts.
             // - Lowercase the first character to abide by C# style rules for method parameter

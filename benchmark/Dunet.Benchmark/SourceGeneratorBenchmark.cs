@@ -46,7 +46,7 @@ public class SourceGeneratorBenchmarks
         }
         """;
 
-    /// Guaranteed to be initialized by Benchmark setup.
+    /// Guaranteed to be initialized by the benchmark global setup.
     private GeneratorDriver driver = null!;
     private Compilation compilation = null!;
 

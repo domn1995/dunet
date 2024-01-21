@@ -100,8 +100,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
                 Namespace: @namespace,
                 Accessibility: recordSymbol.DeclaredAccessibility,
                 Name: recordSymbol.Name,
-                TypeParameters: typeParameters?.ToImmutableEquatableArray()
-                    ?? ImmutableEquatableArray.Empty<TypeParameter>(),
+                TypeParameters: typeParameters.ToImmutableEquatableArray(),
                 TypeParameterConstraints: typeParameterConstraints.ToImmutableEquatableArray(),
                 Variants: variants.ToImmutableEquatableArray(),
                 ParentTypes: parentTypes.ToImmutableEquatableArray(),
