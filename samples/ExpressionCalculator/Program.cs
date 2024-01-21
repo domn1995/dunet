@@ -19,7 +19,7 @@ Console.WriteLine(result); // 5
 
 static int Evaluate(Dictionary<string, int> env, Expression exp) =>
     exp.Match(
-        number => number.Value,
+        static number => number.Value,
         add => Evaluate(env, add.Left) + Evaluate(env, add.Right),
         multiply => Evaluate(env, multiply.Left) * Evaluate(env, multiply.Right),
         variable => env[variable.Value]

@@ -17,36 +17,36 @@ public sealed class MatchSpecificUnionValueAsyncTests
     {
         // Arrange.
         const string shapeCs = """
-using Dunet;
+            using Dunet;
 
-namespace Shapes;
+            namespace Shapes;
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
 
         var programCs = $$"""
-using System.Threading.Tasks;
-using Shapes;
+            using System.Threading.Tasks;
+            using Shapes;
 
-async static {{taskType}}<Shape> GetShapeAsync()
-{
-    await Task.Delay(0);
-    return {{shapeDeclaration}};
-};
+            async static {{taskType}}<Shape> GetShapeAsync()
+            {
+                await Task.Delay(0);
+                return {{shapeDeclaration}};
+            };
 
-async static Task<double> GetAreaAsync() =>
-    await GetShapeAsync()
-        .MatchCircleAsync(
-            circle => 3.14 * circle.Radius * circle.Radius,
-            () => -1d
-        );
-""";
+            async static Task<double> GetAreaAsync() =>
+                await GetShapeAsync()
+                    .MatchCircleAsync(
+                        circle => 3.14 * circle.Radius * circle.Radius,
+                        () => -1d
+                    );
+            """;
 
         // Act.
         var result = Compiler.Compile(shapeCs, programCs);
@@ -74,40 +74,40 @@ async static Task<double> GetAreaAsync() =>
     {
         // Arrange.
         const string shapeCs = """
-using Dunet;
+            using Dunet;
 
-namespace Shapes;
+            namespace Shapes;
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
 
         var programCs = $$"""
-using System.Threading.Tasks;
-using Shapes;
+            using System.Threading.Tasks;
+            using Shapes;
 
-async static {{taskType}}<Shape> GetShapeAsync()
-{
-    await Task.Delay(0);
-    return {{shapeDeclaration}};
-};
+            async static {{taskType}}<Shape> GetShapeAsync()
+            {
+                await Task.Delay(0);
+                return {{shapeDeclaration}};
+            };
 
-async static Task<double> GetAreaAsync()
-{
-    var value = 0d;
-    await GetShapeAsync()
-        .MatchCircleAsync(
-            circle => { value = 3.14 * circle.Radius * circle.Radius; },
-            () => { value = -1; }
-        );
-    return value;
-}
-""";
+            async static Task<double> GetAreaAsync()
+            {
+                var value = 0d;
+                await GetShapeAsync()
+                    .MatchCircleAsync(
+                        circle => { value = 3.14 * circle.Radius * circle.Radius; },
+                        () => { value = -1; }
+                    );
+                return value;
+            }
+            """;
 
         // Act.
         var result = Compiler.Compile(shapeCs, programCs);

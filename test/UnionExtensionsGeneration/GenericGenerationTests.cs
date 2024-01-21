@@ -15,27 +15,27 @@ public sealed class GenericGenerationTests
     {
         // Arrange.
         var optionCs = """
-using Dunet;
+            using Dunet;
 
-namespace GenericsTest;
+            namespace GenericsTest;
 
-[Union]
-partial record Option<T>
-{
-    partial record Some(T Value);
-    partial record None();
-}
-""";
+            [Union]
+            partial record Option<T>
+            {
+                partial record Some(T Value);
+                partial record None();
+            }
+            """;
         var programCs = $"""
-using System.Threading.Tasks;
-using GenericsTest;
+            using System.Threading.Tasks;
+            using GenericsTest;
 
-async static Task<int> GetValueAsync() =>
-    await GetOptionAsync().MatchAsync(some => some.Value, none => 0);
+            async static Task<int> GetValueAsync() =>
+                await GetOptionAsync().MatchAsync(some => some.Value, none => 0);
 
-async static {taskType}<Option<int>> GetOptionAsync() =>
-    await Task.FromResult({optionDeclaration});
-""";
+            async static {taskType}<Option<int>> GetOptionAsync() =>
+                await Task.FromResult({optionDeclaration});
+            """;
 
         // Act.
         var result = Compiler.Compile(optionCs, programCs);
@@ -61,35 +61,35 @@ async static {taskType}<Option<int>> GetOptionAsync() =>
     {
         // Arrange.
         var optionCs = """
-using Dunet;
+            using Dunet;
 
-namespace GenericsTest;
+            namespace GenericsTest;
 
-[Union]
-partial record Option<T>
-{
-    partial record Some(T Value);
-    partial record None();
-}
-""";
+            [Union]
+            partial record Option<T>
+            {
+                partial record Some(T Value);
+                partial record None();
+            }
+            """;
         var programCs = $$"""
-using System.Threading.Tasks;
-using GenericsTest;
+            using System.Threading.Tasks;
+            using GenericsTest;
 
-async static Task<int> GetValueAsync()
-{
-    var value = 0;
-    await GetOptionAsync()
-        .MatchAsync(
-            some => { value = some.Value; },
-            none => { value = -1; }
-        );
-    return value;
-}
+            async static Task<int> GetValueAsync()
+            {
+                var value = 0;
+                await GetOptionAsync()
+                    .MatchAsync(
+                        some => { value = some.Value; },
+                        none => { value = -1; }
+                    );
+                return value;
+            }
 
-async static {{taskType}}<Option<int>> GetOptionAsync() =>
-    await Task.FromResult({{optionDeclaration}});
-""";
+            async static {{taskType}}<Option<int>> GetOptionAsync() =>
+                await Task.FromResult({{optionDeclaration}});
+            """;
 
         // Act.
         var result = Compiler.Compile(optionCs, programCs);

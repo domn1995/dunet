@@ -2,11 +2,8 @@
 
 namespace Dunet.Generator.UnionGeneration;
 
-public static class ImmutableEquatableArray
+internal static class ImmutableEquatableArray
 {
-    public static ImmutableEquatableArray<T> Empty<T>()
-        where T : IEquatable<T> => ImmutableEquatableArray<T>.Empty;
-
     public static ImmutableEquatableArray<T> ToImmutableEquatableArray<T>(
         this IEnumerable<T> values
     )
@@ -16,20 +13,19 @@ public static class ImmutableEquatableArray
 /// <summary>
 /// Provides an immutable list implementation which implements sequence equality.
 /// </summary>
-public sealed class ImmutableEquatableArray<T>(IEnumerable<T> values)
-    : IEquatable<ImmutableEquatableArray<T>>, IReadOnlyList<T>
+internal sealed class ImmutableEquatableArray<T>(IEnumerable<T> values)
+    : IEquatable<ImmutableEquatableArray<T>>,
+        IReadOnlyList<T>
     where T : IEquatable<T>
 {
-    private readonly T[] _values = values.ToArray();
+    private readonly T[] values = values.ToArray();
 
-    public static ImmutableEquatableArray<T> Empty { get; } = new([]);
+    public T this[int index] => values[index];
 
-    public T this[int index] => _values[index];
-
-    public int Count => _values.Length;
+    public int Count => values.Length;
 
     public bool Equals(ImmutableEquatableArray<T>? other) =>
-        other != null && ((ReadOnlySpan<T>)_values).SequenceEqual(other._values);
+        other is not null && ((ReadOnlySpan<T>)values).SequenceEqual(other.values);
 
     public override bool Equals(object? obj) =>
         obj is ImmutableEquatableArray<T> other && Equals(other);
@@ -37,7 +33,7 @@ public sealed class ImmutableEquatableArray<T>(IEnumerable<T> values)
     public override int GetHashCode()
     {
         var hash = 0;
-        foreach (T value in _values)
+        foreach (T value in values)
         {
             hash = Combine(hash, value.GetHashCode());
         }
@@ -53,36 +49,36 @@ public sealed class ImmutableEquatableArray<T>(IEnumerable<T> values)
         return hash;
     }
 
-    public Enumerator GetEnumerator() => new(_values);
+    public Enumerator GetEnumerator() => new(values);
 
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() => ((IEnumerable<T>)_values).GetEnumerator();
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() => ((IEnumerable<T>)values).GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => values.GetEnumerator();
 
     public struct Enumerator
     {
-        private readonly T[] _values;
-        private int _index;
+        private readonly T[] values;
+        private int index;
 
         internal Enumerator(T[] values)
         {
-            _values = values;
-            _index = -1;
+            this.values = values;
+            index = -1;
         }
 
         public bool MoveNext()
         {
-            var newIndex = _index + 1;
+            var newIndex = index + 1;
 
-            if ((uint)newIndex < (uint)_values.Length)
+            if ((uint)newIndex < (uint)values.Length)
             {
-                _index = newIndex;
+                index = newIndex;
                 return true;
             }
 
             return false;
         }
 
-        public readonly T Current => _values[_index];
+        public readonly T Current => values[index];
     }
 }

@@ -7,20 +7,20 @@ public sealed class GenerationTests
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-QueryState loading = new QueryState.Loading();
-QueryState success = new QueryState.Success();
-QueryState error = new QueryState.Error();
+            QueryState loading = new QueryState.Loading();
+            QueryState success = new QueryState.Success();
+            QueryState error = new QueryState.Error();
 
-[Union]
-partial record QueryState
-{
-    partial record Loading();
-    partial record Success();
-    partial record Error();
-}
-""";
+            [Union]
+            partial record QueryState
+            {
+                partial record Loading();
+                partial record Success();
+                partial record Error();
+            }
+            """;
 
         // Act.
         var result = Compiler.Compile(programCs);
@@ -36,21 +36,21 @@ partial record QueryState
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var loading = new QueryState.Loading();
-var success = new QueryState.Success();
-var error = new QueryState.Error();
+            var loading = new QueryState.Loading();
+            var success = new QueryState.Success();
+            var error = new QueryState.Error();
 
-[Union]
-partial record QueryState
-{
-    partial record Loading();
-    partial record Success();
-    partial record Error();
-}
+            [Union]
+            partial record QueryState
+            {
+                partial record Loading();
+                partial record Success();
+                partial record Error();
+            }
 
-""";
+            """;
 
         // Act.
         var result = Compiler.Compile(programCs);
@@ -66,16 +66,17 @@ partial record QueryState
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-var single = new Single.OnlyVariant();
+            var single = new Single.OnlyVariant();
 
-[Union]
-partial record Single
-{
-    partial record OnlyVariant();
-}
-""";
+            [Union]
+            partial record Single
+            {
+                partial record OnlyVariant();
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 
@@ -90,14 +91,15 @@ partial record Single
     {
         // Arrange.
         var programCs = """
-using Dunet;
+            using Dunet;
 
-// Must have something for top level program to compile.
-var dummy = 1;
+            // Must have something for top level program to compile.
+            var dummy = 1;
 
-[Union]
-partial record Empty;
-""";
+            [Union]
+            partial record Empty;
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 
@@ -112,19 +114,20 @@ partial record Empty;
     {
         // Arrange.
         var programCs = """
-using Dunet;
-using System;
+            using Dunet;
+            using System;
 
-var success = new Result.Success(Guid.NewGuid());
-var failure = new Result.Failure(new Exception("Boom!"));
+            var success = new Result.Success(Guid.NewGuid());
+            var failure = new Result.Failure(new Exception("Boom!"));
 
-[Union]
-partial record Result
-{
-    partial record Success(Guid Id);
-    partial record Failure(Exception Error);
-}
-""";
+            [Union]
+            partial record Result
+            {
+                partial record Success(Guid Id);
+                partial record Failure(Exception Error);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 
@@ -139,35 +142,36 @@ partial record Result
     {
         // Arrange.
         var dataCs = """
-namespace ComplexTypes;
+            namespace ComplexTypes;
 
-public record Data(string Value);
-""";
+            public record Data(string Value);
+            """;
 
         var resultCs = """
-using Dunet;
-using ComplexTypes;
-using System;
+            using Dunet;
+            using ComplexTypes;
+            using System;
 
-namespace Results;
+            namespace Results;
 
-[Union]
-partial record Result
-{
-    partial record Success(Data Value);
-    partial record Failure(Exception Error);
-}
-""";
+            [Union]
+            partial record Result
+            {
+                partial record Success(Data Value);
+                partial record Failure(Exception Error);
+            }
+            """;
 
         var programCs = """
-using System;
-using ComplexTypes;
-using Results;
+            using System;
+            using ComplexTypes;
+            using Results;
 
-// Must have something for top level program to execute.
-var success = new Result.Success(new Data("foo"));
-var failure = new Result.Failure(new Exception("bar"));
-""";
+            // Must have something for top level program to execute.
+            var success = new Result.Success(new Data("foo"));
+            var failure = new Result.Failure(new Exception("bar"));
+            """;
+
         // Act.
         var result = Compiler.Compile(dataCs, resultCs, programCs);
 
@@ -182,23 +186,24 @@ var failure = new Result.Failure(new Exception("bar"));
     {
         // Arrange.
         var programCs = """
-using Dunet;
-using System;
+            using Dunet;
+            using System;
 
-Result result1 = new Result.Success(Guid.NewGuid()) { Name = "Success" };
-Result result2 = new Result.Failure(new Exception("Boom!")) { Name = "Failure" };
+            Result result1 = new Result.Success(Guid.NewGuid()) { Name = "Success" };
+            Result result2 = new Result.Failure(new Exception("Boom!")) { Name = "Failure" };
 
-var result1Name = result1.Name;
-var result2Name = result2.Name;
+            var result1Name = result1.Name;
+            var result2Name = result2.Name;
 
-[Union]
-partial record Result
-{
-    public required string Name { get; init; }
-    partial record Success(Guid Id);
-    partial record Failure(Exception Error);
-}
-""";
+            [Union]
+            partial record Result
+            {
+                public required string Name { get; init; }
+                partial record Success(Guid Id);
+                partial record Failure(Exception Error);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(programCs);
 

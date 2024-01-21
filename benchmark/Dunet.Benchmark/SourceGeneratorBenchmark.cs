@@ -1,8 +1,8 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Reflection;
+using BenchmarkDotNet.Attributes;
+using Dunet.Generator.UnionGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Reflection;
-using Dunet.Generator.UnionGeneration;
 
 namespace Dunet.Benchmark;
 
@@ -10,8 +10,7 @@ namespace Dunet.Benchmark;
 [InProcess]
 public class SourceGeneratorBenchmarks
 {
-    const string sourceText =
-        """
+    const string sourceText = """
         using Dunet;
 
         [Union]
@@ -46,52 +45,62 @@ public class SourceGeneratorBenchmarks
             partial record None();
         }
         """;
-        
-    private GeneratorDriver? _driver;
-    private Compilation? _compilation;
 
-    private (Compilation, CSharpGeneratorDriver) Setup(string source)
+    /// Guaranteed to be initialized by the benchmark global setup.
+    private GeneratorDriver driver = null!;
+    private Compilation compilation = null!;
+
+    private static (Compilation, CSharpGeneratorDriver) SetUp(string source)
     {
-        var compilation = CreateCompilation(source);
-        if (compilation == null)
-            throw new InvalidOperationException("Compilation returned null");
+        var compilation =
+            CreateCompilation(source)
+            ?? throw new InvalidOperationException("Compilation returned null");
 
         var unionGenerator = new UnionGenerator();
 
         var driver = CSharpGeneratorDriver.Create(unionGenerator);
-        
+
         return (compilation, driver);
     }
 
     [GlobalSetup(Target = nameof(Compile))]
-    public void SetupCompile() => (_compilation, _driver) = Setup(sourceText);
-    
+    public void SetUpCompile() => (compilation, driver) = SetUp(sourceText);
+
     [GlobalSetup(Target = nameof(Cached))]
-    public void SetupCached()
+    public void SetUpCached()
     {
-        (_compilation, var driver) = Setup(sourceText);
-        _driver = driver.RunGenerators(_compilation);
+        (compilation, var driver) = SetUp(sourceText);
+        this.driver = driver.RunGenerators(compilation);
     }
 
     [Benchmark]
-    public GeneratorDriver Compile() => _driver!.RunGeneratorsAndUpdateCompilation(_compilation!, out _, out _);
-    
-    [Benchmark]
-    public GeneratorDriver Cached() => _driver!.RunGeneratorsAndUpdateCompilation(_compilation!, out _, out _);
+    public GeneratorDriver Compile() =>
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
 
-    private static Compilation CreateCompilation(params string[] sources) =>
+    [Benchmark]
+    public GeneratorDriver Cached() =>
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out _, out _);
+
+    private static CSharpCompilation CreateCompilation(params string[] sources) =>
         CSharpCompilation.Create(
-            "compilation",
-            sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
-            new[]
-            {
+            assemblyName: "compilation",
+            syntaxTrees: sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
+            references:
+            [
                 // Resolves to System.Private.CoreLib.dll
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 // Resolves to System.Runtime.dll, which is needed for the Attribute type
                 // Can't use typeof(Attribute).GetTypeInfo().Assembly.Location because it resolves to System.Private.CoreLib.dll
-                MetadataReference.CreateFromFile(AppDomain.CurrentDomain.GetAssemblies().First(f => f.FullName?.Contains("System.Runtime") == true).Location),
-                MetadataReference.CreateFromFile(typeof(UnionAttribute).GetTypeInfo().Assembly.Location)
-            },
-            new CSharpCompilationOptions(OutputKind.ConsoleApplication)
+                MetadataReference.CreateFromFile(
+                    AppDomain
+                        .CurrentDomain.GetAssemblies()
+                        .First(f => f.FullName?.Contains("System.Runtime") is true)
+                        .Location
+                ),
+                MetadataReference.CreateFromFile(
+                    typeof(UnionAttribute).GetTypeInfo().Assembly.Location
+                )
+            ],
+            options: new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );
 }

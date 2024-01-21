@@ -1,5 +1,5 @@
-﻿using Dunet;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
+using Dunet;
 
 namespace PokemonClient;
 

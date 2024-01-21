@@ -7,26 +7,27 @@ public sealed class SwitchExpressionTests
     {
         // Arrange.
         var source = """
-using Dunet;
+            using Dunet;
 
-Shape circle = new Shape.Circle(3.14);
+            Shape circle = new Shape.Circle(3.14);
 
-var area = circle switch
-{
-    Shape.Rectangle r => r.Length * r.Width,
-    Shape.Circle c => 3.14 * c.Radius * c.Radius,
-    Shape.Triangle t => t.Base * t.Height / 2,
-    _ => 0d,
-};
+            var area = circle switch
+            {
+                Shape.Rectangle r => r.Length * r.Width,
+                Shape.Circle c => 3.14 * c.Radius * c.Radius,
+                Shape.Triangle t => t.Base * t.Height / 2,
+                _ => 0d,
+            };
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
 
@@ -44,28 +45,29 @@ partial record Shape
     {
         // Arrange.
         var source = $$"""
-using Dunet;
+            using Dunet;
 
-static double GetActualArea()
-{
-    {{shapeDeclaration}}
-    return shape switch
-    {
-        Shape.Rectangle r => r.Length * r.Width,
-        Shape.Circle c => 3.14 * c.Radius * c.Radius,
-        Shape.Triangle t => t.Base * t.Height / 2,
-        _ => 0d,
-    };
-}
+            static double GetActualArea()
+            {
+                {{shapeDeclaration}}
+                return shape switch
+                {
+                    Shape.Rectangle r => r.Length * r.Width,
+                    Shape.Circle c => 3.14 * c.Radius * c.Radius,
+                    Shape.Triangle t => t.Base * t.Height / 2,
+                    _ => 0d,
+                };
+            }
 
-[Union]
-partial record Shape
-{
-    partial record Circle(double Radius);
-    partial record Rectangle(double Length, double Width);
-    partial record Triangle(double Base, double Height);
-}
-""";
+            [Union]
+            partial record Shape
+            {
+                partial record Circle(double Radius);
+                partial record Rectangle(double Length, double Width);
+                partial record Triangle(double Base, double Height);
+            }
+            """;
+
         // Act.
         var result = Compiler.Compile(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetActualArea");

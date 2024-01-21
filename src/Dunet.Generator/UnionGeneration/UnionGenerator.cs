@@ -13,8 +13,8 @@ public sealed class UnionGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var targets = context.SyntaxProvider
-            .CreateSyntaxProvider(
+        var targets = context
+            .SyntaxProvider.CreateSyntaxProvider(
                 predicate: static (node, _) => node.IsDecoratedRecord(),
                 transform: static (ctx, _) => GetGenerationTarget(ctx)
             )
@@ -100,8 +100,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
                 Namespace: @namespace,
                 Accessibility: recordSymbol.DeclaredAccessibility,
                 Name: recordSymbol.Name,
-                TypeParameters: typeParameters?.ToImmutableEquatableArray()
-                    ?? ImmutableEquatableArray.Empty<TypeParameter>(),
+                TypeParameters: typeParameters.ToImmutableEquatableArray(),
                 TypeParameterConstraints: typeParameterConstraints.ToImmutableEquatableArray(),
                 Variants: variants.ToImmutableEquatableArray(),
                 ParentTypes: parentTypes.ToImmutableEquatableArray(),
