@@ -56,15 +56,15 @@ internal static class StringBuilderExtensions
             $$"""[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Dunet.Generator", "{{GeneratorVersion}}")]"""
         );
 
-    public static StringBuilder AppendPragmaWarningDisableCa1591Line(this StringBuilder builder) =>
+    public static StringBuilder AppendPragmaWarningDisableCs1591Line(this StringBuilder builder) =>
         builder
-            .AppendLine("// Disable CA1591 - Missing XML comment on public member")
+            .AppendLine("// Disable CS1591 - Missing XML comment on public member")
             .AppendLine("#pragma warning disable 1591");
 
-    public static StringBuilder AppendPragmaWarningRestoreCa1591Line(this StringBuilder builder) =>
+    public static StringBuilder AppendPragmaWarningRestoreCs1591Line(this StringBuilder builder) =>
         builder
-            .AppendLine("// Disable CA1591 - Missing XML comment on public member")
-            .AppendLine("#pragma warning enable 1591");
+            .AppendLine("// Disable CS1591 - Missing XML comment on public member")
+            .AppendLine("#pragma warning restore 1591");
 
     private static string? GeneratorVersion { get; } = GetGeneratorVersion();
 
