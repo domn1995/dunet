@@ -68,47 +68,7 @@ internal static class UnionSourceBuilder
             builder.AppendLine("    }");
         }
 
-        // TODO(jupjohn): extract this out to an extension method
-        // TODO(jupjohn): prelim struct support
-        foreach (var variant in union.Variants)
-        {
-            builder.AppendLine();
-
-            var methodParameters = string.Empty;
-            var constructorParameters = string.Empty;
-
-            if (variant.Parameters.Count > 0)
-            {
-                // TODO(jupjohn): I don't like this
-                var parameters = variant.Parameters
-                    .Select(p => (
-                        Type: p.Type.Identifier,
-                        Property: p.Identifier,
-                        // PropertyName -> propertyName
-                        Parameter: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
-                    ))
-                    .ToArray();
-                methodParameters = string.Join(", ", parameters.Select(p => $"{p.Type} {p.Parameter}"));
-                constructorParameters = string.Join(", ", parameters.Select(p => $"{p.Property}: {p.Parameter}"));
-            }
-
-            builder.Append($"    public static {union.Name}");
-            builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($" As{variant.Identifier}");
-            builder.AppendLine($"({methodParameters})");
-
-            builder.AppendLine("    {");
-            builder.Append("        return ");
-            builder.Append($"new {variant.Identifier}");
-            builder.AppendTypeParams(variant.TypeParameters);
-            builder.Append($"({constructorParameters})");
-            builder.AppendLine(";");
-            builder.AppendLine("    }");
-        }
-
-        // TODO(jupjohn): note in PR about static non-generic class factory methods for generic unions
-        // e.g. Union<string>.AsThing("abc") v.s. Union.AsThing("abc) (generic type inferred)
-
+        builder.AppendFactoryMethods(union);
         builder.AppendLine("}");
 
         foreach (var _ in parentTypes)
@@ -555,6 +515,57 @@ internal static class UnionSourceBuilder
             }
         }
 
+        return builder;
+    }
+
+    private static StringBuilder AppendFactoryMethods(
+        this StringBuilder builder,
+        UnionDeclaration union
+    )
+    {
+        // TODO(jupjohn): prelim struct support
+        foreach (var variant in union.Variants)
+        {
+            // public static Union AsUnionVariantX(T1 t1, T2 t2, ...)
+            // {
+            //     return new Union.UnionVariantX(t1, t2, ...);
+            // }
+
+            var methodParameters = string.Empty;
+            var constructorParameters = string.Empty;
+
+            if (variant.Parameters.Count > 0)
+            {
+                // TODO(jupjohn): I don't like this
+                var parameters = variant.Parameters
+                    .Select(p => (
+                        Type: p.Type.Identifier,
+                        Property: p.Identifier,
+                        // PropertyName -> propertyName
+                        Parameter: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
+                    ))
+                    .ToArray();
+                methodParameters = string.Join(", ", parameters.Select(p => $"{p.Type} {p.Parameter}"));
+                constructorParameters = string.Join(", ", parameters.Select(p => $"{p.Property}: {p.Parameter}"));
+            }
+
+            builder.AppendLine();
+            builder.Append($"    public static {union.Name}");
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.Append($" As{variant.Identifier}");
+            builder.AppendLine($"({methodParameters})");
+
+            builder.AppendLine("    {");
+            builder.Append("        return ");
+            builder.Append($"new {variant.Identifier}");
+            builder.AppendTypeParams(variant.TypeParameters);
+            builder.Append($"({constructorParameters})");
+            builder.AppendLine(";");
+            builder.AppendLine("    }");
+        }
+
+        // TODO(jupjohn): note in PR about static non-generic class factory methods for generic unions
+        // e.g. Union<string>.AsThing("abc") v.s. Union.AsThing("abc) (generic type inferred)
         return builder;
     }
 }
