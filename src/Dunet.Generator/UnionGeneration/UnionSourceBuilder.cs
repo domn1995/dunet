@@ -528,7 +528,7 @@ internal static class UnionSourceBuilder
         {
             // public static Union AsUnionVariantX(T1 t1, T2 t2, ...)
             // {
-            //     return new Union.UnionVariantX(t1, t2, ...);
+            //     return new UnionVariantX(t1, t2, ...);
             // }
 
             var methodParameters = string.Empty;
@@ -552,15 +552,12 @@ internal static class UnionSourceBuilder
             builder.AppendLine();
             builder.Append($"    public static {union.Name}");
             builder.AppendTypeParams(union.TypeParameters);
-            builder.Append($" As{variant.Identifier}");
-            builder.AppendLine($"({methodParameters})");
+            builder.AppendLine($" As{variant.Identifier}({methodParameters})");
 
             builder.AppendLine("    {");
-            builder.Append("        return ");
-            builder.Append($"new {variant.Identifier}");
+            builder.Append($"        return new {variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
-            builder.Append($"({constructorParameters})");
-            builder.AppendLine(";");
+            builder.AppendLine($"({constructorParameters});");
             builder.AppendLine("    }");
         }
 
