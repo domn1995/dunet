@@ -523,7 +523,6 @@ internal static class UnionSourceBuilder
         UnionDeclaration union
     )
     {
-        // TODO(jupjohn): prelim struct support
         foreach (var variant in union.Variants)
         {
             // public static Union AsUnionVariantX(T1 t1, T2 t2, ...)
