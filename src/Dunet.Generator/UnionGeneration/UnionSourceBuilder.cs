@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Dunet.Generator.UnionGeneration;
 
+using FactoryProperty = (string Type, string Property, string Parameter);
+
 internal static class UnionSourceBuilder
 {
     public static string Build(UnionDeclaration union)
@@ -540,7 +542,7 @@ internal static class UnionSourceBuilder
             builder.AppendTypeParams(union.TypeParameters);
             builder.AppendLine($" As{variant.Identifier}(");
 
-            (string PropertyType, string PropertyIdentifier, string ParameterIdentifier)[] allProperties = [..variantProperties, ..unionProperties];
+            FactoryProperty[] allProperties = [..variantProperties, ..unionProperties];
             for (var index = 0; index < allProperties.Length; index++)
             {
                 var parameterSeparator = index != allProperties.Length - 1 ? "," : string.Empty;
@@ -573,8 +575,7 @@ internal static class UnionSourceBuilder
 
         return builder;
 
-        static IEnumerable<(string Type, string Property, string Parameter)>
-            ExtractParameters(IEnumerable<Parameter> parameters)
+        static IEnumerable<FactoryProperty> ExtractParameters(IEnumerable<Parameter> parameters)
         {
             return parameters
                 .Select(p => (
