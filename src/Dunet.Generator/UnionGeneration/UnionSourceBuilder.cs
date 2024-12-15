@@ -530,34 +530,34 @@ internal static class UnionSourceBuilder
             //     return new UnionVariantX(t1, t2, ...);
             // }
 
-            var methodParameters = string.Empty;
-            var constructorParameters = string.Empty;
-
-            if (variant.Parameters.Count > 0)
-            {
-                // TODO(jupjohn): I don't like this
-                var parameters = variant.Parameters
+            var variantProperties =
+                variant.Parameters
                     .Select(p => (
-                        Type: p.Type.Identifier,
-                        Property: p.Identifier,
+                        PropertyType: p.Type.Identifier,
+                        PropertyIdentifier: p.Identifier,
                         // PropertyName -> propertyName
-                        Parameter: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
+                        ParameterIdentifier: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
                     ))
                     .ToArray();
-                methodParameters = string.Join(", ", parameters.Select(p => $"{p.Type} {p.Parameter}"));
-                constructorParameters = string.Join(", ", parameters.Select(p => $"{p.Property}: {p.Parameter}"));
-            }
 
             builder.AppendLine();
             builder.Append($"    public static {union.Name}");
             builder.AppendTypeParams(union.TypeParameters);
-            builder.AppendLine($" As{variant.Identifier}({methodParameters})");
+            builder.AppendLine($" As{variant.Identifier}(");
 
-            builder.AppendLine("    {");
-            builder.Append($"        return new {variant.Identifier}");
+            for (var index = 0; index < variantProperties.Length; index++)
+            {
+                var parameterSeparator = index != variantProperties.Length - 1 ? "," : string.Empty;
+
+                var (type, _, parameterIdentifier) = variantProperties[index];
+                builder.AppendLine($"        {type} {parameterIdentifier}{parameterSeparator}");
+            }
+
+            builder.Append($"    ) => new {variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
-            builder.AppendLine($"({constructorParameters});");
-            builder.AppendLine("    }");
+
+            var constructorCallParameters = variantProperties.Select(p => $"{p.PropertyIdentifier}: {p.ParameterIdentifier}");
+            builder.AppendLine($"({string.Join(", ", constructorCallParameters)});");
         }
 
         // TODO(jupjohn): note in PR about static non-generic class factory methods for generic unions
