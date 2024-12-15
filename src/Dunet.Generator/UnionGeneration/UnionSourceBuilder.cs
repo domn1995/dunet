@@ -560,8 +560,6 @@ internal static class UnionSourceBuilder
             builder.AppendLine($"({string.Join(", ", constructorCallParameters)});");
         }
 
-        // TODO(jupjohn): note in PR about static non-generic class factory methods for generic unions
-        // e.g. Union<string>.AsThing("abc") v.s. Union.AsThing("abc) (generic type inferred)
         return builder;
     }
 }
