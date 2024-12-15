@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Dunet.Generator.UnionGeneration;
 
@@ -539,6 +540,15 @@ internal static class UnionSourceBuilder
                         // PropertyName -> propertyName
                         ParameterIdentifier: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
                     ))
+                    .Select(p =>
+                    {
+                        if (SyntaxFacts.GetKeywordKind(p.ParameterIdentifier) != SyntaxKind.None)
+                        {
+                            p.ParameterIdentifier += "Value";
+                        }
+
+                        return p;
+                    })
                     .ToArray();
 
             builder.AppendLine();
