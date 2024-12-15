@@ -532,43 +532,8 @@ internal static class UnionSourceBuilder
             //     ...
             // ) => UnionVariantX(t1, t2, ...);
 
-            var unionProperties =
-                union.Properties
-                    .Select(p => (
-                        PropertyType: p.Type.Identifier,
-                        PropertyIdentifier: p.Identifier,
-                        // PropertyName -> propertyName
-                        ParameterIdentifier: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
-                    ))
-                    .Select(p =>
-                    {
-                        if (SyntaxFacts.GetKeywordKind(p.ParameterIdentifier) != SyntaxKind.None)
-                        {
-                            p.ParameterIdentifier += "Value";
-                        }
-
-                        return p;
-                    })
-                    .ToArray();
-
-            var variantProperties =
-                variant.Parameters
-                    .Select(p => (
-                        PropertyType: p.Type.Identifier,
-                        PropertyIdentifier: p.Identifier,
-                        // PropertyName -> propertyName
-                        ParameterIdentifier: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
-                    ))
-                    .Select(p =>
-                    {
-                        if (SyntaxFacts.GetKeywordKind(p.ParameterIdentifier) != SyntaxKind.None)
-                        {
-                            p.ParameterIdentifier += "Value";
-                        }
-
-                        return p;
-                    })
-                    .ToArray();
+            var unionProperties = ExtractParameters(union.Properties.Select(ToParameter)).ToArray();
+            var variantProperties = ExtractParameters(variant.Parameters).ToArray();
 
             builder.AppendLine();
             builder.Append($"    public static {union.Name}");
@@ -587,7 +552,7 @@ internal static class UnionSourceBuilder
             builder.Append($"    ) => new {variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
 
-            var constructorCallParameters = variantProperties.Select(p => $"{p.PropertyIdentifier}: {p.ParameterIdentifier}");
+            var constructorCallParameters = variantProperties.Select(p => $"{p.Property}: {p.Parameter}");
             builder.Append($"({string.Join(", ", constructorCallParameters)})");
             if (unionProperties.Length > 0)
             {
@@ -607,5 +572,34 @@ internal static class UnionSourceBuilder
         }
 
         return builder;
+
+        static IEnumerable<(string Type, string Property, string Parameter)>
+            ExtractParameters(IEnumerable<Parameter> parameters)
+        {
+            return parameters
+                .Select(p => (
+                    PropertyType: p.Type.Identifier,
+                    PropertyIdentifier: p.Identifier,
+                    // PropertyName -> propertyName
+                    ParameterIdentifier: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
+                ))
+                .Select(p =>
+                {
+                    if (SyntaxFacts.GetKeywordKind(p.ParameterIdentifier) != SyntaxKind.None)
+                    {
+                        p.ParameterIdentifier += "Value";
+                    }
+
+                    return p;
+                });
+        }
+
+        static Parameter ToParameter(Property property)
+        {
+            return new Parameter(
+                new ParameterType(property.Type.Identifier, property.Type.IsInterface),
+                property.Identifier
+            );
+        }
     }
 }
