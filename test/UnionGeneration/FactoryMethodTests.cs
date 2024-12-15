@@ -82,4 +82,32 @@ public class FactoryMethodTests
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void ParentLevelProperties()
+    {
+        var programCs = """
+            using Dunet;
+            using System;
+
+            Result success = Result.AsInner1("base", "string", "name");
+            Result error = Result.AsInner2("class", "name");
+
+            [Union]
+            partial record Result
+            {
+                public required string Name { get; init; }
+                partial record Inner1(string Base, string String);
+                partial record Inner2(string Class);
+            }
+            """;
+
+        // Act.
+        var result = Compiler.Compile(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }

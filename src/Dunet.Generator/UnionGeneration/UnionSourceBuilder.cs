@@ -532,6 +532,25 @@ internal static class UnionSourceBuilder
             //     ...
             // ) => UnionVariantX(t1, t2, ...);
 
+            var unionProperties =
+                union.Properties
+                    .Select(p => (
+                        PropertyType: p.Type.Identifier,
+                        PropertyIdentifier: p.Identifier,
+                        // PropertyName -> propertyName
+                        ParameterIdentifier: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
+                    ))
+                    .Select(p =>
+                    {
+                        if (SyntaxFacts.GetKeywordKind(p.ParameterIdentifier) != SyntaxKind.None)
+                        {
+                            p.ParameterIdentifier += "Value";
+                        }
+
+                        return p;
+                    })
+                    .ToArray();
+
             var variantProperties =
                 variant.Parameters
                     .Select(p => (
@@ -556,11 +575,12 @@ internal static class UnionSourceBuilder
             builder.AppendTypeParams(union.TypeParameters);
             builder.AppendLine($" As{variant.Identifier}(");
 
-            for (var index = 0; index < variantProperties.Length; index++)
+            (string PropertyType, string PropertyIdentifier, string ParameterIdentifier)[] allProperties = [..variantProperties, ..unionProperties];
+            for (var index = 0; index < allProperties.Length; index++)
             {
-                var parameterSeparator = index != variantProperties.Length - 1 ? "," : string.Empty;
+                var parameterSeparator = index != allProperties.Length - 1 ? "," : string.Empty;
 
-                var (type, _, parameterIdentifier) = variantProperties[index];
+                var (type, _, parameterIdentifier) = allProperties[index];
                 builder.AppendLine($"        {type} {parameterIdentifier}{parameterSeparator}");
             }
 
@@ -568,7 +588,22 @@ internal static class UnionSourceBuilder
             builder.AppendTypeParams(variant.TypeParameters);
 
             var constructorCallParameters = variantProperties.Select(p => $"{p.PropertyIdentifier}: {p.ParameterIdentifier}");
-            builder.AppendLine($"({string.Join(", ", constructorCallParameters)});");
+            builder.Append($"({string.Join(", ", constructorCallParameters)})");
+            if (unionProperties.Length > 0)
+            {
+                builder.AppendLine();
+                builder.AppendLine("    {");
+
+                foreach (var (_, propertyIdentifier, parameterIdentifier) in unionProperties)
+                {
+                    // Can always end the line with a comma (,) when using intializers
+                    builder.AppendLine($"        {propertyIdentifier} = {parameterIdentifier},");
+                }
+
+                builder.Append("    }");
+            }
+
+            builder.AppendLine(";");
         }
 
         return builder;
