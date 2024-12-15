@@ -525,10 +525,11 @@ internal static class UnionSourceBuilder
     {
         foreach (var variant in union.Variants)
         {
-            // public static Union AsUnionVariantX(T1 t1, T2 t2, ...)
-            // {
-            //     return new UnionVariantX(t1, t2, ...);
-            // }
+            // public static Union AsUnionVariantX(
+            //     T1 t1,
+            //     T2 t2,
+            //     ...
+            // ) => UnionVariantX(t1, t2, ...);
 
             var variantProperties =
                 variant.Parameters
