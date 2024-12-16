@@ -528,7 +528,7 @@ internal static class UnionSourceBuilder
     {
         foreach (var variant in union.Variants)
         {
-            // public static Union AsUnionVariantX(
+            // public static Union OfUnionVariantX(
             //     T1 t1,
             //     T2 t2,
             //     ...
@@ -540,7 +540,7 @@ internal static class UnionSourceBuilder
             builder.AppendLine();
             builder.Append($"    public static {union.Name}");
             builder.AppendTypeParams(union.TypeParameters);
-            builder.AppendLine($" As{variant.Identifier}(");
+            builder.AppendLine($" Of{variant.Identifier}(");
 
             FactoryProperty[] allProperties = [..variantProperties, ..unionProperties];
             for (var index = 0; index < allProperties.Length; index++)
