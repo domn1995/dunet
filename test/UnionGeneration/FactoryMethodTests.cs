@@ -9,8 +9,8 @@ public class FactoryMethodTests
             using Dunet;
             using System;
 
-            Result success = Result.AsSuccess("Hello, world!");
-            Result error = Result.AsFailure(new Exception("Boom!"), "Something went wrong :(");
+            Result success = Result.OfSuccess("Hello, world!");
+            Result error = Result.OfFailure(new Exception("Boom!"), "Something went wrong :(");
 
             [Union]
             partial record Result
@@ -36,8 +36,8 @@ public class FactoryMethodTests
             using Dunet;
             using System;
 
-            Result<string> success = Result<string>.AsSuccess("Hello, world!");
-            Result<string> error = Result<string>.AsFailure(new Exception("Boom!"), "Something went wrong :(");
+            Result<string> success = Result<string>.OfSuccess("Hello, world!");
+            Result<string> error = Result<string>.OfFailure(new Exception("Boom!"), "Something went wrong :(");
 
             [Union]
             partial record Result<T>
@@ -63,8 +63,8 @@ public class FactoryMethodTests
             using Dunet;
             using System;
 
-            Result success = Result.AsInner1("base", "string");
-            Result error = Result.AsInner2("class");
+            Result success = Result.OfInner1("base", "string");
+            Result error = Result.OfInner2("class");
 
             [Union]
             partial record Result
@@ -90,8 +90,8 @@ public class FactoryMethodTests
             using Dunet;
             using System;
 
-            Result success = Result.AsInner1("base", "string", "name");
-            Result error = Result.AsInner2("class", "name");
+            Result success = Result.OfInner1("base", "string", "name");
+            Result error = Result.OfInner2("class", "name");
 
             [Union]
             partial record Result
