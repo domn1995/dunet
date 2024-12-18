@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace StructPrototype;
+﻿namespace StructPrototype;
 
 public partial record struct Result<TErr, TOk>
 {
@@ -22,9 +20,9 @@ public readonly partial record struct Result<TErr, TOk>
     private readonly Ok ok;
     private readonly Err err;
 
-    public static implicit operator Result<TErr, TOk>(TOk value) => NewOk(value);
+    public static implicit operator Result<TErr, TOk>(TOk value) => OfOk(value);
 
-    public static implicit operator Result<TErr, TOk>(TErr error) => NewErr(error);
+    public static implicit operator Result<TErr, TOk>(TErr error) => OfErr(error);
 
     private Result(ResultType type, Ok ok) => (this.type, this.ok) = (type, ok);
 
@@ -36,12 +34,12 @@ public readonly partial record struct Result<TErr, TOk>
             ResultType.Err => err(this.err),
             ResultType.Ok => ok(this.ok),
             var unionType
-                => throw new UnreachableException(
+                => throw new System.Diagnostics.UnreachableException(
                     $"Matched an unreachable union type: {unionType}"
                 ),
         };
 
-    public static Result<TErr, TOk> NewOk(TOk value) => new(ResultType.Ok, new Ok(value));
+    public static Result<TErr, TOk> OfOk(TOk value) => new(ResultType.Ok, new Ok(value));
 
-    public static Result<TErr, TOk> NewErr(TErr error) => new(ResultType.Ok, new Err(error));
+    public static Result<TErr, TOk> OfErr(TErr error) => new(ResultType.Ok, new Err(error));
 }

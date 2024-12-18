@@ -1,6 +1,4 @@
-﻿using static StructPrototype.ShapePrelude;
-using static StructPrototype.OptionPrelude;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Globalization;
 
 namespace StructPrototype;
@@ -10,10 +8,10 @@ public static class InputParser
     public static Option<Shape> ParseShape(string? input) =>
         input switch
         {
-            "c" => Circle(1),
-            "r" => Rectangle(1, 1),
-            "t" => Triangle(1, 1),
-            _ => None<Shape>(),
+            "c" => Shape.OfCircle(1),
+            "r" => Shape.OfRectangle(1, 1),
+            "t" => Shape.OfTriangle(1, 1),
+            _ => Option.OfNone<Shape>(),
         };
 
     public static Result<FormatException, T> ParseNumber<T>(string? input) where T : INumber<T> =>

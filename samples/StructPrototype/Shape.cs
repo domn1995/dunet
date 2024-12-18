@@ -40,26 +40,12 @@ public partial record struct Shape
                 => throw new UnreachableException($"Matched an unreachable union type: {invalid}"),
         };
 
-    public static class Prelude
-    {
-        public static Shape Circle(double radius) =>
-            new() { circle = new Circle(radius), type = ShapeType.Circle, };
+    public static Shape OfCircle(double radius) =>
+        new() { circle = new Circle(radius), type = ShapeType.Circle, };
 
-        public static Shape Rectangle(double height, double width) =>
-            new() { rectangle = new Rectangle(height, width), type = ShapeType.Rectangle, };
+    public static Shape OfRectangle(double height, double width) =>
+        new() { rectangle = new Rectangle(height, width), type = ShapeType.Rectangle, };
 
-        public static Shape Triangle(double @base, double height) =>
-            new() { triangle = new Triangle(@base, height), type = ShapeType.Triangle, };
-    }
-}
-
-public static class ShapePrelude
-{
-    public static Shape Circle(double radius) => Shape.Prelude.Circle(radius);
-
-    public static Shape Rectangle(double height, double width) =>
-        Shape.Prelude.Rectangle(height, width);
-
-    public static Shape Triangle(double @base, double height) =>
-        Shape.Prelude.Triangle(@base, height);
+    public static Shape OfTriangle(double @base, double height) =>
+        new() { triangle = new Triangle(@base, height), type = ShapeType.Triangle, };
 }

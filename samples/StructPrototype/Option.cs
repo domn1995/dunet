@@ -29,20 +29,17 @@ public partial record struct Option<T>
                 => throw new UnreachableException($"Matched an unreachable union type: {invalid}"),
         };
 
-    public static implicit operator Option<T>(T value) => Prelude.Some(value);
+    public static implicit operator Option<T>(T value) => OfSome(value);
 
-    public static class Prelude
-    {
-        public static Option<T> Some(T value) =>
-            new() { type = OptionType.Some, some = new Some(value) };
+    public static Option<T> OfSome(T value) =>
+        new() { type = OptionType.Some, some = new Some(value) };
 
-        public static Option<T> None() => new() { type = OptionType.None };
-    }
+    public static Option<T> OfNone() => new() { type = OptionType.None };
 }
 
-public static class OptionPrelude
+public static class Option
 {
-    public static Option<T> Some<T>(T value) => Option<T>.Prelude.Some(value);
+    public static Option<T> OfSome<T>(T value) => Option<T>.OfSome(value);
 
-    public static Option<T> None<T>() => Option<T>.Prelude.None();
+    public static Option<T> OfNone<T>() => Option<T>.OfNone();
 }
