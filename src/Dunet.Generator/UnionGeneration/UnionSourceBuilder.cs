@@ -90,15 +90,15 @@ internal static class UnionSourceBuilder
     )
     {
         // public abstract TMatchOutput Match<TMatchOutput>(
-        //     System.Func<UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
-        //     System.Func<UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
+        //     global::System.Func<UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
+        //     global::System.Func<UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
         //     ...
         // );
         builder.AppendLine("    public abstract TMatchOutput Match<TMatchOutput>(");
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variant = union.Variants[i];
-            builder.Append($"        System.Func<{variant.Identifier}");
+            builder.Append($"        global::System.Func<{variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.Append($", TMatchOutput> {variant.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -110,15 +110,15 @@ internal static class UnionSourceBuilder
         builder.AppendLine("    );");
 
         // public abstract void Match(
-        //     System.Action<UnionVariant1<T1, T2, ...>> @unionVariant1,
-        //     System.Action<UnionVariant2<T1, T2, ...>> @unionVariant2,
+        //     global::System.Action<UnionVariant1<T1, T2, ...>> @unionVariant1,
+        //     global::System.Action<UnionVariant2<T1, T2, ...>> @unionVariant2,
         //     ...
         // );
         builder.AppendLine("    public abstract void Match(");
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variant = union.Variants[i];
-            builder.Append($"        System.Action<{variant.Identifier}");
+            builder.Append($"        global::System.Action<{variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.Append($"> {variant.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -132,8 +132,8 @@ internal static class UnionSourceBuilder
 
         // public abstract TMatchOutput Match<TState, TMatchOutput>(
         //     TState state,
-        //     System.Func<TState, UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
-        //     System.Func<TState, UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
+        //     global::System.Func<TState, UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
+        //     global::System.Func<TState, UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
         //     ...
         // );
         builder.AppendLine("    public abstract TMatchOutput Match<TState, TMatchOutput>(");
@@ -142,7 +142,7 @@ internal static class UnionSourceBuilder
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variant = union.Variants[i];
-            builder.Append($"        System.Func<TState, {variant.Identifier}");
+            builder.Append($"        global::System.Func<TState, {variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.Append($", TMatchOutput> {variant.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -155,8 +155,8 @@ internal static class UnionSourceBuilder
 
         // public abstract void Match<TState>(
         //     TState state,
-        //     System.Action<TState, UnionVariant1<T1, T2, ...>> @unionVariant1,
-        //     System.Action<TState, UnionVariant2<T1, T2, ...>> @unionVariant2,
+        //     global::System.Action<TState, UnionVariant1<T1, T2, ...>> @unionVariant1,
+        //     global::System.Action<TState, UnionVariant2<T1, T2, ...>> @unionVariant2,
         //     ...
         // );
         builder.AppendLine("    public abstract void Match<TState>(");
@@ -165,7 +165,7 @@ internal static class UnionSourceBuilder
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variant = union.Variants[i];
-            builder.Append($"        System.Action<TState, {variant.Identifier}");
+            builder.Append($"        global::System.Action<TState, {variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.Append($"> {variant.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -187,16 +187,16 @@ internal static class UnionSourceBuilder
         foreach (var variant in union.Variants)
         {
             // public abstract TMatchOutput MatchSpecific<TMatchOutput>(
-            //     System.Func<Specific<T1, T2, ...>, TMatchOutput> @specific,
-            //     System.Func<TMatchOutput> @else
+            //     global::System.Func<Specific<T1, T2, ...>, TMatchOutput> @specific,
+            //     global::System.Func<TMatchOutput> @else
             // );
             builder.AppendLine(
                 $"    public abstract TMatchOutput Match{variant.Identifier}<TMatchOutput>("
             );
-            builder.Append($"        System.Func<{variant.Identifier}");
+            builder.Append($"        global::System.Func<{variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.AppendLine($", TMatchOutput> {variant.Identifier.ToMethodParameterCase()},");
-            builder.AppendLine($"        System.Func<TMatchOutput> @else");
+            builder.AppendLine($"        global::System.Func<TMatchOutput> @else");
             builder.AppendLine("    );");
         }
 
@@ -205,14 +205,14 @@ internal static class UnionSourceBuilder
         foreach (var variant in union.Variants)
         {
             // public abstract void MatchSpecific(
-            //     System.Action<Specific<T1, T2, ...>> @specific,
-            //     System.Action @else
+            //     global::System.Action<Specific<T1, T2, ...>> @specific,
+            //     global::System.Action @else
             // );
             builder.AppendLine($"    public abstract void Match{variant.Identifier}(");
-            builder.Append($"        System.Action<{variant.Identifier}");
+            builder.Append($"        global::System.Action<{variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.AppendLine($"> {variant.Identifier.ToMethodParameterCase()},");
-            builder.AppendLine($"        System.Action @else");
+            builder.AppendLine($"        global::System.Action @else");
             builder.AppendLine("    );");
         }
 
@@ -222,18 +222,18 @@ internal static class UnionSourceBuilder
         {
             // public abstract TMatchOutput MatchSpecific<TState, TMatchOutput>(
             //     TState state,
-            //     System.Func<TState, Specific<T1, T2, ...>, TMatchOutput> @specific,
-            //     System.Func<TState, TMatchOutput> @else
+            //     global::System.Func<TState, Specific<T1, T2, ...>, TMatchOutput> @specific,
+            //     global::System.Func<TState, TMatchOutput> @else
             // );
             builder.AppendLine(
                 $"    public abstract TMatchOutput Match{variant.Identifier}<TState, TMatchOutput>("
             );
             builder.Append($"        TState state");
             builder.AppendLine(union.Variants.Count > 0 ? "," : string.Empty);
-            builder.Append($"        System.Func<TState, {variant.Identifier}");
+            builder.Append($"        global::System.Func<TState, {variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.AppendLine($", TMatchOutput> {variant.Identifier.ToMethodParameterCase()},");
-            builder.AppendLine($"        System.Func<TState, TMatchOutput> @else");
+            builder.AppendLine($"        global::System.Func<TState, TMatchOutput> @else");
             builder.AppendLine("    );");
         }
 
@@ -243,16 +243,16 @@ internal static class UnionSourceBuilder
         {
             // public abstract void MatchSpecific<TState>(
             //     TState state,
-            //     System.Action<TState, Specific<T1, T2, ...>> @specific,
-            //     System.Action<TState> @else
+            //     global::System.Action<TState, Specific<T1, T2, ...>> @specific,
+            //     global::System.Action<TState> @else
             // );
             builder.AppendLine($"    public abstract void Match{variant.Identifier}<TState>(");
             builder.Append($"        TState state");
             builder.AppendLine(union.Variants.Count > 0 ? "," : string.Empty);
-            builder.Append($"        System.Action<TState, {variant.Identifier}");
+            builder.Append($"        global::System.Action<TState, {variant.Identifier}");
             builder.AppendTypeParams(variant.TypeParameters);
             builder.AppendLine($"> {variant.Identifier.ToMethodParameterCase()},");
-            builder.AppendLine($"        System.Action<TState> @else");
+            builder.AppendLine($"        global::System.Action<TState> @else");
             builder.AppendLine("    );");
         }
 
@@ -266,15 +266,15 @@ internal static class UnionSourceBuilder
     )
     {
         // public override TMatchOutput Match<TMatchOutput>(
-        //     System.Func<UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
-        //     System.Func<UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
+        //     global::System.Func<UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
+        //     global::System.Func<UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
         //     ...
         // ) => unionVariantX(this);
         builder.AppendLine("        public override TMatchOutput Match<TMatchOutput>(");
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variantParam = union.Variants[i];
-            builder.Append($"            System.Func<{variantParam.Identifier}");
+            builder.Append($"            global::System.Func<{variantParam.Identifier}");
             builder.AppendTypeParams(variantParam.TypeParameters);
             builder.Append($", TMatchOutput> {variantParam.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -286,15 +286,15 @@ internal static class UnionSourceBuilder
         builder.AppendLine($"        ) => {variant.Identifier.ToMethodParameterCase()}(this);");
 
         // public override void Match(
-        //     System.Action<UnionVariant1<T1, T2, ...>> @unionVariant1,
-        //     System.Action<UnionVariant2<T1, T2, ...>> @unionVariant2,
+        //     global::System.Action<UnionVariant1<T1, T2, ...>> @unionVariant1,
+        //     global::System.Action<UnionVariant2<T1, T2, ...>> @unionVariant2,
         //     ...
         // ) => unionVariantX(this);
         builder.AppendLine("        public override void Match(");
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variantParam = union.Variants[i];
-            builder.Append($"            System.Action<{variantParam.Identifier}");
+            builder.Append($"            global::System.Action<{variantParam.Identifier}");
             builder.AppendTypeParams(variantParam.TypeParameters);
             builder.Append($"> {variantParam.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -307,8 +307,8 @@ internal static class UnionSourceBuilder
 
         // public override TMatchOutput Match<TState, TMatchOutput>(
         //     TState state,
-        //     System.Func<TState, UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
-        //     System.Func<TState, UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
+        //     global::System.Func<TState, UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariant1,
+        //     global::System.Func<TState, UnionVariant2<T1, T2, ...>, TMatchOutput> @unionVariant2,
         //     ...
         // ) => unionVariantX(state, this);
         builder.AppendLine("        public override TMatchOutput Match<TState, TMatchOutput>(");
@@ -317,7 +317,7 @@ internal static class UnionSourceBuilder
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variantParam = union.Variants[i];
-            builder.Append($"            System.Func<TState, {variantParam.Identifier}");
+            builder.Append($"            global::System.Func<TState, {variantParam.Identifier}");
             builder.AppendTypeParams(variantParam.TypeParameters);
             builder.Append($", TMatchOutput> {variantParam.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -332,8 +332,8 @@ internal static class UnionSourceBuilder
 
         // public override void Match<TState>(
         //     TState state,
-        //     System.Action<TState, UnionVariant1<T1, T2, ...>> @unionVariant1,
-        //     System.Action<TState, UnionVariant2<T1, T2, ...>> @unionVariant2,
+        //     global::System.Action<TState, UnionVariant1<T1, T2, ...>> @unionVariant1,
+        //     global::System.Action<TState, UnionVariant2<T1, T2, ...>> @unionVariant2,
         //     ...
         // ) => unionVariantX(state, this);
         builder.AppendLine("        public override void Match<TState>(");
@@ -342,7 +342,7 @@ internal static class UnionSourceBuilder
         for (int i = 0; i < union.Variants.Count; ++i)
         {
             var variantParam = union.Variants[i];
-            builder.Append($"            System.Action<TState, {variantParam.Identifier}");
+            builder.Append($"            global::System.Action<TState, {variantParam.Identifier}");
             builder.AppendTypeParams(variantParam.TypeParameters);
             builder.Append($"> {variantParam.Identifier.ToMethodParameterCase()}");
             if (i < union.Variants.Count - 1)
@@ -364,8 +364,8 @@ internal static class UnionSourceBuilder
     )
     {
         // public override TMatchOutput MatchVariantX<TMatchOutput>(
-        //     System.Func<UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariantX,
-        //     System.Func<TMatchOutput> @else,
+        //     global::System.Func<UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariantX,
+        //     global::System.Func<TMatchOutput> @else,
         //     ...
         // ) => unionVariantX(this);
         foreach (var specificVariant in union.Variants)
@@ -373,12 +373,12 @@ internal static class UnionSourceBuilder
             builder.AppendLine(
                 $"        public override TMatchOutput Match{specificVariant.Identifier}<TMatchOutput>("
             );
-            builder.Append($"            System.Func<{specificVariant.Identifier}");
+            builder.Append($"            global::System.Func<{specificVariant.Identifier}");
             builder.AppendTypeParams(specificVariant.TypeParameters);
             builder.AppendLine(
                 $", TMatchOutput> {specificVariant.Identifier.ToMethodParameterCase()},"
             );
-            builder.AppendLine($"            System.Func<TMatchOutput> @else");
+            builder.AppendLine($"            global::System.Func<TMatchOutput> @else");
             builder.Append("        ) => ");
             if (specificVariant.Identifier == variant.Identifier)
             {
@@ -391,17 +391,17 @@ internal static class UnionSourceBuilder
         }
 
         // public override void MatchVariantX(
-        //     System.Action<UnionVariant1<T1, T2, ...>> @unionVariantX,
-        //     System.Action @else,
+        //     global::System.Action<UnionVariant1<T1, T2, ...>> @unionVariantX,
+        //     global::System.Action @else,
         //     ...
         // ) => unionVariantX(this);
         foreach (var specificVariant in union.Variants)
         {
             builder.AppendLine($"        public override void Match{specificVariant.Identifier}(");
-            builder.Append($"            System.Action<{specificVariant.Identifier}");
+            builder.Append($"            global::System.Action<{specificVariant.Identifier}");
             builder.AppendTypeParams(specificVariant.TypeParameters);
             builder.AppendLine($"> {specificVariant.Identifier.ToMethodParameterCase()},");
-            builder.AppendLine($"            System.Action @else");
+            builder.AppendLine($"            global::System.Action @else");
             builder.Append("        ) => ");
             if (specificVariant.Identifier == variant.Identifier)
             {
@@ -415,8 +415,8 @@ internal static class UnionSourceBuilder
 
         // public override TMatchOutput MatchVariantX<TState, TMatchOutput>(
         //     TState state,
-        //     System.Func<TState, UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariantX,
-        //     System.Func<TState, TMatchOutput> @else,
+        //     global::System.Func<TState, UnionVariant1<T1, T2, ...>, TMatchOutput> @unionVariantX,
+        //     global::System.Func<TState, TMatchOutput> @else,
         //     ...
         // ) => unionVariantX(state, this);
         foreach (var specificVariant in union.Variants)
@@ -426,12 +426,12 @@ internal static class UnionSourceBuilder
             );
             builder.Append($"        TState state");
             builder.AppendLine(union.Variants.Count > 0 ? "," : string.Empty);
-            builder.Append($"            System.Func<TState, {specificVariant.Identifier}");
+            builder.Append($"            global::System.Func<TState, {specificVariant.Identifier}");
             builder.AppendTypeParams(specificVariant.TypeParameters);
             builder.AppendLine(
                 $", TMatchOutput> {specificVariant.Identifier.ToMethodParameterCase()},"
             );
-            builder.AppendLine($"            System.Func<TState, TMatchOutput> @else");
+            builder.AppendLine($"            global::System.Func<TState, TMatchOutput> @else");
             builder.Append("        ) => ");
             if (specificVariant.Identifier == variant.Identifier)
             {
@@ -447,8 +447,8 @@ internal static class UnionSourceBuilder
 
         // public override void MatchVariantX<TState>(
         //     TState state,
-        //     System.Action<TState, UnionVariant1<T1, T2, ...>> @unionVariantX,
-        //     System.Action<TState> @else,
+        //     global::System.Action<TState, UnionVariant1<T1, T2, ...>> @unionVariantX,
+        //     global::System.Action<TState> @else,
         //     ...
         // ) => unionVariantX(state, this);
         foreach (var specificVariant in union.Variants)
@@ -458,10 +458,10 @@ internal static class UnionSourceBuilder
             );
             builder.Append($"        TState state");
             builder.AppendLine(union.Variants.Count > 0 ? "," : string.Empty);
-            builder.Append($"            System.Action<TState, {specificVariant.Identifier}");
+            builder.Append($"            global::System.Action<TState, {specificVariant.Identifier}");
             builder.AppendTypeParams(specificVariant.TypeParameters);
             builder.AppendLine($"> {specificVariant.Identifier.ToMethodParameterCase()},");
-            builder.AppendLine($"            System.Action<TState> @else");
+            builder.AppendLine($"            global::System.Action<TState> @else");
             builder.Append("        ) => ");
             if (specificVariant.Identifier == variant.Identifier)
             {
@@ -513,7 +513,7 @@ internal static class UnionSourceBuilder
             else
             {
                 builder.AppendLine(
-                    $$"""throw new System.InvalidOperationException("Called `{{union.Name}}.Unwrap{{specificVariant.Identifier}}()` on `{{variant.Identifier}}` value.");"""
+                    $$"""throw new global::System.InvalidOperationException("Called `{{union.Name}}.Unwrap{{specificVariant.Identifier}}()` on `{{variant.Identifier}}` value.");"""
                 );
             }
         }
