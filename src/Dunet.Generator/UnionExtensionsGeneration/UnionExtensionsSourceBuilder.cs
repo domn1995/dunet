@@ -5,8 +5,8 @@ namespace Dunet.Generator.UnionExtensionsGeneration;
 
 internal static class UnionExtensionsSourceBuilder
 {
-    const string task = "System.Threading.Tasks.Task";
-    const string valueTask = "System.Threading.Tasks.ValueTask";
+    const string task = "global::System.Threading.Tasks.Task";
+    const string valueTask = "global::System.Threading.Tasks.ValueTask";
 
     public static string GenerateExtensions(UnionDeclaration union)
     {
@@ -83,7 +83,7 @@ internal static class UnionExtensionsSourceBuilder
             var variant = union.Variants[i];
 
             builder
-                .Append($"        System.Func<")
+                .Append($"        global::System.Func<")
                 .AppendFullUnionName(union)
                 .AppendTypeParams(union.TypeParameters)
                 .Append($".{variant.Identifier}")
@@ -143,7 +143,7 @@ internal static class UnionExtensionsSourceBuilder
             var variant = union.Variants[i];
 
             builder
-                .Append($"        System.Action<")
+                .Append($"        global::System.Action<")
                 .AppendFullUnionName(union)
                 .AppendTypeParams(union.TypeParameters)
                 .Append($".{variant.Identifier}")
@@ -186,8 +186,8 @@ internal static class UnionExtensionsSourceBuilder
     /// <summary>
     /// public static async TaskType<TMatchOuput> MatchSpecificAsync<T1, T2, ..., TMatchOutput>(
     ///     this Task<Parent1.Parent2.UnionType<T1, T2, ...>> unionTask,
-    ///     System.Func<Parent1.Parent2.UnionType<T1, T2, ...>.Specific, TMatchOutput> @specific,
-    ///     System.Func<TMatchOutput> @else
+    ///     global::System.Func<Parent1.Parent2.UnionType<T1, T2, ...>.Specific, TMatchOutput> @specific,
+    ///     global::System.Func<TMatchOutput> @else
     /// )
     /// where T1 : notnull
     /// where T2 : notnull
@@ -218,12 +218,12 @@ internal static class UnionExtensionsSourceBuilder
                 .AppendFullUnionName(union)
                 .AppendTypeParams(union.TypeParameters)
                 .AppendLine("> unionTask,")
-                .Append($"        System.Func<")
+                .Append($"        global::System.Func<")
                 .AppendFullUnionName(union)
                 .AppendTypeParams(union.TypeParameters)
                 .Append($".{variant.Identifier}")
                 .AppendLine($", TMatchOutput> {variant.Identifier.ToMethodParameterCase()},")
-                .AppendLine("        System.Func<TMatchOutput> @else")
+                .AppendLine("        global::System.Func<TMatchOutput> @else")
                 .AppendLine($"    )");
 
             foreach (var typeParamConstraint in union.TypeParameterConstraints)
@@ -246,8 +246,8 @@ internal static class UnionExtensionsSourceBuilder
     /// <summary>
     /// public static async TaskType MatchSpecificAsync<T1, T2, ...>(
     ///     this Task<Parent1.Parent2.UnionType<T1, T2, ...>> unionTask,
-    ///     System.Action<Parent1.Parent2.UnionType<T1, T2, ...>.Specific> @specific,
-    ///     System.Action @else
+    ///     global::System.Action<Parent1.Parent2.UnionType<T1, T2, ...>.Specific> @specific,
+    ///     global::System.Action @else
     /// )
     /// where T1 : notnull
     /// where T2 : notnull
@@ -274,12 +274,12 @@ internal static class UnionExtensionsSourceBuilder
                 .AppendFullUnionName(union)
                 .AppendTypeParams(union.TypeParameters)
                 .AppendLine("> unionTask,")
-                .Append($"        System.Action<")
+                .Append($"        global::System.Action<")
                 .AppendFullUnionName(union)
                 .AppendTypeParams(union.TypeParameters)
                 .Append($".{variant.Identifier}")
                 .AppendLine($"> {variant.Identifier.ToMethodParameterCase()},")
-                .AppendLine("        System.Action @else")
+                .AppendLine("        global::System.Action @else")
                 .AppendLine($"    )");
 
             foreach (var typeParamConstraint in union.TypeParameterConstraints)
