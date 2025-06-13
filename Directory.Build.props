@@ -3,7 +3,7 @@
 
     <PropertyGroup>
         <Nullable>enable</Nullable>
-        <Version>1.11.2</Version>
+        <Version>1.11.3</Version>
         <SignAssembly>False</SignAssembly>
     </PropertyGroup>
 
