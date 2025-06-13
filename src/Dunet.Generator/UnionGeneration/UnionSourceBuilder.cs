@@ -1,9 +1,6 @@
 using System.Text;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace Dunet.Generator.UnionGeneration;
-
-using FactoryProperty = (string Type, string Property, string Parameter);
 
 internal static class UnionSourceBuilder
 {
@@ -71,7 +68,6 @@ internal static class UnionSourceBuilder
             builder.AppendLine("    }");
         }
 
-        builder.AppendFactoryMethods(union);
         builder.AppendLine("}");
 
         foreach (var _ in parentTypes)
@@ -519,88 +515,5 @@ internal static class UnionSourceBuilder
         }
 
         return builder;
-    }
-
-    private static StringBuilder AppendFactoryMethods(
-        this StringBuilder builder,
-        UnionDeclaration union
-    )
-    {
-        foreach (var variant in union.Variants)
-        {
-            // public static Union OfUnionVariantX(
-            //     T1 t1,
-            //     T2 t2,
-            //     ...
-            // ) => UnionVariantX(t1, t2, ...);
-
-            var unionProperties = ExtractParameters(union.Properties.Select(ToParameter)).ToArray();
-            var variantProperties = ExtractParameters(variant.Parameters).ToArray();
-
-            builder.AppendLine();
-            builder.Append($"    public static {union.Name}");
-            builder.AppendTypeParams(union.TypeParameters);
-            builder.AppendLine($" Of{variant.Identifier}(");
-
-            FactoryProperty[] allProperties = [..variantProperties, ..unionProperties];
-            for (var index = 0; index < allProperties.Length; index++)
-            {
-                var parameterSeparator = index != allProperties.Length - 1 ? "," : string.Empty;
-
-                var (type, _, parameterIdentifier) = allProperties[index];
-                builder.AppendLine($"        {type} {parameterIdentifier}{parameterSeparator}");
-            }
-
-            builder.Append($"    ) => new {variant.Identifier}");
-            builder.AppendTypeParams(variant.TypeParameters);
-
-            var constructorCallParameters = variantProperties.Select(p => $"{p.Property}: {p.Parameter}");
-            builder.Append($"({string.Join(", ", constructorCallParameters)})");
-            if (unionProperties.Length > 0)
-            {
-                builder.AppendLine();
-                builder.AppendLine("    {");
-
-                foreach (var (_, propertyIdentifier, parameterIdentifier) in unionProperties)
-                {
-                    // Can always end the line with a comma (,) when using intializers
-                    builder.AppendLine($"        {propertyIdentifier} = {parameterIdentifier},");
-                }
-
-                builder.Append("    }");
-            }
-
-            builder.AppendLine(";");
-        }
-
-        return builder;
-
-        static IEnumerable<FactoryProperty> ExtractParameters(IEnumerable<Parameter> parameters)
-        {
-            return parameters
-                .Select(p => (
-                    PropertyType: p.Type.Identifier,
-                    PropertyIdentifier: p.Identifier,
-                    // PropertyName -> propertyName
-                    ParameterIdentifier: $"{char.ToLower(p.Identifier[0])}{p.Identifier[1..]}"
-                ))
-                .Select(p =>
-                {
-                    if (SyntaxFacts.GetKeywordKind(p.ParameterIdentifier) != SyntaxKind.None)
-                    {
-                        p.ParameterIdentifier += "Value";
-                    }
-
-                    return p;
-                });
-        }
-
-        static Parameter ToParameter(Property property)
-        {
-            return new Parameter(
-                new ParameterType(property.Type.Identifier, property.Type.IsInterface),
-                property.Identifier
-            );
-        }
     }
 }
