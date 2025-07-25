@@ -30,7 +30,7 @@
     </Target>
 
     <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
-        <None Include="$(MSBuildThisFileDirectory)\Readme.md" Pack="true" PackagePath="\"/>
-        <None Include="$(MSBuildThisFileDirectory)\favicon.png" Pack="true" PackagePath="\"/>
+        <None Include="$(MSBuildThisFileDirectory)\Readme.md" Pack="true" PackagePath="\" />
+        <None Include="$(MSBuildThisFileDirectory)\favicon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>
