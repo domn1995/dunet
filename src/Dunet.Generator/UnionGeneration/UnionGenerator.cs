@@ -44,7 +44,9 @@ public sealed class UnionGenerator : IIncrementalGenerator
 
         var union = UnionSourceBuilder.Build(unionRecord);
         context.AddSource(
-            $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs",
+            unionRecord.TypeParameters.Count == 0
+             ? $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs"
+             : $"{unionRecord.Namespace}.{unionRecord.Name}.{unionRecord.TypeParameters.Count}.g.cs",
             SourceText.From(union, Encoding.UTF8)
         );
 
