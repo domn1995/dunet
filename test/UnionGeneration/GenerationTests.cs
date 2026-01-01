@@ -212,4 +212,50 @@ public sealed class GenerationTests
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void GenericUnionTypesMayHaveRequiredProperties()
+    {
+        // Arrange.
+        var programCs = """
+            using Dunet;
+            using System;
+            
+            Result<Guid, Exception> result1 = Result.Ok<Guid, Exception>(Guid.NewGuid());
+            Result<Exception> result2 = Result.Error(new Exception("Boom!"));
+
+            [Union]
+            public partial record Result<T, TError>
+            {
+                public partial record Ok(T Value);
+                public partial record Error(TError Value);
+            }
+
+            [Union]
+            public partial record Result<TError>
+            {
+                public partial record Ok();
+                public partial record Error(TError Value);
+            }
+
+            public static class Result
+            {
+                public static Result<T, TError> Ok<T, TError>(T value) => new Result<T, TError>.Ok(value);
+
+                public static Result<T, TError> Error<T, TError>(TError value) => new Result<T, TError>.Error(value);
+
+                public static Result<TError> Ok<TError>() => new Result<TError>.Ok();
+
+                public static Result<TError> Error<TError>(TError value) => new Result<TError>.Error(value);
+            }
+            """;
+
+        // Act.
+        var result = Compiler.Compile(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }
