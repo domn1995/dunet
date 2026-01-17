@@ -45,7 +45,7 @@ internal static class UnionExtensionsSourceBuilder
         UnionDeclaration union
     ) =>
         builder.AppendLine(
-            $"{union.Accessibility.ToKeyword()} static class {union.Name}MatchExtensions"
+            $"{union.Accessibility.ToKeyword()} static class {union.Name}{union.TypeParameters.Count}MatchExtensions"
         );
 
     private static StringBuilder AppendUsingStatements(

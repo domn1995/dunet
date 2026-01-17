@@ -58,8 +58,11 @@ public sealed class UnionGenerator : IIncrementalGenerator
         if (unionRecord.SupportsExtensionMethods())
         {
             var matchExtensions = UnionExtensionsSourceBuilder.GenerateExtensions(unionRecord);
+            var fileName = unionRecord.TypeParameters.Count == 0
+                ? $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.g.cs"
+                : $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.{unionRecord.TypeParameters.Count}.g.cs";
             context.AddSource(
-                $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.g.cs",
+                fileName,
                 SourceText.From(matchExtensions, Encoding.UTF8)
             );
         }

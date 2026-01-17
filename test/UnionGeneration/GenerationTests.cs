@@ -214,7 +214,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void GenericUnionTypesMayHaveRequiredProperties()
+    public void GenericUnionsWithTheSameName()
     {
         // Arrange.
         var programCs = """
