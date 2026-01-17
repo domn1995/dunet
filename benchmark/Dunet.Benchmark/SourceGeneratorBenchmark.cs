@@ -99,7 +99,7 @@ public class SourceGeneratorBenchmarks
                 ),
                 MetadataReference.CreateFromFile(
                     typeof(UnionAttribute).GetTypeInfo().Assembly.Location
-                )
+                ),
             ],
             options: new CSharpCompilationOptions(OutputKind.ConsoleApplication)
         );

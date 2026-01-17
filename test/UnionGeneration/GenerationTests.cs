@@ -220,7 +220,7 @@ public sealed class GenerationTests
         var programCs = """
             using Dunet;
             using System;
-            
+
             Result<Guid, Exception> result1 = Result.Ok<Guid, Exception>(Guid.NewGuid());
             Result<Exception> result2 = Result.Error(new Exception("Boom!"));
 
