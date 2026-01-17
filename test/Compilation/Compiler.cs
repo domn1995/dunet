@@ -47,7 +47,8 @@ internal sealed class Compiler
         // Include metadata references for all currently loaded assemblies that have a physical location.
         // This keeps the test compilation environment in sync with the test host and avoids
         // manually listing specific runtime assemblies.
-        var loadedAssemblyPaths = AppDomain.CurrentDomain.GetAssemblies()
+        var loadedAssemblyPaths = AppDomain
+            .CurrentDomain.GetAssemblies()
             .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
             .Select(a => a.Location)
             .Distinct()
@@ -59,7 +60,10 @@ internal sealed class Compiler
 
         // Ensure the assembly containing UnionAttribute is referenced in case it's not already loaded.
         var unionAssemblyLocation = typeof(UnionAttribute).GetTypeInfo().Assembly.Location;
-        if (!string.IsNullOrEmpty(unionAssemblyLocation) && !loadedAssemblyPaths.Contains(unionAssemblyLocation))
+        if (
+            !string.IsNullOrEmpty(unionAssemblyLocation)
+            && !loadedAssemblyPaths.Contains(unionAssemblyLocation)
+        )
         {
             references.Add(MetadataReference.CreateFromFile(unionAssemblyLocation));
         }

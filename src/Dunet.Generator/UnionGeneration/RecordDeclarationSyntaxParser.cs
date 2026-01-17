@@ -17,9 +17,9 @@ internal static class RecordDeclarationSyntaxParser
     public static IEnumerable<TypeParameter> GetTypeParameters(
         this RecordDeclarationSyntax record
     ) =>
-        record
-            .TypeParameterList?.Parameters
-            .Select(static typeParam => new TypeParameter(typeParam.Identifier.ToString())) ?? [];
+        record.TypeParameterList?.Parameters.Select(static typeParam => new TypeParameter(
+            typeParam.Identifier.ToString()
+        )) ?? [];
 
     /// <summary>
     /// Gets the type parameter constraints of this record declaration.
@@ -43,15 +43,13 @@ internal static class RecordDeclarationSyntaxParser
         this RecordDeclarationSyntax record,
         SemanticModel semanticModel
     ) =>
-        record
-            .ParameterList?.Parameters
-            .Select(parameter => new Parameter(
-                Type: new ParameterType(
-                    Identifier: parameter.Type?.ToString() ?? "",
-                    IsInterface: parameter.Type.IsInterfaceType(semanticModel)
-                ),
-                Identifier: parameter.Identifier.ToString()
-            )) ?? [];
+        record.ParameterList?.Parameters.Select(parameter => new Parameter(
+            Type: new ParameterType(
+                Identifier: parameter.Type?.ToString() ?? "",
+                IsInterface: parameter.Type.IsInterfaceType(semanticModel)
+            ),
+            Identifier: parameter.Identifier.ToString()
+        )) ?? [];
 
     /// <summary>
     /// Gets the properties declared in this record.
@@ -94,7 +92,7 @@ internal static class RecordDeclarationSyntaxParser
             {
                 Identifier = nestedRecord.Identifier.ToString(),
                 TypeParameters = nestedRecord.GetTypeParameters().ToImmutableEquatableArray(),
-                Parameters = nestedRecord.GetParameters(semanticModel).ToImmutableEquatableArray()
+                Parameters = nestedRecord.GetParameters(semanticModel).ToImmutableEquatableArray(),
             });
 
     /// <summary>

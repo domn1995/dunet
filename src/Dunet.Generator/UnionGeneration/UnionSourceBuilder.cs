@@ -454,7 +454,9 @@ internal static class UnionSourceBuilder
             );
             builder.Append($"        TState state");
             builder.AppendLine(union.Variants.Count > 0 ? "," : string.Empty);
-            builder.Append($"            global::System.Action<TState, {specificVariant.Identifier}");
+            builder.Append(
+                $"            global::System.Action<TState, {specificVariant.Identifier}"
+            );
             builder.AppendTypeParams(specificVariant.TypeParameters);
             builder.AppendLine($"> {specificVariant.Identifier.ToMethodParameterCase()},");
             builder.AppendLine($"            global::System.Action<TState> @else");

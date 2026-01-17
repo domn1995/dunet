@@ -12,8 +12,7 @@ internal static class IdentifierExtensions
             // - Prepend '@' to prevent keyword conflicts.
             // - Lowercase the first character to abide by C# style rules for method parameter
             //   casing and prevent collision with its type.
-            [var firstCharacter, .. var rest]
-                => $"@{char.ToLowerInvariant(firstCharacter)}{rest}",
+            [var firstCharacter, .. var rest] => $"@{char.ToLowerInvariant(firstCharacter)}{rest}",
             // If anything else came in, we just return it back and let the caller handle it.
             _ => identifier,
         };

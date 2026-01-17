@@ -42,14 +42,12 @@ internal static class SyntaxExtensions
         accessibility switch
         {
             Accessibility.Public => "public",
-            Accessibility.ProtectedOrInternal
-            or Accessibility.ProtectedOrFriend
-                => "protected internal",
+            Accessibility.ProtectedOrInternal or Accessibility.ProtectedOrFriend =>
+                "protected internal",
             Accessibility.Internal or Accessibility.Friend => "internal",
             Accessibility.Protected => "protected",
-            Accessibility.ProtectedAndInternal
-            or Accessibility.ProtectedAndFriend
-                => "private protected",
+            Accessibility.ProtectedAndInternal or Accessibility.ProtectedAndFriend =>
+                "private protected",
             Accessibility.Private => "private",
             Accessibility.NotApplicable => "",
             _ => "",
