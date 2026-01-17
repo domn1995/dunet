@@ -44,9 +44,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
 
         var union = UnionSourceBuilder.Build(unionRecord);
         context.AddSource(
-            unionRecord.TypeParameters.Count == 0
-                ? $"{unionRecord.Namespace}.{unionRecord.Name}.g.cs"
-                : $"{unionRecord.Namespace}.{unionRecord.Name}.{unionRecord.TypeParameters.Count}.g.cs",
+            $"{unionRecord.Namespace}.{unionRecord.Name}{unionRecord.TypeParameters.Count}.g.cs",
             SourceText.From(union, Encoding.UTF8)
         );
 
@@ -59,7 +57,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
         {
             var matchExtensions = UnionExtensionsSourceBuilder.GenerateExtensions(unionRecord);
             context.AddSource(
-                $"{unionRecord.Namespace}.{unionRecord.Name}MatchExtensions.g.cs",
+                $"{unionRecord.Namespace}.{unionRecord.Name}{unionRecord.TypeParameters.Count}MatchExtensions.g.cs",
                 SourceText.From(matchExtensions, Encoding.UTF8)
             );
         }

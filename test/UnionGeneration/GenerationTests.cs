@@ -214,13 +214,13 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void GenericUnionTypesMayHaveRequiredProperties()
+    public void GenericUnionsWithTheSameName()
     {
         // Arrange.
         var programCs = """
             using Dunet;
             using System;
-            
+
             Result<Guid, Exception> result1 = Result.Ok<Guid, Exception>(Guid.NewGuid());
             Result<Exception> result2 = Result.Error(new Exception("Boom!"));
 

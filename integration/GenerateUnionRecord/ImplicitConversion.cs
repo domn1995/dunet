@@ -1,6 +1,6 @@
-﻿namespace Dunet.Integration.GenerateUnionRecord;
+﻿using Dunet.Integration.GenerateUnionRecord.Unions;
 
-using Result = Unions.Result<Exception, string>;
+namespace Dunet.Integration.GenerateUnionRecord;
 
 public class ImplicitConversion
 {
@@ -21,6 +21,6 @@ public class ImplicitConversion
         actualMessage.Should().Be(expectedMessage);
     }
 
-    private static string GetResultMessage(Result result) =>
+    private static string GetResultMessage(Result<Exception, string> result) =>
         result.Match(success => success.Value, failure => failure.Error.Message);
 }
