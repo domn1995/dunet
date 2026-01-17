@@ -3,7 +3,7 @@ namespace Dunet.Test.UnionGeneration;
 public sealed class MultipleGenericUnionsGenerationTests
 {
     [Fact]
-    public void TwoGenericUnionsWithSameName_DifferentTypeParameters()
+    public void TwoGenericUnionsWithSameNameDifferentTypeParameters()
     {
         // Arrange.
         var programCs = """
@@ -37,7 +37,7 @@ public sealed class MultipleGenericUnionsGenerationTests
     }
 
     [Fact]
-    public void ThreeGenericUnionsWithSameName_IncreasingTypeParameters()
+    public void ThreeGenericUnionsWithSameNameIncreasingTypeParameters()
     {
         // Arrange.
         var programCs = """
@@ -80,7 +80,7 @@ public sealed class MultipleGenericUnionsGenerationTests
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameName_InDifferentNamespaces()
+    public void MultipleGenericUnionsWithSameNameInDifferentNamespaces()
     {
         // Arrange.
         var resultCS = """
@@ -120,7 +120,7 @@ public sealed class MultipleGenericUnionsGenerationTests
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameName_WithComplexVariants()
+    public void MultipleGenericUnionsWithSameNameWithComplexVariants()
     {
         // Arrange.
         var programCs = """
@@ -157,7 +157,7 @@ public sealed class MultipleGenericUnionsGenerationTests
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameName_CanInstantiateAllVariants()
+    public void MultipleGenericUnionsWithSameNameCanInstantiateAllVariants()
     {
         // Arrange.
         var programCs = """
@@ -196,7 +196,7 @@ public sealed class MultipleGenericUnionsGenerationTests
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameName_WithConstraints()
+    public void MultipleGenericUnionsWithSameNameWithConstraints()
     {
         // Arrange.
         var programCs = """
