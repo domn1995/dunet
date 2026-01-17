@@ -1,6 +1,6 @@
-﻿namespace Dunet.Integration.GenerateUnionRecord;
+﻿using Dunet.Integration.GenerateUnionRecord.Unions;
 
-using Result = Unions.Result<Exception, string>;
+namespace Dunet.Integration.GenerateUnionRecord;
 
 public class Generics
 {
@@ -8,7 +8,7 @@ public class Generics
     public void Failure()
     {
         const string expectedMessage = "Boom!";
-        var result = new Result.Failure(new Exception(expectedMessage));
+        var result = Result.Failure(new Exception(expectedMessage));
         var actualMessage = GetResultMessage(result);
         actualMessage.Should().Be(expectedMessage);
     }
@@ -17,11 +17,11 @@ public class Generics
     public void Success()
     {
         const string expectedMessage = "Success!";
-        var result = new Result.Success(expectedMessage);
+        var result = Result.Success(expectedMessage);
         var actualMessage = GetResultMessage(result);
         actualMessage.Should().Be(expectedMessage);
     }
 
-    private static string GetResultMessage(Result result) =>
+    private static string GetResultMessage(Result<Exception, string> result) =>
         result.Match(success => success.Value, failure => failure.Error.Message);
 }
