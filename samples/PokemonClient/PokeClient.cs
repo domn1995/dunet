@@ -3,12 +3,8 @@ using Dunet;
 
 namespace PokemonClient;
 
-public class PokeClient
+public class PokeClient(HttpClient client)
 {
-    private readonly HttpClient client;
-
-    public PokeClient(HttpClient httpClient) => client = httpClient;
-
     public async Task<Result<Exception, Pokemon>> GetPokemonAsync(string name)
     {
         var fetch = () => client.GetFromJsonAsync<Pokemon>(name);
