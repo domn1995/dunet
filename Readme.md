@@ -61,7 +61,7 @@ partial record Option<T>
 // 4. Use the union variants.
 Option<int> ParseInt(string? value) =>
     int.TryParse(value, out var number)
-        ? new Some(number)
+        ? number
         : new None();
 
 string GetOutput(Option<int> number) =>
@@ -86,9 +86,9 @@ Console.WriteLine(output); // "12345".
 Dunet generates implicit conversions between union variants and the union type if your union meets all of the following conditions:
 
 - The union has no required properties.
-- All variants contain a single property.
-- Each variant's property is unique within the union.
 - No variant's property is an interface type.
+- Each non-empty variant has a single property.
+- Each non-empty variant's property is unique within the union.
 
 For example, consider a `Result` union type that represents success as a `double` and failure as an `Exception`:
 
@@ -127,6 +127,8 @@ var output = result.Match(
 
 Console.WriteLine(output); // "Cannot divide by zero!"
 ```
+
+> Note: Empty variants are ignored when generated implicit conversions.
 
 ## Async Match
 
