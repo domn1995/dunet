@@ -20,8 +20,6 @@ static Option<int> ParseInt(string? value) => int.TryParse(value, out var num) ?
 [Union]
 public partial record Option<T>
 {
-    public static implicit operator Option<T>(T value) => new Some(value);
-
     partial record Some(T Value);
 
     partial record None();
