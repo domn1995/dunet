@@ -4,10 +4,11 @@ namespace Dunet.Generator.UnionGeneration;
 
 internal static class ImmutableEquatableArray
 {
-    public static ImmutableEquatableArray<T> ToImmutableEquatableArray<T>(
-        this IEnumerable<T> values
-    )
-        where T : IEquatable<T> => new(values);
+    extension<T>(IEnumerable<T> self)
+        where T : IEquatable<T>
+    {
+        public ImmutableEquatableArray<T> ToImmutableEquatableArray() => new(self);
+    }
 }
 
 /// <summary>

@@ -6,54 +6,68 @@ namespace Dunet.Generator;
 
 internal static class SyntaxExtensions
 {
-    public static string? GetNamespace(this INamedTypeSymbol symbol) =>
-        symbol.ContainingNamespace.ToString() switch
-        {
-            "<global namespace>" => null,
-            var ns => ns,
-        };
+    extension(INamedTypeSymbol self)
+    {
+        public string? GetNamespace() =>
+            self.ContainingNamespace.ToString() switch
+            {
+                "<global namespace>" => null,
+                var ns => ns,
+            };
+    }
 
-    public static IEnumerable<UsingDirectiveSyntax> GetImports(
-        this TypeDeclarationSyntax typeDeclaration
-    ) =>
-        typeDeclaration.SyntaxTree.GetRoot() switch
-        {
-            CompilationUnitSyntax root => root.Usings,
-            _ => Enumerable.Empty<UsingDirectiveSyntax>(),
-        };
+    extension(TypeDeclarationSyntax self)
+    {
+        public IEnumerable<UsingDirectiveSyntax> GetImports() =>
+            self.SyntaxTree.GetRoot() switch
+            {
+                CompilationUnitSyntax root => root.Usings,
+                _ => Enumerable.Empty<UsingDirectiveSyntax>(),
+            };
 
-    public static bool IsDecoratedRecord(this SyntaxNode node) =>
-        node is RecordDeclarationSyntax { AttributeLists.Count: > 0 };
+        public bool IsPartial() => self.Modifiers.Any(SyntaxKind.PartialKeyword);
+    }
 
-    public static bool IsImporting(this UsingDirectiveSyntax import, string name) =>
-        import.Name?.ToString() == name;
+    extension(SyntaxNode self)
+    {
+        public bool IsDecoratedRecord() =>
+            self is RecordDeclarationSyntax { AttributeLists.Count: > 0 };
 
-    public static bool IsPartial(this TypeDeclarationSyntax declaration) =>
-        declaration.Modifiers.Any(SyntaxKind.PartialKeyword);
+        public bool IsRecordDeclaration() => self is RecordDeclarationSyntax;
 
-    public static bool IsRecordDeclaration(this SyntaxNode node) => node is RecordDeclarationSyntax;
+        public bool IsClassDeclaration() => self is ClassDeclarationSyntax;
 
-    public static bool IsClassDeclaration(this SyntaxNode node) => node is ClassDeclarationSyntax;
+        public bool IsClassOrRecordDeclaration() =>
+            self.IsRecordDeclaration() || self.IsClassDeclaration();
+    }
 
-    public static bool IsClassOrRecordDeclaration(this SyntaxNode node) =>
-        node.IsRecordDeclaration() || node.IsClassDeclaration();
+    extension(UsingDirectiveSyntax self)
+    {
+        public bool IsImporting(string name) => self.Name?.ToString() == name;
+    }
 
-    public static string ToKeyword(this Accessibility accessibility) =>
-        accessibility switch
-        {
-            Accessibility.Public => "public",
-            Accessibility.ProtectedOrInternal or Accessibility.ProtectedOrFriend =>
-                "protected internal",
-            Accessibility.Internal or Accessibility.Friend => "internal",
-            Accessibility.Protected => "protected",
-            Accessibility.ProtectedAndInternal or Accessibility.ProtectedAndFriend =>
-                "private protected",
-            Accessibility.Private => "private",
-            Accessibility.NotApplicable => "",
-            _ => "",
-        };
+    extension(Accessibility self)
+    {
+        public string ToKeyword() =>
+            self switch
+            {
+                Accessibility.Public => "public",
+                Accessibility.ProtectedOrInternal or Accessibility.ProtectedOrFriend =>
+                    "protected internal",
+                Accessibility.Internal or Accessibility.Friend => "internal",
+                Accessibility.Protected => "protected",
+                Accessibility.ProtectedAndInternal or Accessibility.ProtectedAndFriend =>
+                    "private protected",
+                Accessibility.Private => "private",
+                Accessibility.NotApplicable => "",
+                _ => "",
+            };
+    }
 
-    public static bool IsInterfaceType(this TypeSyntax? typeSyntax, SemanticModel semanticModel) =>
-        typeSyntax is not null
-        && semanticModel.GetTypeInfo(typeSyntax).Type?.TypeKind is TypeKind.Interface;
+    extension(TypeSyntax? self)
+    {
+        public bool IsInterfaceType(SemanticModel semanticModel) =>
+            self is not null
+            && semanticModel.GetTypeInfo(self).Type?.TypeKind is TypeKind.Interface;
+    }
 }

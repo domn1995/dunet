@@ -10,25 +10,27 @@ namespace Dunet.Test.Runtime;
 /// </remarks>
 internal static class AssemblyExtensions
 {
-    public static T? ExecuteStaticMethod<T>(this Assembly assembly, string methodName) =>
-        (T?)
-            assembly
-                .DefinedTypes.SelectMany(type => type.DeclaredMethods)
-                .FirstOrDefault(method => method.Name.Contains(methodName))
-                ?.Invoke(null, null);
-
-    public static T? ExecuteStaticAsyncMethod<T>(this Assembly assembly, string methodName)
+    extension(Assembly self)
     {
-        var task =
-            assembly
-                .DefinedTypes.SelectMany(type => type.DeclaredMethods)
-                .FirstOrDefault(method => method.Name.Contains(methodName))
-                ?.Invoke(null, null) as Task<T>;
+        public T? ExecuteStaticMethod<T>(string methodName) =>
+            (T?)
+                self
+                    .DefinedTypes.SelectMany(type => type.DeclaredMethods)
+                    .FirstOrDefault(method => method.Name.Contains(methodName))
+                    ?.Invoke(null, null);
 
-        return task switch
+        public T? ExecuteStaticAsyncMethod<T>(string methodName)
         {
-            not null => task.GetAwaiter().GetResult(),
-            _ => default,
-        };
+            var task =
+                self.DefinedTypes.SelectMany(type => type.DeclaredMethods)
+                    .FirstOrDefault(method => method.Name.Contains(methodName))
+                    ?.Invoke(null, null) as Task<T>;
+
+            return task switch
+            {
+                not null => task.GetAwaiter().GetResult(),
+                _ => default,
+            };
+        }
     }
 }
