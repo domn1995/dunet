@@ -18,33 +18,44 @@ internal sealed record UnionDeclaration(
     // It also doesn't make sense to generate Match extensions if there are no variants to match against.
     public bool SupportsExtensionMethods() => Namespace is not null && Variants.Count > 0;
 
-    public bool SupportsImplicitConversions()
+    public List<VariantDeclaration> VariantsWithImplicitConversionSupport()
     {
-        var allVariantsHaveSingleParameter = () =>
-            Variants.All(static variant => variant.Parameters.Count is 1);
+        var hasRequiredProperties = Properties.Any(static property => property.IsRequired);
 
-        var noVariantHasInterfaceParameter = () =>
-            Variants
-                .SelectMany(static variant => variant.Parameters)
-                .All(static parameter => !parameter.Type.IsInterface);
-
-        var allVariantsParameterTypesAreDifferent = () =>
+        // We cannot generate implicit conversions for unions with required properties because
+        // we cannot initialize the required value as part of performing the conversion.
+        if (hasRequiredProperties)
         {
-            var allParameterTypes = Variants
+            return [];
+        }
+
+        static bool eachVariantHasUniqueParameterType(IEnumerable<VariantDeclaration> variants)
+        {
+            var allParameterTypes = variants
+                // Ignore variants with no parameters since they don't impact uniqueness.
+                .Where(static variant => variant.Parameters.Count > 0)
                 .SelectMany(static variant => variant.Parameters)
-                .Select(static parameter => parameter.Type.Identifier);
-            var numAllParameterTypes = allParameterTypes.Count();
+                .Select(static parameter => parameter.Type.Identifier)
+                .ToList();
+            var numAllParameterTypes = allParameterTypes.Count;
             var numUniqueParameterTypes = allParameterTypes.Distinct().Count();
             return numAllParameterTypes == numUniqueParameterTypes;
-        };
+        }
 
-        var unionHasNoRequiredProperties = () =>
-            !Properties.Any(static property => property.IsRequired);
+        if (!eachVariantHasUniqueParameterType(Variants))
+        {
+            return [];
+        }
 
-        return allVariantsHaveSingleParameter()
-            && noVariantHasInterfaceParameter()
-            && allVariantsParameterTypesAreDifferent()
-            && unionHasNoRequiredProperties();
+        // Isolate the variants that have a single parameter because only those can have implicit conversions.
+        bool hasSingleParameter(VariantDeclaration variant) => variant.Parameters.Count is 1;
+
+        static bool hasInterfaceParameter(VariantDeclaration variant) =>
+            variant.Parameters.Any(static parameter => parameter.Type.IsInterface);
+
+        return Variants
+            .Where(variant => hasSingleParameter(variant) && !hasInterfaceParameter(variant))
+            .ToList();
     }
 }
 

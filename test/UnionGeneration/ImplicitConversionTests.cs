@@ -142,4 +142,32 @@ public sealed class ImplicitConversionTests
         result.CompilationErrors.Should().BeEmpty();
         result.GenerationDiagnostics.Should().BeEmpty();
     }
+
+    [Fact]
+    public void IgnoresEmptyMembersWhenGeneratingImplicitConversions()
+    {
+        var programCs = """
+            using Dunet;
+            using System;
+            using static Option<int>;
+
+            Option<int> success = 42;
+            Option<int> none = new None();
+
+            [Union]
+            partial record Option<T>
+            {
+                partial record Some(T Value);
+                partial record None();
+            }
+            """;
+
+        // Act.
+        using var scope = new AssertionScope();
+        var result = Compiler.Compile(programCs);
+
+        // Assert.
+        result.CompilationErrors.Should().BeEmpty();
+        result.GenerationDiagnostics.Should().BeEmpty();
+    }
 }
