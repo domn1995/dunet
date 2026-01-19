@@ -40,18 +40,15 @@ internal static class UnionSourceBuilder
         builder.AppendAbstractSpecificMatchMethods(union);
         builder.AppendAbstractUnwrapMethods(union);
 
-        if (union.SupportsImplicitConversions())
+        foreach (var variant in union.VariantsWithImplicitConversionSupport())
         {
-            foreach (var variant in union.Variants)
-            {
-                builder.Append($"    public static implicit operator {union.Name}");
-                builder.AppendTypeParams(union.TypeParameters);
-                builder.AppendLine(
-                    $"({variant.Parameters[0].Type.Identifier} value) => new {variant.Identifier}(value);"
-                );
-            }
-            builder.AppendLine();
+            builder.Append($"    public static implicit operator {union.Name}");
+            builder.AppendTypeParams(union.TypeParameters);
+            builder.AppendLine(
+                $"({variant.Parameters[0].Type.Identifier} value) => new {variant.Identifier}(value);"
+            );
         }
+        builder.AppendLine();
 
         foreach (var variant in union.Variants)
         {
