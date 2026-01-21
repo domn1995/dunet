@@ -128,7 +128,7 @@ var output = result.Match(
 Console.WriteLine(output); // "Cannot divide by zero!"
 ```
 
-> Note: Empty variants are ignored when generated implicit conversions.
+> Note: Empty variants are ignored when generating implicit conversions.
 
 ## Async Match
 
