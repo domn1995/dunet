@@ -3,7 +3,7 @@
 public sealed class GenerationTests
 {
     [Fact]
-    public void UnionVariantsExtendUnionType()
+    public async Task UnionVariantsExtendUnionType()
     {
         // Arrange.
         var programCs = """
@@ -23,7 +23,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -32,7 +32,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void UnionVariantsMayHaveNoProperties()
+    public async Task UnionVariantsMayHaveNoProperties()
     {
         // Arrange.
         var programCs = """
@@ -53,7 +53,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -62,7 +62,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void UnionMayContainSingleVariant()
+    public async Task UnionMayContainSingleVariant()
     {
         // Arrange.
         var programCs = """
@@ -78,7 +78,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -87,7 +87,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void UnionMayBeEmpty()
+    public async Task UnionMayBeEmpty()
     {
         // Arrange.
         var programCs = """
@@ -101,7 +101,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -110,7 +110,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void UnionTypeMayHaveComplexVariants()
+    public async Task UnionTypeMayHaveComplexVariants()
     {
         // Arrange.
         var programCs = """
@@ -129,7 +129,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -138,7 +138,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void UnionTypeMayHaveComplexVariantsFromOtherNamespace()
+    public async Task UnionTypeMayHaveComplexVariantsFromOtherNamespace()
     {
         // Arrange.
         var dataCs = """
@@ -173,7 +173,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(dataCs, resultCs, programCs);
+        var result = await Compiler.CompileAsync(dataCs, resultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -182,7 +182,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void UnionTypeMayHaveRequiredProperties()
+    public async Task UnionTypeMayHaveRequiredProperties()
     {
         // Arrange.
         var programCs = """
@@ -205,7 +205,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -214,7 +214,7 @@ public sealed class GenerationTests
     }
 
     [Fact]
-    public void GenericUnionsWithTheSameName()
+    public async Task GenericUnionsWithTheSameName()
     {
         // Arrange.
         var programCs = """
@@ -251,7 +251,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();

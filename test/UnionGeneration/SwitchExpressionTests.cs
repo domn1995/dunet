@@ -3,7 +3,7 @@
 public sealed class SwitchExpressionTests
 {
     [Fact]
-    public void CanUseUnionTypesInSwitchExpression()
+    public async Task CanUseUnionTypesInSwitchExpression()
     {
         // Arrange.
         var source = """
@@ -29,7 +29,7 @@ public sealed class SwitchExpressionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -41,7 +41,7 @@ public sealed class SwitchExpressionTests
     [InlineData("Shape shape = new Shape.Rectangle(4, 4);", 16d)]
     [InlineData("Shape shape = new Shape.Circle(2);", 12.56d)]
     [InlineData("Shape shape = new Shape.Triangle(2, 3);", 3d)]
-    public void SwitchExpressionMatchesCorrectCase(string shapeDeclaration, double expectedArea)
+    public async Task SwitchExpressionMatchesCorrectCase(string shapeDeclaration, double expectedArea)
     {
         // Arrange.
         var source = $$"""
@@ -68,12 +68,13 @@ public sealed class SwitchExpressionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetActualArea");
 
         // Assert.
         using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
+        result.CompilationDiagnostics.Should().NotContain(diagnostic => diagnostic.Id == "CS8509");
         result.GenerationErrors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }

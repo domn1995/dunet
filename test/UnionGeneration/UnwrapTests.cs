@@ -28,7 +28,7 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.Compile(programCs);
+        var compilation = Compiler.CompileAsync(programCs);
         var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
@@ -62,7 +62,7 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.Compile(programCs);
+        var compilation = Compiler.CompileAsync(programCs);
         var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
@@ -96,7 +96,7 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.Compile(programCs);
+        var compilation = Compiler.CompileAsync(programCs);
         var action = () => compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.

@@ -9,7 +9,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", -1d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", -1d)]
-    public void MatchAsyncCallsCorrectFunctionArgument(
+    public async Task MatchAsyncCallsCorrectFunctionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -49,7 +49,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
             """;
 
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
         var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.
@@ -66,7 +66,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", -1d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", -1d)]
-    public void MatchAsyncCallsCorrectActionArgument(
+    public async Task MatchAsyncCallsCorrectActionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -110,7 +110,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
             """;
 
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
         var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.

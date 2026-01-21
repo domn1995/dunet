@@ -9,7 +9,7 @@ public sealed class MatchAsyncMethodTests
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", 4d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", 4d)]
-    public void MatchAsyncCallsCorrectFunctionArgument(
+    public async Task MatchAsyncCallsCorrectFunctionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -48,9 +48,8 @@ public sealed class MatchAsyncMethodTests
                         triangle => triangle.Base * triangle.Height / 2
                     );
             """;
-
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
         var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.
@@ -67,7 +66,7 @@ public sealed class MatchAsyncMethodTests
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", 4d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", 4d)]
-    public void MatchAsyncCallsCorrectActionArgument(
+    public async Task MatchAsyncCallsCorrectActionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -112,7 +111,7 @@ public sealed class MatchAsyncMethodTests
             """;
 
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
         var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.
@@ -129,7 +128,7 @@ public sealed class MatchAsyncMethodTests
     [InlineData("ValueTask", "new Keyword.Base()", "base")]
     [InlineData("Task", "new Keyword.Null()", "null")]
     [InlineData("ValueTask", "new Keyword.Null()", "null")]
-    public void CanMatchAsyncOnUnionVariantsNamedAfterKeywords(
+    public async Task CanMatchAsyncOnUnionVariantsNamedAfterKeywords(
         string taskType,
         string keywordDeclaration,
         string expectedKeyword
@@ -174,7 +173,7 @@ public sealed class MatchAsyncMethodTests
             """;
 
         // Act.
-        var result = Compiler.Compile(keywordCs, programCs);
+        var result = await Compiler.CompileAsync(keywordCs, programCs);
         var actualKeyword = result.Assembly?.ExecuteStaticAsyncMethod<string>("GetValueAsync");
 
         // Assert.

@@ -29,7 +29,7 @@ public sealed class MatchMethodWithStateTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = Compiler.CompileAsync(source);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -72,7 +72,7 @@ public sealed class MatchMethodWithStateTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
@@ -118,7 +118,7 @@ public sealed class MatchMethodWithStateTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = Compiler.CompileAsync(source);
         var actualKeyword = result.Assembly?.ExecuteStaticMethod<string>("GetKeyword");
 
         // Assert.

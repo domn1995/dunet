@@ -28,7 +28,7 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -71,7 +71,7 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -111,7 +111,7 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(resultCS, programCs);
+        var result = Compiler.CompileAsync(resultCS, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -148,7 +148,7 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -187,7 +187,7 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -221,7 +221,7 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();

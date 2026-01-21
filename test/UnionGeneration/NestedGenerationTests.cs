@@ -37,7 +37,7 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -83,7 +83,7 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -135,7 +135,7 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(nestedCs, programCs);
+        var result = Compiler.CompileAsync(nestedCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -188,7 +188,7 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();

@@ -7,7 +7,7 @@ public sealed class GenericGenerationTests
     [InlineData("ValueTask", "new Option<int>.Some(1)", 1)]
     [InlineData("Task", "new Option<int>.None()", 0)]
     [InlineData("ValueTask", "new Option<int>.None()", 0)]
-    public void SupportsAsyncMatchFunctionsForUnionsWithSingleTypeParameter(
+    public async Task SupportsAsyncMatchFunctionsForUnionsWithSingleTypeParameter(
         string taskType,
         string optionDeclaration,
         int expectedValue
@@ -38,7 +38,7 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(optionCs, programCs);
+        var result = await Compiler.CompileAsync(optionCs, programCs);
         var value = result.Assembly?.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.
@@ -53,7 +53,7 @@ public sealed class GenericGenerationTests
     [InlineData("ValueTask", "new Option<int>.Some(1)", 1)]
     [InlineData("Task", "new Option<int>.None()", -1)]
     [InlineData("ValueTask", "new Option<int>.None()", -1)]
-    public void SupportsAsyncMatchActionsForUnionsWithSingleTypeParameter(
+    public async Task SupportsAsyncMatchActionsForUnionsWithSingleTypeParameter(
         string taskType,
         string optionDeclaration,
         int expectedValue
@@ -92,7 +92,7 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(optionCs, programCs);
+        var result = await Compiler.CompileAsync(optionCs, programCs);
         var value = result.Assembly?.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.

@@ -21,7 +21,7 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -51,7 +51,7 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -78,7 +78,7 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -106,7 +106,7 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -136,7 +136,7 @@ public sealed class ImplicitConversionTests
 
         // Act.
         using var scope = new AssertionScope();
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();
@@ -164,7 +164,7 @@ public sealed class ImplicitConversionTests
 
         // Act.
         using var scope = new AssertionScope();
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         result.CompilationErrors.Should().BeEmpty();

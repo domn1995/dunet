@@ -1,7 +1,9 @@
-﻿using System.Reflection;
+﻿using System.Collections.Immutable;
+using System.Reflection;
 using Dunet.Generator.UnionGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Dunet.Test.Compilation;
 
@@ -11,13 +13,16 @@ namespace Dunet.Test.Compilation;
 internal sealed class Compiler
 {
     private static readonly IIncrementalGenerator unionGenerator = new UnionGenerator();
+    private static readonly DiagnosticSuppressor unionSwitchExpressionDiagnosticSuppressor =
+        new UnionSwitchExpressionDiagnosticSupressor();
 
-    public static CompilationResult Compile(params string[] sources)
+    public static async Task<CompilationResult> CompileAsync(params string[] sources)
     {
         var baseCompilation = CreateCompilation(sources);
         var (outputCompilation, compilationDiagnostics, generationDiagnostics) = RunGenerator(
             baseCompilation
         );
+        var diagnostics = await RunAnalyzersAsync(baseCompilation);
 
         using var ms = new MemoryStream();
         Assembly? assembly = null;
@@ -35,7 +40,8 @@ internal sealed class Compiler
         return new(
             Assembly: assembly,
             CompilationDiagnostics: compilationDiagnostics,
-            GenerationDiagnostics: generationDiagnostics
+            GenerationDiagnostics: generationDiagnostics,
+            AnalyzerDiagnostics: diagnostics
         );
     }
 
@@ -88,5 +94,24 @@ internal sealed class Compiler
             CompilationDiagnostics: outputCompilation.GetDiagnostics(),
             GenerationDiagnostics: generationDiagnostics
         );
+    }
+
+    private static async Task<ImmutableArray<Diagnostic>> RunAnalyzersAsync(
+        Microsoft.CodeAnalysis.Compilation compilation
+    )
+    {
+        var compilationWithAnalyzers = new CompilationWithAnalyzers(
+            compilation,
+            [unionSwitchExpressionDiagnosticSuppressor],
+            new CompilationWithAnalyzersOptions(
+                new AnalyzerOptions([]),
+                onAnalyzerException: null,
+                concurrentAnalysis: false,
+                logAnalyzerExecutionTime: false,
+                reportSuppressedDiagnostics: true
+            )
+        );
+
+        return await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync();
     }
 }

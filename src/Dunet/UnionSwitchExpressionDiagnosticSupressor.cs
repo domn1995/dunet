@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Dunet;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppressor
+public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppressor
 {
     private static readonly SuppressionDescriptor descriptor = new(
         "DUNET1",

@@ -38,7 +38,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(iShapeCs, programCs);
+        var result = Compiler.CompileAsync(iShapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -74,7 +74,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -102,7 +102,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -139,7 +139,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -175,7 +175,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -219,7 +219,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(iShapeCs, programCs);
+        var result = Compiler.CompileAsync(iShapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -264,7 +264,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(iShapeCs, programCs);
+        var result = Compiler.CompileAsync(iShapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -310,7 +310,7 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.Compile(resultCs, otherResultCs, programCs);
+        var result = Compiler.CompileAsync(resultCs, otherResultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();

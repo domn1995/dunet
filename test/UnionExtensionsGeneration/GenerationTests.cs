@@ -5,7 +5,7 @@ public sealed class GenerationTests
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
-    public void CanUseMatchAsyncOnAsyncMethodsThatReturnUnions(string taskType)
+    public async Task CanUseMatchAsyncOnAsyncMethodsThatReturnUnions(string taskType)
     {
         // Arrange.
         const string shapeCs = """
@@ -41,7 +41,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -52,7 +52,7 @@ public sealed class GenerationTests
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
-    public void CanUseMatchAsyncWithActionsOnAsyncMethodsThatReturnUnions(string taskType)
+    public async Task CanUseMatchAsyncWithActionsOnAsyncMethodsThatReturnUnions(string taskType)
     {
         // Arrange.
         const string shapeCs = """
@@ -90,7 +90,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -101,7 +101,7 @@ public sealed class GenerationTests
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
-    public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoNamespace(string taskType)
+    public async Task MatchAsyncMethodsAreNotGeneratedForUnionsWithNoNamespace(string taskType)
     {
         // Arrange.
         var source = $$"""
@@ -131,7 +131,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.
@@ -149,7 +149,7 @@ public sealed class GenerationTests
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
-    public void MatchAsyncMethodsAreNotGeneratedForUnionsWithNoVariants(string taskType)
+    public async Task MatchAsyncMethodsAreNotGeneratedForUnionsWithNoVariants(string taskType)
     {
         // Arrange.
         var emptyCs = """
@@ -176,7 +176,7 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(emptyCs, source);
+        var result = await Compiler.CompileAsync(emptyCs, source);
         var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
 
         // Assert.

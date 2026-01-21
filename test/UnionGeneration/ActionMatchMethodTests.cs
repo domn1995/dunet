@@ -6,7 +6,7 @@
 public sealed class ActionMatchMethodTests
 {
     [Fact]
-    public void CanUseUnionTypesInActionMatchMethod()
+    public async Task CanUseUnionTypesInActionMatchMethod()
     {
         // Arrange.
         var source = """
@@ -32,7 +32,7 @@ public sealed class ActionMatchMethodTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
 
         // Assert.
         using var scope = new AssertionScope();
@@ -44,7 +44,7 @@ public sealed class ActionMatchMethodTests
     [InlineData("Shape shape = new Shape.Rectangle(3, 4);", 12d)]
     [InlineData("Shape shape = new Shape.Circle(1);", 3.14d)]
     [InlineData("Shape shape = new Shape.Triangle(4, 2);", 4d)]
-    public void MatchMethodCallsCorrectActionArgument(string shapeDeclaration, double expectedArea)
+    public async Task MatchMethodCallsCorrectActionArgument(string shapeDeclaration, double expectedArea)
     {
         // Arrange.
         var source = $$"""
@@ -71,7 +71,7 @@ public sealed class ActionMatchMethodTests
             }
             """;
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
@@ -84,7 +84,7 @@ public sealed class ActionMatchMethodTests
     [Theory]
     [InlineData(1, 2, "0.5")]
     [InlineData(1, 0, "Error: division by zero.")]
-    public void GenericMatchMethodCallsCorrectActionArgument(
+    public async Task GenericMatchMethodCallsCorrectActionArgument(
         int dividend,
         int divisor,
         string expectedOutput
@@ -124,9 +124,8 @@ public sealed class ActionMatchMethodTests
                 partial record None();
             }
             """;
-
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
         var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetResult");
 
         // Assert.
@@ -139,7 +138,7 @@ public sealed class ActionMatchMethodTests
     [Theory]
     [InlineData("""Success("Successful!")""", "Successful!")]
     [InlineData("""Failure(new Exception("Failure!"))""", "Failure!")]
-    public void MultiGenericMatchMethodCallsCorrectActionArgument(
+    public async Task MultiGenericMatchMethodCallsCorrectActionArgument(
         string resultRecord,
         string expectedMessage
     )
@@ -167,15 +166,14 @@ public sealed class ActionMatchMethodTests
                 partial record Failure(TFailure Error);
             }
             """;
-
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
         var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");
 
         // Assert.
         using var scope = new AssertionScope();
         result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.GenerationErrors.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);
     }
 }

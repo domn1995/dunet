@@ -10,7 +10,8 @@ namespace Dunet.Test.Compilation;
 internal sealed record CompilationResult(
     Assembly? Assembly,
     ImmutableArray<Diagnostic> CompilationDiagnostics,
-    ImmutableArray<Diagnostic> GenerationDiagnostics
+    ImmutableArray<Diagnostic> GenerationDiagnostics,
+    ImmutableArray<Diagnostic> AnalyzerDiagnostics
 )
 {
     public ImmutableArray<Diagnostic> CompilationErrors =>
