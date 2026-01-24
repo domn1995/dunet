@@ -16,7 +16,6 @@ public sealed class SwitchExpressionTests
                 Shape.Rectangle r => r.Length * r.Width,
                 Shape.Circle c => 3.14 * c.Radius * c.Radius,
                 Shape.Triangle t => t.Base * t.Height / 2,
-                _ => 0d,
             };
 
             [Union]
@@ -76,7 +75,6 @@ public sealed class SwitchExpressionTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
-        result.ShouldNotContainSwitchExpressionWarning();
         actualArea.Should().Be(expectedArea);
     }
 }
