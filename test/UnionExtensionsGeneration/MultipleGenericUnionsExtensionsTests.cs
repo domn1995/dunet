@@ -47,8 +47,7 @@ public sealed class MultipleGenericUnionsExtensionsTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Fact]
@@ -111,14 +110,15 @@ public sealed class MultipleGenericUnionsExtensionsTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
-    public async Task CanGenerateMatchAsyncExtensionsForMultipleGenericUnionsWithSameName(string taskType)
+    public async Task CanGenerateMatchAsyncExtensionsForMultipleGenericUnionsWithSameName(
+        string taskType
+    )
     {
         // Arrange.
         var resultCs = """
@@ -169,8 +169,7 @@ public sealed class MultipleGenericUnionsExtensionsTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Fact]
@@ -238,8 +237,7 @@ public sealed class MultipleGenericUnionsExtensionsTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Fact]
@@ -287,8 +285,7 @@ public sealed class MultipleGenericUnionsExtensionsTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Fact]
@@ -331,7 +328,6 @@ public sealed class MultipleGenericUnionsExtensionsTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 }

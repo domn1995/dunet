@@ -47,8 +47,7 @@ public sealed class GenericMatchAsyncMethodTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 
@@ -103,8 +102,7 @@ public sealed class GenericMatchAsyncMethodTests
         var value = result.Assembly?.ExecuteStaticAsyncMethod<int>("GetValueAsync");
 
         // Assert.
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 
@@ -154,8 +152,7 @@ public sealed class GenericMatchAsyncMethodTests
         var value = result.Assembly?.ExecuteStaticAsyncMethod<string>("GetValueAsync");
 
         // Assert.
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 
@@ -212,8 +209,7 @@ public sealed class GenericMatchAsyncMethodTests
         var value = result.Assembly?.ExecuteStaticAsyncMethod<string>("GetValueAsync");
 
         // Assert.
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 }

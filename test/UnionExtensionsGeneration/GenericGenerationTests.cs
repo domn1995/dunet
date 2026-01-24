@@ -30,8 +30,10 @@ public sealed class GenericGenerationTests
             using System.Threading.Tasks;
             using GenericsTest;
 
+            #pragma warning disable CS8321 // Called by the test only.
             async static Task<int> GetValueAsync() =>
                 await GetOptionAsync().MatchAsync(some => some.Value, none => 0);
+            #pragma warning restore CS8321 // Called by test.
 
             async static {taskType}<Option<int>> GetOptionAsync() =>
                 await Task.FromResult({optionDeclaration});
@@ -43,8 +45,8 @@ public sealed class GenericGenerationTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 
@@ -76,6 +78,7 @@ public sealed class GenericGenerationTests
             using System.Threading.Tasks;
             using GenericsTest;
 
+            #pragma warning disable CS8321 // Called by the test only.
             async static Task<int> GetValueAsync()
             {
                 var value = 0;
@@ -85,7 +88,8 @@ public sealed class GenericGenerationTests
                         none => { value = -1; }
                     );
                 return value;
-            }
+            }            
+            #pragma warning restore CS8321 // Called by test.
 
             async static {{taskType}}<Option<int>> GetOptionAsync() =>
                 await Task.FromResult({{optionDeclaration}});
@@ -97,8 +101,8 @@ public sealed class GenericGenerationTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 }

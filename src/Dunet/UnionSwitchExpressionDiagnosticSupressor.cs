@@ -9,9 +9,9 @@ namespace Dunet;
 public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppressor
 {
     private static readonly SuppressionDescriptor descriptor = new(
-        "DUNET1",
-        "CS8509",
-        "The switch expression arms handle all union variants; therefore, a default case is unnecessary."
+        id: "DUNET1",
+        suppressedDiagnosticId: "CS8509",
+        justification: "The switch expression arms handle all union variants; therefore, a default case is unnecessary."
     );
 
     public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions => [descriptor];

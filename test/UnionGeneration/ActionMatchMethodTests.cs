@@ -36,15 +36,17 @@ public sealed class ActionMatchMethodTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("Shape shape = new Shape.Rectangle(3, 4);", 12d)]
     [InlineData("Shape shape = new Shape.Circle(1);", 3.14d)]
     [InlineData("Shape shape = new Shape.Triangle(4, 2);", 4d)]
-    public async Task MatchMethodCallsCorrectActionArgument(string shapeDeclaration, double expectedArea)
+    public async Task MatchMethodCallsCorrectActionArgument(
+        string shapeDeclaration,
+        double expectedArea
+    )
     {
         // Arrange.
         var source = $$"""
@@ -76,8 +78,8 @@ public sealed class ActionMatchMethodTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+
         actualArea.Should().Be(expectedArea);
     }
 
@@ -130,8 +132,8 @@ public sealed class ActionMatchMethodTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+
         actualArea.Should().Be(expectedOutput);
     }
 
@@ -172,8 +174,7 @@ public sealed class ActionMatchMethodTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);
     }
 }

@@ -5,7 +5,7 @@ namespace Dunet.Test.UnionGeneration;
 public sealed class UnwrapTests
 {
     [Fact]
-    public void CanUseUnwrapMethodToUnsafelyGetVariantValue()
+    public async Task CanUseUnwrapMethodToUnsafelyGetVariantValue()
     {
         // Arrange.
         var programCs = """
@@ -28,18 +28,17 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.CompileAsync(programCs);
+        var compilation = await Compiler.CompileAsync(programCs);
         var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.CompilationErrors.Should().BeEmpty();
-        compilation.GenerationErrors.Should().BeEmpty();
+        compilation.Errors.Should().BeEmpty();
         value.Should().Be(1);
     }
 
     [Fact]
-    public void CanUseUnwrapMethodToUnsafelyGetGenericVariantValue()
+    public async Task CanUseUnwrapMethodToUnsafelyGetGenericVariantValue()
     {
         // Arrange.
         var programCs = """
@@ -62,18 +61,17 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.CompileAsync(programCs);
+        var compilation = await Compiler.CompileAsync(programCs);
         var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.CompilationErrors.Should().BeEmpty();
-        compilation.GenerationErrors.Should().BeEmpty();
+        compilation.Errors.Should().BeEmpty();
         value.Should().Be(1);
     }
 
     [Fact]
-    public void UnwrapMethodThrowsWhenCalledWithWrongUnderlyingValue()
+    public async Task UnwrapMethodThrowsWhenCalledWithWrongUnderlyingValue()
     {
         // Arrange.
         var programCs = """
@@ -96,13 +94,12 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.CompileAsync(programCs);
+        var compilation = await Compiler.CompileAsync(programCs);
         var action = () => compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.CompilationErrors.Should().BeEmpty();
-        compilation.GenerationErrors.Should().BeEmpty();
+        compilation.Errors.Should().BeEmpty();
         action
             .Should()
             .Throw<TargetInvocationException>()

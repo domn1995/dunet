@@ -7,20 +7,17 @@ namespace Dunet.Test.Compilation;
 /// <summary>
 /// Represents the result of compiling C# source code.
 /// </summary>
-internal sealed record CompilationResult(
-    Assembly? Assembly,
-    ImmutableArray<Diagnostic> CompilationDiagnostics,
-    ImmutableArray<Diagnostic> GenerationDiagnostics,
-    ImmutableArray<Diagnostic> AnalyzerDiagnostics
-)
+internal sealed record CompilationResult(Assembly? Assembly, ImmutableArray<Diagnostic> Diagnostics)
 {
-    public ImmutableArray<Diagnostic> CompilationErrors =>
-        CompilationDiagnostics
-            .Where(static diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
+    public ImmutableArray<Diagnostic> Warnings =>
+        Diagnostics
+            .Where(static diagnostic =>
+                diagnostic.Severity is DiagnosticSeverity.Warning && !diagnostic.IsSuppressed
+            )
             .ToImmutableArray();
 
-    public ImmutableArray<Diagnostic> GenerationErrors =>
-        GenerationDiagnostics
-            .Where(static diagnostic => diagnostic.Severity >= DiagnosticSeverity.Error)
+    public ImmutableArray<Diagnostic> Errors =>
+        Diagnostics
+            .Where(static diagnostic => diagnostic.Severity is DiagnosticSeverity.Error)
             .ToImmutableArray();
 }

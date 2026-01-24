@@ -24,8 +24,8 @@ public sealed class GenericGenerationTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
@@ -47,12 +47,12 @@ public sealed class GenericGenerationTests
 
         // Act.
         var result = await Compiler.CompileAsync(programCs);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();
         result.Assembly.Should().BeNull();
-        result.CompilationErrors.Should().NotBeEmpty();
+        result.Errors.Should().NotBeEmpty();
     }
 
     [Theory]
@@ -102,8 +102,7 @@ public sealed class GenericGenerationTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         actualArea.Should().Be(expectedOutput);
     }
 
@@ -121,10 +120,12 @@ public sealed class GenericGenerationTests
 
             static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
 
+            #pragma warning disable CS8321 // Called by the test only.
             static string GetActualMessage() => DoWork().Match(
                 success => success.Value,
                 failure => failure.Error.Message
             );
+            #pragma warning restore CS8321
 
             [Union]
             partial record Result<TFailure, TSuccess>
@@ -140,8 +141,8 @@ public sealed class GenericGenerationTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);
     }
 
@@ -164,7 +165,7 @@ public sealed class GenericGenerationTests
 
         // Act.
         var result = await Compiler.CompileAsync(programCs);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();
@@ -199,7 +200,7 @@ public sealed class GenericGenerationTests
 
         // Act.
         var result = await Compiler.CompileAsync(programCs);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();

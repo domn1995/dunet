@@ -33,15 +33,17 @@ public sealed class SwitchExpressionTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("Shape shape = new Shape.Rectangle(4, 4);", 16d)]
     [InlineData("Shape shape = new Shape.Circle(2);", 12.56d)]
     [InlineData("Shape shape = new Shape.Triangle(2, 3);", 3d)]
-    public async Task SwitchExpressionMatchesCorrectCase(string shapeDeclaration, double expectedArea)
+    public async Task SwitchExpressionMatchesCorrectCase(
+        string shapeDeclaration,
+        double expectedArea
+    )
     {
         // Arrange.
         var source = $$"""
@@ -73,9 +75,8 @@ public sealed class SwitchExpressionTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.CompilationDiagnostics.Should().NotContain(diagnostic => diagnostic.Id == "CS8509");
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.ShouldNotContainSwitchExpressionWarning();
         actualArea.Should().Be(expectedArea);
     }
 }

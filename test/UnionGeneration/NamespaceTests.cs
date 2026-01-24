@@ -3,7 +3,7 @@ namespace Dunet.Test.UnionGeneration;
 public sealed class NamespaceTests
 {
     [Fact]
-    public void CanReferenceUnionTypesFromSeparateNamespace()
+    public async Task CanReferenceUnionTypesFromSeparateNamespace()
     {
         // Arrange.
         var iShapeCs = """
@@ -38,16 +38,16 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(iShapeCs, programCs);
+        var result = await Compiler.CompileAsync(iShapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanUseUnionTypesInSameNamespace()
+    public async Task CanUseUnionTypesInSameNamespace()
     {
         var programCs = """
             using Dunet;
@@ -74,16 +74,16 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanUseUnionTypesInTopLevelPrograms()
+    public async Task CanUseUnionTypesInTopLevelPrograms()
     {
         var programCs = """
             using Dunet;
@@ -102,16 +102,16 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanUseUnionTypesWithBlockScopedNamespaces()
+    public async Task CanUseUnionTypesWithBlockScopedNamespaces()
     {
         var programCs = """
             using Dunet;
@@ -139,16 +139,16 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanUseUnionTypesWithFileScopedNamespaces()
+    public async Task CanUseUnionTypesWithFileScopedNamespaces()
     {
         var programCs = """
             using Dunet;
@@ -175,16 +175,16 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanReferenceUnionTypesFromSeparateFileScopedNamespace()
+    public async Task CanReferenceUnionTypesFromSeparateFileScopedNamespace()
     {
         // Arrange.
         var iShapeCs = """
@@ -219,16 +219,16 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(iShapeCs, programCs);
+        var result = await Compiler.CompileAsync(iShapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanReferenceUnionTypesFromSeparateBlockScopedNamespace()
+    public async Task CanReferenceUnionTypesFromSeparateBlockScopedNamespace()
     {
         // Arrange.
         var iShapeCs = """
@@ -264,16 +264,16 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(iShapeCs, programCs);
+        var result = await Compiler.CompileAsync(iShapeCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanHaveMultipleUnionsWithSameNameInSeparateNamespaces()
+    public async Task CanHaveMultipleUnionsWithSameNameInSeparateNamespaces()
     {
         // Arrange.
         var resultCs = """
@@ -310,11 +310,11 @@ public sealed class NamespaceTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(resultCs, otherResultCs, programCs);
+        var result = await Compiler.CompileAsync(resultCs, otherResultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 }

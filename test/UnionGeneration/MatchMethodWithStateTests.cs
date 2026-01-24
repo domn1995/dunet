@@ -3,7 +3,7 @@
 public sealed class MatchMethodWithStateTests
 {
     [Fact]
-    public void CanUseUnionTypesInDedicatedMatchMethod()
+    public async Task CanUseUnionTypesInDedicatedMatchMethod()
     {
         // Arrange.
         var source = """
@@ -29,19 +29,18 @@ public sealed class MatchMethodWithStateTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(source);
+        var result = await Compiler.CompileAsync(source);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("Shape shape = new Shape.Rectangle(3, 4);", 14d)]
     [InlineData("Shape shape = new Shape.Circle(1);", 5.14d)]
     [InlineData("Shape shape = new Shape.Triangle(4, 2);", 6d)]
-    public void MatchMethodCallsCorrectFunctionArgument(
+    public async Task MatchMethodCallsCorrectFunctionArgument(
         string shapeDeclaration,
         double expectedArea
     )
@@ -72,13 +71,12 @@ public sealed class MatchMethodWithStateTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(source);
+        var result = await Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         actualArea.Should().BeApproximately(expectedArea, 0.0000000001d);
     }
 
@@ -86,7 +84,7 @@ public sealed class MatchMethodWithStateTests
     [InlineData("Keyword keyword = new Keyword.New();", "string state = \"new\";", "new")]
     [InlineData("Keyword keyword = new Keyword.Base();", "string state = \"base\";", "base")]
     [InlineData("Keyword keyword = new Keyword.Null();", "string state = \"null\";", "null")]
-    public void CanMatchOnUnionVariantsNamedAfterKeywords(
+    public async Task CanMatchOnUnionVariantsNamedAfterKeywords(
         string keywordDeclaration,
         string stateDeclaration,
         string expectedKeyword
@@ -118,13 +116,12 @@ public sealed class MatchMethodWithStateTests
             """;
 
         // Act.
-        var result = Compiler.CompileAsync(source);
+        var result = await Compiler.CompileAsync(source);
         var actualKeyword = result.Assembly?.ExecuteStaticMethod<string>("GetKeyword");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         actualKeyword.Should().Be(expectedKeyword);
     }
 }

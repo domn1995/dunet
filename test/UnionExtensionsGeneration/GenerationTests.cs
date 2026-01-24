@@ -45,8 +45,7 @@ public sealed class GenerationTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Theory]
@@ -94,8 +93,7 @@ public sealed class GenerationTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Theory]
@@ -132,7 +130,7 @@ public sealed class GenerationTests
 
         // Act.
         var result = await Compiler.CompileAsync(source);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();
@@ -143,7 +141,6 @@ public sealed class GenerationTests
                     + $"'MatchAsync' accepting a first argument of type '{taskType}<Shape>' could be found (are you missing a "
                     + "using directive or an assembly reference?)"
             );
-        result.GenerationErrors.Should().BeEmpty();
     }
 
     [Theory]
@@ -177,7 +174,7 @@ public sealed class GenerationTests
 
         // Act.
         var result = await Compiler.CompileAsync(emptyCs, source);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();
@@ -188,6 +185,5 @@ public sealed class GenerationTests
                     + $"'MatchAsync' accepting a first argument of type '{taskType}<Empty>' could be found (are you missing a "
                     + "using directive or an assembly reference?)"
             );
-        result.GenerationErrors.Should().BeEmpty();
     }
 }

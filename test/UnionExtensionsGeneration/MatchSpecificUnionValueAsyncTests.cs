@@ -54,8 +54,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -115,8 +114,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 }
