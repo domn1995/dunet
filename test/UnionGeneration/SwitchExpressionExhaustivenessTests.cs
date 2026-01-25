@@ -42,6 +42,42 @@ public sealed class SwitchExpressionExhaustivenessTests
     }
 
     [Fact]
+    public async Task DoesNotWarnAboutMultipleExhaustiveSwitchExpressions()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle r => r.Length * r.Width,
+                Circle c => 3.14 * c.Radius * c.Radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            var area2 = circle switch
+            {
+                Rectangle r => r.Length * r.Width,
+                Circle c => 3.14 * c.Radius * c.Radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task DefaultCaseOnlyIsExhaustive()
     {
         // Arrange.

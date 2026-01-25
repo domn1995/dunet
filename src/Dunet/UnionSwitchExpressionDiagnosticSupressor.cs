@@ -171,7 +171,7 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
             // don't erroneously suppress the diagnostic.
             if (isNullable && !isNullHandled)
             {
-                break;
+                continue;
             }
 
             // If all variants have been satisfied, we have proven exhaustiveness and can suppress
@@ -179,7 +179,7 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
             if (unsatisfiedVariants.Count is 0)
             {
                 context.ReportSuppression(Suppression.Create(descriptor, diagnostic));
-                break;
+                continue;
             }
         }
     }
