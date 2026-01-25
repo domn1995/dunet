@@ -76,7 +76,7 @@ Use generics for more advanced union types. For example, an option monad:
 ```cs
 // 1. Import the namespace.
 using Dunet;
-// Optional: use static import for more terse code.
+// Optional: statically import the union for more terse code.
 using static Option<int>;
 
 // 2. Add the `Union` attribute to a partial record.
@@ -404,7 +404,8 @@ var bad = option.UnwrapSome();
 ```
 
 > **Note**:
-> Unwrapping is unsafe. Use only when runtime errors are ok.
+> Unwrapping may be unsafe. Use only when runtime errors are ok or if you
+> have already checked variant is what you expect.
 
 ## Stateful Matching
 
