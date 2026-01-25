@@ -27,6 +27,41 @@ partial record Shape
 ```
 
 ```cs
+// Optional: statically import the union for more terse code.
+using static Shape;
+
+// 4. Use the union variants.
+var shape = new Rectangle(3, 4);
+// Switch expression is checked for exhaustiveness.
+var area = shape switch 
+{
+    Circle(var radius) => 3.14 * radius * radius,
+    Rectangle(var length, var width) => length * width,
+    Triangle(var @base, var height) => @base * height / 2,
+};
+Console.WriteLine(area); // "12"
+```
+
+## Match Method
+
+A `Match` method is also provided as a switch expression alternative:
+
+```cs
+// 1. Import the namespace.
+using Dunet;
+
+// 2. Add the `Union` attribute to a partial record.
+[Union]
+partial record Shape
+{
+    // 3. Define the union variants as inner partial records.
+    partial record Circle(double Radius);
+    partial record Rectangle(double Length, double Width);
+    partial record Triangle(double Base, double Height);
+}
+```
+
+```cs
 // 4. Use the union variants.
 var shape = new Shape.Rectangle(3, 4);
 var area = shape.Match(
@@ -44,7 +79,7 @@ Use generics for more advanced union types. For example, an option monad:
 ```cs
 // 1. Import the namespace.
 using Dunet;
-// Optional: use static import for more terse code.
+// Optional: statically import the union for more terse code.
 using static Option<int>;
 
 // 2. Add the `Union` attribute to a partial record.
@@ -65,10 +100,11 @@ Option<int> ParseInt(string? value) =>
         : new None();
 
 string GetOutput(Option<int> number) =>
-    number.Match(
-        some => some.Value.ToString(),
-        none => "Invalid input!"
-    );
+    number switch
+    {
+        Some(var value) => value.ToString(),
+        None => "Invalid input!",
+    };
 
 var input = Console.ReadLine(); // User inputs "not a number".
 var result = ParseInt(input);
@@ -371,7 +407,8 @@ var bad = option.UnwrapSome();
 ```
 
 > **Note**:
-> Unwrapping is unsafe. Use only when runtime errors are ok.
+> Unwrapping can be dangerous. Use only when runtime errors are ok 
+> or if you have checked that the value is the type that you expect.
 
 ## Stateful Matching
 
