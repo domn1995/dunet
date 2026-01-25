@@ -64,7 +64,7 @@ var shape = new Shape.Rectangle(3, 4);
 var area = shape.Match(
     circle => 3.14 * circle.Radius * circle.Radius,
     rectangle => rectangle.Length * rectangle.Width,
-    triangle => triangleBase * triangle.Height / 2
+    triangle => triangle.Base * triangle.Height / 2
 );
 Console.WriteLine(area); // "12"
 ```
