@@ -97,7 +97,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(5,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
             );
     }
 
@@ -130,7 +130,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(5,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
             );
     }
 
@@ -164,7 +164,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(5,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Circle{ Radius: 0D }' is not covered."
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Circle{ Radius: 0D }' is not covered."
             );
     }
 
@@ -233,22 +233,85 @@ public sealed class SwitchExpressionExhaustivenessTests
     }
 
     [Fact]
-    public async Task DoesNotWarnWithDistributedExhaustiveDeconstruction()
+    public async Task WarnsOnUnhandledNullCase()
     {
         // Arrange.
         var source = $$"""
+            using System;
+            using Dunet;
+            using static Shape;
+
+            Shape? circle = null;
+
+            var sides = circle switch
+            {
+                Rectangle => 4,
+                Circle => 0,
+                Triangle t => 3,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result
+            .Warnings.Should()
+            .OnlyContain(static diagnostic =>
+                diagnostic.ToString()
+                == "(7,20): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+            );
+    }
+
+    [Fact]
+    public async Task DoesNotWarnOnVarPattern()
+    {
+        // Arrange.
+        var source = $$"""
+            using System;
             using Dunet;
             using static Shape;
 
             Shape circle = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var sides = circle switch
             {
-                Rectangle(5, var width) => 5 * width,
-                Rectangle(< 5, var width) => 0 * width,
-                Rectangle(> 5, var width) => 100 * width,
-                Circle(var radius) => 3.14 * radius * radius,
-                Triangle(var @base, var height) t => @base * height / 2,
+                Rectangle => 4,
+                var shape => 0,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task VarPatternHandlesNullableUnionCase()
+    {
+        // Arrange.
+        var source = $$"""
+            using System;
+            using Dunet;
+            using static Shape;
+
+            Shape? circle = null;
+
+            var sides = circle switch
+            {
+                Rectangle => 4,
+                Circle => 0,
+                var shape => -1,
             };
 
             {{unionDeclaration}}

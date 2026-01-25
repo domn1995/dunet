@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -41,6 +42,8 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                 continue;
             }
 
+            bool isNullable = type.NullableAnnotation == NullableAnnotation.Annotated;
+
             var isUnion = type.GetAttributes()
                 .Any(static attr =>
                     attr.AttributeClass
@@ -69,8 +72,31 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                 SymbolEqualityComparer.Default
             );
 
+            var isNullHandled = false;
+
             foreach (var arm in node.Arms)
             {
+                // Check for the `null` constant pattern.
+                if (
+                    arm.Pattern is ConstantPatternSyntax
+                    {
+                        Expression: LiteralExpressionSyntax
+                        {
+                            RawKind: (int)SyntaxKind.NullLiteralExpression
+                        }
+                    }
+                )
+                {
+                    isNullHandled = true;
+                    continue;
+                }
+
+                // Check for the discard/var pattern which handles everything, including null.
+                if (arm.Pattern is DiscardPatternSyntax or VarPatternSyntax)
+                {
+                    isNullHandled = true;
+                }
+
                 if (arm.Pattern is ConstantPatternSyntax typePattern)
                 {
                     var symbol = model.GetSymbolInfo(typePattern.Expression).Symbol;
@@ -117,6 +143,15 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                 }
             }
 
+            // If the type was nullable but the `null` case was not handled, we bail early so we
+            // don't erroneously suppress the diagnostic.
+            if (isNullable && !isNullHandled)
+            {
+                break;
+            }
+
+            // If all variants have been satisfied, we have proven exhaustiveness and can suppress
+            // the diagnostic.
             if (unsatisfiedVariants.Count is 0)
             {
                 context.ReportSuppression(Suppression.Create(descriptor, diagnostic));
