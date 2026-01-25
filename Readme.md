@@ -14,6 +14,8 @@
 ```cs
 // 1. Import the namespace.
 using Dunet;
+// Optional: statically import the union for more terse code.
+using static Shape;
 
 // 2. Add the `Union` attribute to a partial record.
 [Union]
@@ -28,7 +30,7 @@ partial record Shape
 
 ```cs
 // 4. Use the union variants.
-var shape = new Shape.Rectangle(3, 4);
+var shape = new Rectangle(3, 4);
 // Switch expression is checked for exhaustiveness.
 var area = shape switch 
 {
