@@ -3,7 +3,7 @@ namespace Dunet.Test.UnionGeneration;
 public sealed class MultipleGenericUnionsGenerationTests
 {
     [Fact]
-    public void TwoGenericUnionsWithSameNameDifferentTypeParameters()
+    public async Task TwoGenericUnionsWithSameNameDifferentTypeParameters()
     {
         // Arrange.
         var programCs = """
@@ -28,16 +28,16 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void ThreeGenericUnionsWithSameNameIncreasingTypeParameters()
+    public async Task ThreeGenericUnionsWithSameNameIncreasingTypeParameters()
     {
         // Arrange.
         var programCs = """
@@ -71,16 +71,16 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameNameInDifferentNamespaces()
+    public async Task MultipleGenericUnionsWithSameNameInDifferentNamespaces()
     {
         // Arrange.
         var resultCS = """
@@ -111,16 +111,16 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(resultCS, programCs);
+        var result = await Compiler.CompileAsync(resultCS, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameNameWithComplexVariants()
+    public async Task MultipleGenericUnionsWithSameNameWithComplexVariants()
     {
         // Arrange.
         var programCs = """
@@ -148,16 +148,16 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameNameCanInstantiateAllVariants()
+    public async Task MultipleGenericUnionsWithSameNameCanInstantiateAllVariants()
     {
         // Arrange.
         var programCs = """
@@ -187,16 +187,16 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameNameWithConstraints()
+    public async Task MultipleGenericUnionsWithSameNameWithConstraints()
     {
         // Arrange.
         var programCs = """
@@ -221,11 +221,11 @@ public sealed class MultipleGenericUnionsGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 }

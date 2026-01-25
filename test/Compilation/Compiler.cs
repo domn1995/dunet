@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using System.Reflection;
 using Dunet.Generator.UnionGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Dunet.Test.Compilation;
 
@@ -14,20 +13,20 @@ namespace Dunet.Test.Compilation;
 internal sealed class Compiler
 {
     private static readonly IIncrementalGenerator unionGenerator = new UnionGenerator();
+    private static readonly DiagnosticSuppressor unionSwitchExpressionDiagnosticSuppressor =
+        new UnionSwitchExpressionDiagnosticSupressor();
 
-    public static CompilationResult Compile(params string[] sources)
+    public static async Task<CompilationResult> CompileAsync(params string[] sources)
     {
-        var baseCompilation = CreateCompilation(sources);
-        var (outputCompilation, compilationDiagnostics, generationDiagnostics) = RunGenerator(
-            baseCompilation
-        );
+        var compilationWithAnalyzers = CreateCompilation(sources);
+        var generationResult = await RunGeneratorAsync(compilationWithAnalyzers);
 
         using var ms = new MemoryStream();
         Assembly? assembly = null;
 
         try
         {
-            outputCompilation.Emit(ms);
+            generationResult.Compilation.Emit(ms);
             assembly = Assembly.Load(ms.ToArray());
         }
         catch
@@ -35,14 +34,10 @@ internal sealed class Compiler
             // Do nothing since we want to inspect the diagnostics when compilation fails.
         }
 
-        return new(
-            Assembly: assembly,
-            CompilationDiagnostics: compilationDiagnostics,
-            GenerationDiagnostics: generationDiagnostics
-        );
+        return new(Assembly: assembly, Diagnostics: generationResult.Diagnostics);
     }
 
-    private static CSharpCompilation CreateCompilation(params string[] sources)
+    private static CompilationWithAnalyzers CreateCompilation(params string[] sources)
     {
         // Include metadata references for all currently loaded assemblies that have a physical location.
         // This keeps the test compilation environment in sync with the test host and avoids
@@ -51,6 +46,8 @@ internal sealed class Compiler
             .CurrentDomain.GetAssemblies()
             .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
             .Select(a => a.Location)
+            // Include the Dunet assembly explicitly to ensure it's referenced.
+            .Concat([typeof(UnionAttribute).Assembly.Location])
             .Distinct()
             .ToList();
 
@@ -58,38 +55,57 @@ internal sealed class Compiler
             .Select(path => MetadataReference.CreateFromFile(path))
             .ToList();
 
-        // Ensure the assembly containing UnionAttribute is referenced in case it's not already loaded.
-        var unionAssemblyLocation = typeof(UnionAttribute).GetTypeInfo().Assembly.Location;
-        if (
-            !string.IsNullOrEmpty(unionAssemblyLocation)
-            && !loadedAssemblyPaths.Contains(unionAssemblyLocation)
-        )
-        {
-            references.Add(MetadataReference.CreateFromFile(unionAssemblyLocation));
-        }
-
-        return CSharpCompilation.Create(
+        var compilation = CSharpCompilation.Create(
             "compilation",
             sources.Select(static source => CSharpSyntaxTree.ParseText(source)),
             references,
-            new CSharpCompilationOptions(OutputKind.ConsoleApplication)
+            new CSharpCompilationOptions(
+                OutputKind.ConsoleApplication,
+                reportSuppressedDiagnostics: true,
+                nullableContextOptions: NullableContextOptions.Enable
+            )
+        );
+
+        return new CompilationWithAnalyzers(
+            compilation,
+            [unionSwitchExpressionDiagnosticSuppressor],
+            new CompilationWithAnalyzersOptions(
+                new AnalyzerOptions([]),
+                onAnalyzerException: null,
+                concurrentAnalysis: false,
+                logAnalyzerExecutionTime: false,
+                reportSuppressedDiagnostics: true
+            )
         );
     }
 
-    private static GenerationResult RunGenerator(Microsoft.CodeAnalysis.Compilation compilation)
+    private static async Task<GenerationResult> RunGeneratorAsync(
+        CompilationWithAnalyzers compilationWithAnalyzers
+    )
     {
         CSharpGeneratorDriver
             .Create(unionGenerator)
             .RunGeneratorsAndUpdateCompilation(
-                compilation,
+                compilationWithAnalyzers.Compilation,
                 out var outputCompilation,
                 out var generationDiagnostics
             );
 
-        return new(
-            Compilation: outputCompilation,
-            CompilationDiagnostics: outputCompilation.GetDiagnostics(),
-            GenerationDiagnostics: generationDiagnostics
+        // Create a new CompilationWithAnalyzers with the generated compilation to apply suppressions
+        var compilationWithAnalyzersAfterGeneration = new CompilationWithAnalyzers(
+            outputCompilation,
+            [unionSwitchExpressionDiagnosticSuppressor],
+            new CompilationWithAnalyzersOptions(
+                new AnalyzerOptions([]),
+                onAnalyzerException: null,
+                concurrentAnalysis: false,
+                logAnalyzerExecutionTime: false,
+                reportSuppressedDiagnostics: true
+            )
         );
+
+        var diagnostics = await compilationWithAnalyzersAfterGeneration.GetAllDiagnosticsAsync();
+
+        return new(Compilation: outputCompilation, Diagnostics: diagnostics);
     }
 }

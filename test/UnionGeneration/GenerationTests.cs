@@ -3,7 +3,7 @@
 public sealed class GenerationTests
 {
     [Fact]
-    public void UnionVariantsExtendUnionType()
+    public async Task UnionVariantsExtendUnionType()
     {
         // Arrange.
         var programCs = """
@@ -23,16 +23,16 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionVariantsMayHaveNoProperties()
+    public async Task UnionVariantsMayHaveNoProperties()
     {
         // Arrange.
         var programCs = """
@@ -53,16 +53,16 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionMayContainSingleVariant()
+    public async Task UnionMayContainSingleVariant()
     {
         // Arrange.
         var programCs = """
@@ -78,39 +78,40 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionMayBeEmpty()
+    public async Task UnionMayBeEmpty()
     {
         // Arrange.
         var programCs = """
             using Dunet;
 
-            // Must have something for top level program to compile.
+            #pragma warning disable CS0219 // Must have something for top level program to compile.
             var dummy = 1;
+            #pragma warning restore CA2200
 
             [Union]
             partial record Empty;
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionTypeMayHaveComplexVariants()
+    public async Task UnionTypeMayHaveComplexVariants()
     {
         // Arrange.
         var programCs = """
@@ -129,16 +130,16 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionTypeMayHaveComplexVariantsFromOtherNamespace()
+    public async Task UnionTypeMayHaveComplexVariantsFromOtherNamespace()
     {
         // Arrange.
         var dataCs = """
@@ -173,16 +174,16 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(dataCs, resultCs, programCs);
+        var result = await Compiler.CompileAsync(dataCs, resultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionTypeMayHaveRequiredProperties()
+    public async Task UnionTypeMayHaveRequiredProperties()
     {
         // Arrange.
         var programCs = """
@@ -205,16 +206,16 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void GenericUnionsWithTheSameName()
+    public async Task GenericUnionsWithTheSameName()
     {
         // Arrange.
         var programCs = """
@@ -251,11 +252,11 @@ public sealed class GenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 }

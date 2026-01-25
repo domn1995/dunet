@@ -9,7 +9,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", -1d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", -1d)]
-    public void MatchAsyncCallsCorrectFunctionArgument(
+    public async Task MatchAsyncCallsCorrectFunctionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -40,22 +40,24 @@ public sealed class MatchSpecificUnionValueAsyncTests
                 return {{shapeDeclaration}};
             };
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<double> GetAreaAsync() =>
                 await GetShapeAsync()
                     .MatchCircleAsync(
                         circle => 3.14 * circle.Radius * circle.Radius,
                         () => -1d
                     );
+            #pragma warning restore CS8321
             """;
 
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
         var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -66,7 +68,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
     [InlineData("ValueTask", "new Shape.Circle(1)", 3.14d)]
     [InlineData("Task", "new Shape.Triangle(4, 2)", -1d)]
     [InlineData("ValueTask", "new Shape.Triangle(4, 2)", -1d)]
-    public void MatchAsyncCallsCorrectActionArgument(
+    public async Task MatchAsyncCallsCorrectActionArgument(
         string taskType,
         string shapeDeclaration,
         double expectedArea
@@ -97,6 +99,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
                 return {{shapeDeclaration}};
             };
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<double> GetAreaAsync()
             {
                 var value = 0d;
@@ -107,16 +110,17 @@ public sealed class MatchSpecificUnionValueAsyncTests
                     );
                 return value;
             }
+            #pragma warning restore CS8321
             """;
 
         // Act.
-        var result = Compiler.Compile(shapeCs, programCs);
+        var result = await Compiler.CompileAsync(shapeCs, programCs);
         var actualArea = result.Assembly?.ExecuteStaticAsyncMethod<double>("GetAreaAsync");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 }

@@ -5,7 +5,7 @@ namespace Dunet.Test.UnionGeneration;
 public sealed class UnwrapTests
 {
     [Fact]
-    public void CanUseUnwrapMethodToUnsafelyGetVariantValue()
+    public async Task CanUseUnwrapMethodToUnsafelyGetVariantValue()
     {
         // Arrange.
         var programCs = """
@@ -28,18 +28,18 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.Compile(programCs);
-        var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var result = await Compiler.CompileAsync(programCs);
+        var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.CompilationErrors.Should().BeEmpty();
-        compilation.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(1);
     }
 
     [Fact]
-    public void CanUseUnwrapMethodToUnsafelyGetGenericVariantValue()
+    public async Task CanUseUnwrapMethodToUnsafelyGetGenericVariantValue()
     {
         // Arrange.
         var programCs = """
@@ -62,18 +62,18 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.Compile(programCs);
-        var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var result = await Compiler.CompileAsync(programCs);
+        var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.CompilationErrors.Should().BeEmpty();
-        compilation.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(1);
     }
 
     [Fact]
-    public void UnwrapMethodThrowsWhenCalledWithWrongUnderlyingValue()
+    public async Task UnwrapMethodThrowsWhenCalledWithWrongUnderlyingValue()
     {
         // Arrange.
         var programCs = """
@@ -96,13 +96,13 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = Compiler.Compile(programCs);
-        var action = () => compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var result = await Compiler.CompileAsync(programCs);
+        var action = () => result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.CompilationErrors.Should().BeEmpty();
-        compilation.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         action
             .Should()
             .Throw<TargetInvocationException>()

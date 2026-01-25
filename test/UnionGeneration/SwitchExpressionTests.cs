@@ -3,7 +3,7 @@
 public sealed class SwitchExpressionTests
 {
     [Fact]
-    public void CanUseUnionTypesInSwitchExpression()
+    public async Task CanUseUnionTypesInSwitchExpression()
     {
         // Arrange.
         var source = """
@@ -16,7 +16,6 @@ public sealed class SwitchExpressionTests
                 Shape.Rectangle r => r.Length * r.Width,
                 Shape.Circle c => 3.14 * c.Radius * c.Radius,
                 Shape.Triangle t => t.Base * t.Height / 2,
-                _ => 0d,
             };
 
             [Union]
@@ -29,24 +28,28 @@ public sealed class SwitchExpressionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("Shape shape = new Shape.Rectangle(4, 4);", 16d)]
     [InlineData("Shape shape = new Shape.Circle(2);", 12.56d)]
     [InlineData("Shape shape = new Shape.Triangle(2, 3);", 3d)]
-    public void SwitchExpressionMatchesCorrectCase(string shapeDeclaration, double expectedArea)
+    public async Task SwitchExpressionMatchesCorrectCase(
+        string shapeDeclaration,
+        double expectedArea
+    )
     {
         // Arrange.
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetActualArea()
             {
                 {{shapeDeclaration}}
@@ -55,9 +58,9 @@ public sealed class SwitchExpressionTests
                     Shape.Rectangle r => r.Length * r.Width,
                     Shape.Circle c => 3.14 * c.Radius * c.Radius,
                     Shape.Triangle t => t.Base * t.Height / 2,
-                    _ => 0d,
                 };
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -69,13 +72,13 @@ public sealed class SwitchExpressionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetActualArea");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 }

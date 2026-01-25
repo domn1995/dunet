@@ -6,7 +6,7 @@
 public sealed class NestedGenerationTests
 {
     [Fact]
-    public void CanReturnNestedVariant()
+    public async Task CanReturnNestedVariant()
     {
         // Arrange.
         var programCs = """
@@ -37,16 +37,16 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanReturnDeeplyNestedVariant()
+    public async Task CanReturnDeeplyNestedVariant()
     {
         // Arrange.
         var programCs = """
@@ -83,16 +83,16 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanReturnDeeplyNestedVariantFromOtherNamespace()
+    public async Task CanReturnDeeplyNestedVariantFromOtherNamespace()
     {
         // Arrange.
         var nestedCs = """
@@ -135,16 +135,16 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(nestedCs, programCs);
+        var result = await Compiler.CompileAsync(nestedCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanReturnMultipleDeeplyNestedUnionVariants()
+    public async Task CanReturnMultipleDeeplyNestedUnionVariants()
     {
         // Arrange.
         var programCs = """
@@ -188,11 +188,11 @@ public sealed class NestedGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 }

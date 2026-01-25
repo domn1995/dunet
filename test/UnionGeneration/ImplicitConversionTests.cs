@@ -3,7 +3,7 @@
 public sealed class ImplicitConversionTests
 {
     [Fact]
-    public void UnionVariantIsAssignableToUnionType()
+    public async Task UnionVariantIsAssignableToUnionType()
     {
         var programCs = """
             using Dunet;
@@ -21,16 +21,16 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionVariantPropertyTypeSubclassIsAssignableToUnionType()
+    public async Task UnionVariantPropertyTypeSubclassIsAssignableToUnionType()
     {
         var programCs = """
             using Dunet;
@@ -51,16 +51,16 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionVariantGenericPropertyIsAssignableToUnionType()
+    public async Task UnionVariantGenericPropertyIsAssignableToUnionType()
     {
         var programCs = """
             using Dunet;
@@ -78,16 +78,16 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void VariantOfMultiGenericUnionIsAssignableToUnionType()
+    public async Task VariantOfMultiGenericUnionIsAssignableToUnionType()
     {
         var programCs = """
             using Dunet;
@@ -106,16 +106,16 @@ public sealed class ImplicitConversionTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void ImplicitConversionIsNotCreatedForVariantWithInterfaceProperty()
+    public async Task ImplicitConversionIsNotCreatedForVariantWithInterfaceProperty()
     {
         var programCs = """
             using Dunet;
@@ -136,15 +136,15 @@ public sealed class ImplicitConversionTests
 
         // Act.
         using var scope = new AssertionScope();
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void IgnoresEmptyMembersWhenGeneratingImplicitConversions()
+    public async Task IgnoresEmptyMembersWhenGeneratingImplicitConversions()
     {
         var programCs = """
             using Dunet;
@@ -164,10 +164,10 @@ public sealed class ImplicitConversionTests
 
         // Act.
         using var scope = new AssertionScope();
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 }

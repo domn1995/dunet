@@ -6,7 +6,7 @@ public sealed class MatchSpecificUnionValueTests
     [InlineData("Shape shape = new Shape.Rectangle(3, 4);", -1d)]
     [InlineData("Shape shape = new Shape.Circle(1);", 3.14d)]
     [InlineData("Shape shape = new Shape.Triangle(4, 2);", -1d)]
-    public void SpecificMatchMethodCallsCorrectFunctionArgument(
+    public async Task SpecificMatchMethodCallsCorrectFunctionArgument(
         string shapeDeclaration,
         double expectedArea
     )
@@ -15,6 +15,7 @@ public sealed class MatchSpecificUnionValueTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetArea()
             {
                 {{shapeDeclaration}}
@@ -23,6 +24,7 @@ public sealed class MatchSpecificUnionValueTests
                     () => -1
                 );
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -34,13 +36,13 @@ public sealed class MatchSpecificUnionValueTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -48,7 +50,7 @@ public sealed class MatchSpecificUnionValueTests
     [InlineData("Shape shape = new Shape.Rectangle(3, 4);", -1d)]
     [InlineData("Shape shape = new Shape.Circle(1);", -1d)]
     [InlineData("Shape shape = new Shape.Triangle(4, 2);", 4d)]
-    public void SpecificMatchMethodCallsCorrectActionArgument(
+    public async Task SpecificMatchMethodCallsCorrectActionArgument(
         string shapeDeclaration,
         double expectedArea
     )
@@ -57,6 +59,7 @@ public sealed class MatchSpecificUnionValueTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetArea()
             {
                 double value = 0d;
@@ -67,6 +70,7 @@ public sealed class MatchSpecificUnionValueTests
                 );
                 return value;
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -78,13 +82,13 @@ public sealed class MatchSpecificUnionValueTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 }

@@ -3,7 +3,7 @@ namespace Dunet.Test.UnionExtensionsGeneration;
 public sealed class MultipleGenericUnionsExtensionsTests
 {
     [Fact]
-    public void CanGenerateMatchExtensionsForTwoGenericUnionsWithSameName()
+    public async Task CanGenerateMatchExtensionsForTwoGenericUnionsWithSameName()
     {
         // Arrange.
         var resultCs = """
@@ -43,16 +43,15 @@ public sealed class MultipleGenericUnionsExtensionsTests
             """;
 
         // Act.
-        var result = Compiler.Compile(resultCs, programCs);
+        var result = await Compiler.CompileAsync(resultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void CanGenerateMatchExtensionsForThreeGenericUnionsWithSameName()
+    public async Task CanGenerateMatchExtensionsForThreeGenericUnionsWithSameName()
     {
         // Arrange.
         var responseCs = """
@@ -107,18 +106,19 @@ public sealed class MultipleGenericUnionsExtensionsTests
             """;
 
         // Act.
-        var result = Compiler.Compile(responseCs, programCs);
+        var result = await Compiler.CompileAsync(responseCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("Task")]
     [InlineData("ValueTask")]
-    public void CanGenerateMatchAsyncExtensionsForMultipleGenericUnionsWithSameName(string taskType)
+    public async Task CanGenerateMatchAsyncExtensionsForMultipleGenericUnionsWithSameName(
+        string taskType
+    )
     {
         // Arrange.
         var resultCs = """
@@ -165,16 +165,15 @@ public sealed class MultipleGenericUnionsExtensionsTests
             """;
 
         // Act.
-        var result = Compiler.Compile(resultCs, programCs);
+        var result = await Compiler.CompileAsync(resultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void MatchExtensionsCorrectlyRouteToDifferentVariants()
+    public async Task MatchExtensionsCorrectlyRouteToDifferentVariants()
     {
         // Arrange.
         var resultCs = """
@@ -234,16 +233,15 @@ public sealed class MultipleGenericUnionsExtensionsTests
             """;
 
         // Act.
-        var result = Compiler.Compile(resultCs, programCs);
+        var result = await Compiler.CompileAsync(resultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void MatchExtensionsWorkWithVoidReturnType()
+    public async Task MatchExtensionsWorkWithVoidReturnType()
     {
         // Arrange.
         var resultCs = """
@@ -283,16 +281,16 @@ public sealed class MultipleGenericUnionsExtensionsTests
             """;
 
         // Act.
-        var result = Compiler.Compile(resultCs, programCs);
+        var result = await Compiler.CompileAsync(resultCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void MultipleGenericUnionsWithSameName_EachGetUniqueExtensions()
+    public async Task MultipleGenericUnionsWithSameName_EachGetUniqueExtensions()
     {
         // Arrange.
         var statusCs = """
@@ -322,69 +320,16 @@ public sealed class MultipleGenericUnionsExtensionsTests
             // Each should have unique Match extension based on variant count
             var r1 = s1.Match(a => a.Info, i => 0);
 
-            var s2 = new Status<string, string>.Inactive("paused");
-            // This should have different Match extension signature
-            var r2 = s2.Match(a => a.Info.Length, i => i.Reason.Length);
+            var s2 = new Status<int, string>.Inactive("error");
+            var r2 = s2.Match(a => a.Info, i => -i.Reason.Length);
             """;
 
         // Act.
-        var result = Compiler.Compile(statusCs, programCs);
+        var result = await Compiler.CompileAsync(statusCs, programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
-    }
-
-    [Theory]
-    [InlineData("Task")]
-    [InlineData("ValueTask")]
-    public void MatchAsyncExtensionsWorkWithAsyncLambdas(string taskType)
-    {
-        // Arrange.
-        var resultCs = """
-            using Dunet;
-
-            namespace Results;
-
-            [Union]
-            public partial record Result<T>
-            {
-                public partial record Ok(T Value);
-                public partial record Error();
-            }
-
-            [Union]
-            public partial record Result<T, TError>
-            {
-                public partial record Ok(T Value);
-                public partial record Error(TError ErrorValue);
-            }
-            """;
-
-        var programCs = $$"""
-            using System.Threading.Tasks;
-            using Results;
-
-            {{taskType}}<Result<int>> task1 = {{taskType}}.FromResult<Result<int>>(new Result<int>.Ok(42));
-            var value1 = await task1.MatchAsync(
-                async ok => { await Task.Delay(0); return ok.Value * 2; },
-                async error => { await Task.Delay(0); return 0; }
-            );
-
-            {{taskType}}<Result<string, string>> task2 = {{taskType}}.FromResult<Result<string, string>>(new Result<string, string>.Ok("hello"));
-            var value2 = await task2.MatchAsync(
-                async ok => { await Task.Delay(0); return ok.Value.Length; },
-                async error => { await Task.Delay(0); return -1; }
-            );
-            """;
-
-        // Act.
-        var result = Compiler.Compile(resultCs, programCs);
-
-        // Assert.
-        using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 }

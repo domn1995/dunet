@@ -3,7 +3,7 @@
 public sealed class MatchMethodTests
 {
     [Fact]
-    public void CanUseUnionTypesInDedicatedMatchMethod()
+    public async Task CanUseUnionTypesInDedicatedMatchMethod()
     {
         // Arrange.
         var source = """
@@ -27,19 +27,19 @@ public sealed class MatchMethodTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("Shape shape = new Shape.Rectangle(3, 4);", 12d)]
     [InlineData("Shape shape = new Shape.Circle(1);", 3.14d)]
     [InlineData("Shape shape = new Shape.Triangle(4, 2);", 4d)]
-    public void MatchMethodCallsCorrectFunctionArgument(
+    public async Task MatchMethodCallsCorrectFunctionArgument(
         string shapeDeclaration,
         double expectedArea
     )
@@ -48,6 +48,7 @@ public sealed class MatchMethodTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetArea()
             {
                 {{shapeDeclaration}}
@@ -57,6 +58,7 @@ public sealed class MatchMethodTests
                     triangle => triangle.Base * triangle.Height / 2
                 );
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -68,13 +70,13 @@ public sealed class MatchMethodTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var actualArea = result.Assembly?.ExecuteStaticMethod<double>("GetArea");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -82,7 +84,7 @@ public sealed class MatchMethodTests
     [InlineData("Keyword keyword = new Keyword.New();", "new")]
     [InlineData("Keyword keyword = new Keyword.Base();", "base")]
     [InlineData("Keyword keyword = new Keyword.Null();", "null")]
-    public void CanMatchOnUnionVariantsNamedAfterKeywords(
+    public async Task CanMatchOnUnionVariantsNamedAfterKeywords(
         string keywordDeclaration,
         string expectedKeyword
     )
@@ -91,6 +93,7 @@ public sealed class MatchMethodTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static string GetKeyword()
             {
                 {{keywordDeclaration}}
@@ -100,6 +103,7 @@ public sealed class MatchMethodTests
                     @null => "null"
                 );
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Keyword
@@ -111,13 +115,13 @@ public sealed class MatchMethodTests
             """;
 
         // Act.
-        var result = Compiler.Compile(source);
+        var result = await Compiler.CompileAsync(source);
         var actualKeyword = result.Assembly?.ExecuteStaticMethod<string>("GetKeyword");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualKeyword.Should().Be(expectedKeyword);
     }
 }

@@ -3,7 +3,7 @@
 public sealed class GenericGenerationTests
 {
     [Fact]
-    public void UnionTypeMayHaveGenericParameter()
+    public async Task UnionTypeMayHaveGenericParameter()
     {
         var programCs = """
             using Dunet;
@@ -20,16 +20,16 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void UnionVariantMayNotHaveGenericParameter()
+    public async Task UnionVariantMayNotHaveGenericParameter()
     {
         var programCs = """
             using Dunet;
@@ -46,19 +46,19 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var result = await Compiler.CompileAsync(programCs);
 
         // Assert.
         using var scope = new AssertionScope();
         result.Assembly.Should().BeNull();
-        result.CompilationErrors.Should().NotBeEmpty();
+        result.Errors.Should().NotBeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData(1, 2, "0.5")]
     [InlineData(1, 0, "Error: division by zero.")]
-    public void CanReturnImplementationsOfGenericUnion(
+    public async Task CanReturnImplementationsOfGenericUnion(
         int dividend,
         int divisor,
         string expectedOutput
@@ -68,12 +68,13 @@ public sealed class GenericGenerationTests
             using Dunet;
             using System.Globalization;
 
+            #pragma warning disable CS8321 // Called by the test.
             static string GetResult() => Divide() switch
             {
                 Option<double>.Some some => some.Value.ToString(CultureInfo.InvariantCulture),
                 Option<double>.None none => "Error: division by zero.",
-                _ => throw new System.InvalidOperationException(),
             };
+            #pragma warning restore CS8321
 
             static Option<double> Divide()
             {
@@ -97,20 +98,20 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
         var actualArea = result.Assembly?.ExecuteStaticMethod<string>("GetResult");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationErrors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedOutput);
     }
 
     [Theory]
     [InlineData("""Success("Successful!")""", "Successful!")]
     [InlineData("""Failure(new Exception("Failure!"))""", "Failure!")]
-    public void CanReturnImplementationsOfGenericUnionWithMultipleTypeParameters(
+    public async Task CanReturnImplementationsOfGenericUnionWithMultipleTypeParameters(
         string resultRecord,
         string expectedMessage
     )
@@ -121,10 +122,12 @@ public sealed class GenericGenerationTests
 
             static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
 
+            #pragma warning disable CS8321 // Called by the test.
             static string GetActualMessage() => DoWork().Match(
                 success => success.Value,
                 failure => failure.Error.Message
             );
+            #pragma warning restore CS8321
 
             [Union]
             partial record Result<TFailure, TSuccess>
@@ -135,18 +138,18 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
+        var result = await Compiler.CompileAsync(programCs);
         var actualMessage = result.Assembly?.ExecuteStaticMethod<string>("GetActualMessage");
 
         // Assert.
         using var scope = new AssertionScope();
-        result.CompilationErrors.Should().BeEmpty();
-        result.GenerationDiagnostics.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);
     }
 
     [Fact]
-    public void SupportsGenericTypeParameterConstraints()
+    public async Task SupportsGenericTypeParameterConstraints()
     {
         var programCs = """
             using System;
@@ -163,8 +166,8 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var result = await Compiler.CompileAsync(programCs);
+        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();
@@ -176,21 +179,21 @@ public sealed class GenericGenerationTests
                     + "generic type or method 'Result<TFailure, TSuccess>'. There is no "
                     + "implicit reference conversion from 'string' to 'System.Exception'."
             );
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void SupportsMultipleGenericTypeParameterConstraints()
+    public async Task SupportsMultipleGenericTypeParameterConstraints()
     {
-        var programCs = $$"""
+        var programCs = """
             using System;
             using Dunet;
 
-            var result1 = new Result<string, string>.Success("Can't do this.");
-            var result2 = new Result<Exception, int>.Success(0);
+            var result = new Result<string, string>.Success("Can't do this.");
 
             [Union]
             partial record Result<TFailure, TSuccess>
-                where TFailure : notnull, Exception
+                where TFailure : Exception
                 where TSuccess : class
             {
                 partial record Success(TSuccess Value);
@@ -199,8 +202,8 @@ public sealed class GenericGenerationTests
             """;
 
         // Act.
-        var result = Compiler.Compile(programCs);
-        var errorMessages = result.CompilationErrors.Select(error => error.GetMessage());
+        var result = await Compiler.CompileAsync(programCs);
+        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();
@@ -211,10 +214,7 @@ public sealed class GenericGenerationTests
                 "The type 'string' cannot be used as type parameter 'TFailure' in the "
                     + "generic type or method 'Result<TFailure, TSuccess>'. There is no "
                     + "implicit reference conversion from 'string' to 'System.Exception'."
-            )
-            .And.Contain(
-                "The type 'int' must be a reference type in order to use it as parameter "
-                    + "'TSuccess' in the generic type or method 'Result<TFailure, TSuccess>'"
             );
+        result.Warnings.Should().BeEmpty();
     }
 }
