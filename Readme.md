@@ -404,8 +404,8 @@ var bad = option.UnwrapSome();
 ```
 
 > **Note**:
-> Unwrapping may be unsafe. Use only when runtime errors are ok or if you
-> have checked that the value is the type that you expect.
+> Unwrapping can be dangerous. Use only when runtime errors are ok 
+> or if you have checked that the value is the type that you expect.
 
 ## Stateful Matching
 
