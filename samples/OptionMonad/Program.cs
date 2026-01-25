@@ -7,10 +7,11 @@ while (true)
     var input = Console.ReadLine();
     var result = ParseInt(input);
 
-    var output = result.Match(
-        static some => $"You entered the number: {some.Value}",
-        static none => "That's not a number!"
-    );
+    var output = result switch
+    {
+        Some(var value) => $"You entered the number: {value}",
+        None => "That's not a number!",
+    };
 
     Console.WriteLine(output);
 }
