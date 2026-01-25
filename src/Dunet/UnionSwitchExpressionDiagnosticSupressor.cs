@@ -76,6 +76,13 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
 
             foreach (var arm in node.Arms)
             {
+                // If the arm has a when clause, we cannot statically prove exhaustiveness for it,
+                // so we skip it and move on.
+                if (arm.WhenClause is not null)
+                {
+                    continue;
+                }
+
                 // Check for the `null` constant pattern.
                 if (
                     arm.Pattern is ConstantPatternSyntax
@@ -140,6 +147,21 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                         unsatisfiedVariants.Remove(patternType);
                         continue;
                     }
+                }
+
+                // Property patterns without positional patterns are too complex to determine
+                // exhaustiveness, so we do not suppress warnings for them. This errs on the
+                // side of caution to avoid false negatives.
+                if (
+                    arm.Pattern is RecursivePatternSyntax
+                    {
+                        Type: TypeSyntax,
+                        PropertyPatternClause: not null
+                    }
+                )
+                {
+                    // Do not suppress - we cannot prove exhaustiveness with property patterns
+                    continue;
                 }
             }
 

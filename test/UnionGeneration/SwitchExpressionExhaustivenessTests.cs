@@ -325,4 +325,72 @@ public sealed class SwitchExpressionExhaustivenessTests
         result.Errors.Should().BeEmpty();
         result.Warnings.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task WarnsOnRecursivePatternWithMultiplePropertyPatterns()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;            
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle { Length: > 0, Width: > 0 } r => r.Length * r.Width,
+                Circle c => 3.14 * c.Radius * c.Radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result
+            .Warnings.Should()
+            .OnlyContain(static diagnostic =>
+                diagnostic.ToString()
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle{ Length: 0D }' is not covered."
+            );
+    }
+
+    [Fact]
+    public async Task WarnsWhenGuardMakesPatternNonExhaustive()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;            
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle r when r.Length > 0 => r.Length * r.Width,
+                Circle c => 3.14 * c.Radius * c.Radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result
+            .Warnings.Should()
+            .OnlyContain(static diagnostic =>
+                diagnostic.ToString()
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+            );
+    }
 }
