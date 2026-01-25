@@ -47,8 +47,8 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
             var isUnion = type.GetAttributes()
                 .Any(static attr =>
                     attr.AttributeClass
+                        // Must be a class or record decorated with [Union].
                         is {
-                            // Must be a class or record decorated with [Union].
                             Name: nameof(UnionAttribute),
                             TypeKind: TypeKind.Class,
                             ContainingNamespace.Name: nameof(Dunet),
@@ -163,7 +163,6 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                     }
                 )
                 {
-                    // Do not suppress - we cannot prove exhaustiveness with property patterns
                     continue;
                 }
             }
