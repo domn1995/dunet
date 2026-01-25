@@ -133,7 +133,10 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                         PositionalPatternClause: PositionalPatternClauseSyntax
                         {
                             Subpatterns: SeparatedSyntaxList<SubpatternSyntax> subpatterns
-                        }
+                        },
+                        // If there's a property pattern as well, we cannot check for
+                        // check for exhaustiveness.
+                        PropertyPatternClause: null
                     }
                 )
                 {

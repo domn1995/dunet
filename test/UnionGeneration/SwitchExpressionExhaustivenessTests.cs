@@ -331,7 +331,7 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
             Shape circle = new Shape.Circle(3.14);
@@ -365,7 +365,7 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
             Shape circle = new Shape.Circle(3.14);
@@ -391,6 +391,166 @@ public sealed class SwitchExpressionExhaustivenessTests
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
                 == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+            );
+    }
+
+    [Fact]
+    public async Task WarnsOnRecursivePatternWithBothPositionalAndPropertyClauses()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle(var length, var width) { Length: > 0 } r => length * width,
+                Circle c => 3.14 * c.Radius * c.Radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result
+            .Warnings.Should()
+            .OnlyContain(static diagnostic =>
+                diagnostic.ToString()
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(_, _) { Length: 0D }' is not covered."
+            );
+    }
+
+    [Fact]
+    public async Task DoesNotWarnOnExhaustiveMixedPositionalAndSimplePatterns()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;            
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle(var length, var width) => length * width,
+                Circle => 0,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DoesNotWarnOnExhaustiveDeconstructionWithMixedStyles()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;            
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle(var length, var width) => length * width,
+                Circle(var radius) => 3.14 * radius * radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task WarnsOnConstantValuesInPositionalPatterns()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;            
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle(5, 10) => 50,
+                Circle(var radius) => 3.14 * radius * radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result
+            .Warnings.Should()
+            .OnlyContain(static diagnostic =>
+                diagnostic.ToString()
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(0D, _)' is not covered."
+            );
+    }
+
+    [Fact]
+    public async Task WarnsOnConstantValueInSecondPositionalParameter()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;            
+            using static Shape;
+
+            Shape circle = new Shape.Circle(3.14);
+
+            var area = circle switch
+            {
+                Rectangle(var length, 0) => 0,
+                Circle c => 3.14 * c.Radius * c.Radius,
+                Triangle t => t.Base * t.Height / 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result
+            .Warnings.Should()
+            .OnlyContain(static diagnostic =>
+                diagnostic.ToString()
+                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(_, 5E-324D)' is not covered."
             );
     }
 }
