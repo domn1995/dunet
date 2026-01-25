@@ -433,7 +433,7 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
             Shape circle = new Shape.Circle(3.14);
@@ -462,7 +462,7 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
             Shape circle = new Shape.Circle(3.14);
@@ -491,7 +491,7 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
             Shape circle = new Shape.Circle(3.14);
@@ -525,7 +525,7 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
             Shape circle = new Shape.Circle(3.14);
