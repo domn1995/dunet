@@ -96,6 +96,7 @@ public sealed class MatchAsyncMethodTests
                 return {{shapeDeclaration}};
             };
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<double> GetAreaAsync()
             {
                 var value = 0d;
@@ -107,6 +108,7 @@ public sealed class MatchAsyncMethodTests
                     );
                 return value;
             }
+            #pragma warning restore CS8321
             """;
 
         // Act.
@@ -116,6 +118,7 @@ public sealed class MatchAsyncMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -157,6 +160,7 @@ public sealed class MatchAsyncMethodTests
                 return {{keywordDeclaration}};
             };
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<string> GetValueAsync()
             {
                 var keyword = "";
@@ -168,6 +172,7 @@ public sealed class MatchAsyncMethodTests
                     );
                 return keyword;
             }
+            #pragma warning restore CS8321
             """;
 
         // Act.
@@ -177,6 +182,7 @@ public sealed class MatchAsyncMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualKeyword.Should().Be(expectedKeyword);
     }
 }

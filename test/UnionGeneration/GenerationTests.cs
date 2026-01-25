@@ -107,6 +107,7 @@ public sealed class GenerationTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]

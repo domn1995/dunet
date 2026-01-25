@@ -32,6 +32,7 @@ public sealed class MatchMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Theory]
@@ -47,6 +48,7 @@ public sealed class MatchMethodTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetArea()
             {
                 {{shapeDeclaration}}
@@ -56,6 +58,7 @@ public sealed class MatchMethodTests
                     triangle => triangle.Base * triangle.Height / 2
                 );
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -73,6 +76,7 @@ public sealed class MatchMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -89,6 +93,7 @@ public sealed class MatchMethodTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static string GetKeyword()
             {
                 {{keywordDeclaration}}
@@ -98,6 +103,7 @@ public sealed class MatchMethodTests
                     @null => "null"
                 );
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Keyword
@@ -115,6 +121,7 @@ public sealed class MatchMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualKeyword.Should().Be(expectedKeyword);
     }
 }

@@ -86,6 +86,7 @@ public sealed class GenericMatchAsyncMethodTests
                 return {{optionDeclaration}};
             }
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<int> GetValueAsync()
             {
                 var value = 0;
@@ -96,6 +97,7 @@ public sealed class GenericMatchAsyncMethodTests
                     );
                 return value;
             }
+            #pragma warning restore CS8321
             """;
         // Act.
         var result = await Compiler.CompileAsync(optionCs, programCs);
@@ -103,6 +105,7 @@ public sealed class GenericMatchAsyncMethodTests
 
         // Assert.
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 
@@ -142,9 +145,11 @@ public sealed class GenericMatchAsyncMethodTests
                 return {{resultDeclaration}};
             }
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<string> GetValueAsync() =>
                 await GetResultAsync()
                     .MatchAsync(success => success.Value.ToString(), failure => failure.Error);
+            #pragma warning restore CS8321
             """;
 
         // Act.
@@ -153,6 +158,7 @@ public sealed class GenericMatchAsyncMethodTests
 
         // Assert.
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 

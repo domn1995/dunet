@@ -40,8 +40,10 @@ public sealed class NestedGenerationTests
             using System.Threading.Tasks;
             using NestedTests;
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<int> GetValueAsync() =>
                 await GetNestedAsync().MatchAsync(variant1 => 1, variant2 => 2);
+            #pragma warning restore CS8321
 
             async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
             {
@@ -57,6 +59,7 @@ public sealed class NestedGenerationTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 
@@ -97,6 +100,7 @@ public sealed class NestedGenerationTests
             using System.Threading.Tasks;
             using NestedTests;
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<int> GetValueAsync()
             {
                 var value = 0;
@@ -107,6 +111,7 @@ public sealed class NestedGenerationTests
                     );
                 return value;
             }
+            #pragma warning restore CS8321
 
             async static {{taskType}}<Parent1.Parent2.Parent3.Nested> GetNestedAsync()
             {
@@ -122,6 +127,7 @@ public sealed class NestedGenerationTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(expectedValue);
     }
 }

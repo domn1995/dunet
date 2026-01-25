@@ -47,12 +47,12 @@ public sealed class GenericGenerationTests
 
         // Act.
         var result = await Compiler.CompileAsync(programCs);
-        var errorMessages = result.Errors.Select(error => error.GetMessage());
 
         // Assert.
         using var scope = new AssertionScope();
         result.Assembly.Should().BeNull();
         result.Errors.Should().NotBeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Theory]
@@ -68,12 +68,13 @@ public sealed class GenericGenerationTests
             using Dunet;
             using System.Globalization;
 
+            #pragma warning disable CS8321 // Called by the test.
             static string GetResult() => Divide() switch
             {
                 Option<double>.Some some => some.Value.ToString(CultureInfo.InvariantCulture),
                 Option<double>.None none => "Error: division by zero.",
-                _ => throw new System.InvalidOperationException(),
             };
+            #pragma warning restore CS8321
 
             static Option<double> Divide()
             {
@@ -103,6 +104,7 @@ public sealed class GenericGenerationTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedOutput);
     }
 
@@ -120,7 +122,7 @@ public sealed class GenericGenerationTests
 
             static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
 
-            #pragma warning disable CS8321 // Called by the test only.
+            #pragma warning disable CS8321 // Called by the test.
             static string GetActualMessage() => DoWork().Match(
                 success => success.Value,
                 failure => failure.Error.Message
@@ -177,6 +179,7 @@ public sealed class GenericGenerationTests
                     + "generic type or method 'Result<TFailure, TSuccess>'. There is no "
                     + "implicit reference conversion from 'string' to 'System.Exception'."
             );
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
@@ -212,5 +215,6 @@ public sealed class GenericGenerationTests
                     + "generic type or method 'Result<TFailure, TSuccess>'. There is no "
                     + "implicit reference conversion from 'string' to 'System.Exception'."
             );
+        result.Warnings.Should().BeEmpty();
     }
 }

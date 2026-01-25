@@ -33,6 +33,7 @@ public sealed class SwitchExpressionTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Theory]
@@ -48,6 +49,7 @@ public sealed class SwitchExpressionTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetActualArea()
             {
                 {{shapeDeclaration}}
@@ -58,6 +60,7 @@ public sealed class SwitchExpressionTests
                     Shape.Triangle t => t.Base * t.Height / 2,
                 };
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -75,6 +78,7 @@ public sealed class SwitchExpressionTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 }

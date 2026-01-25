@@ -15,6 +15,7 @@ public sealed class MatchSpecificUnionValueWithStateTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetArea()
             {
                 {{shapeDeclaration}}
@@ -25,6 +26,7 @@ public sealed class MatchSpecificUnionValueWithStateTests
                     static s => -1 + s
                 );
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -42,6 +44,7 @@ public sealed class MatchSpecificUnionValueWithStateTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().BeApproximately(expectedArea, 0.0000000001d);
     }
 
@@ -58,6 +61,7 @@ public sealed class MatchSpecificUnionValueWithStateTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetArea()
             {
                 double value = 0d;
@@ -70,6 +74,7 @@ public sealed class MatchSpecificUnionValueWithStateTests
                 );
                 return value;
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -87,6 +92,7 @@ public sealed class MatchSpecificUnionValueWithStateTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().BeApproximately(expectedArea, 0.0000000001d);
     }
 }

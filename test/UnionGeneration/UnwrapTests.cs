@@ -28,12 +28,13 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = await Compiler.CompileAsync(programCs);
-        var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var result = await Compiler.CompileAsync(programCs);
+        var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.Errors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(1);
     }
 
@@ -61,12 +62,13 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = await Compiler.CompileAsync(programCs);
-        var value = compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var result = await Compiler.CompileAsync(programCs);
+        var value = result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.Errors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         value.Should().Be(1);
     }
 
@@ -94,12 +96,13 @@ public sealed class UnwrapTests
             """;
 
         // Act.
-        var compilation = await Compiler.CompileAsync(programCs);
-        var action = () => compilation.Assembly?.ExecuteStaticMethod<int>("GetValue");
+        var result = await Compiler.CompileAsync(programCs);
+        var action = () => result.Assembly?.ExecuteStaticMethod<int>("GetValue");
 
         // Assert.
         using var scope = new AssertionScope();
-        compilation.Errors.Should().BeEmpty();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         action
             .Should()
             .Throw<TargetInvocationException>()

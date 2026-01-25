@@ -37,6 +37,7 @@ public sealed class ActionMatchMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Theory]
@@ -52,6 +53,7 @@ public sealed class ActionMatchMethodTests
         var source = $$"""
             using Dunet;
 
+            #pragma warning disable CS8321 // Called by the test.
             static double GetArea()
             {
                 double value = 0d;
@@ -63,6 +65,7 @@ public sealed class ActionMatchMethodTests
                 );
                 return value;
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Shape
@@ -79,7 +82,7 @@ public sealed class ActionMatchMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
-
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -96,6 +99,7 @@ public sealed class ActionMatchMethodTests
             using Dunet;
             using System.Globalization;
 
+            #pragma warning disable CS8321 // Called by the test.
             static string GetResult()
             {
                 var value = "";
@@ -105,6 +109,7 @@ public sealed class ActionMatchMethodTests
                 );
                 return value;
             };
+            #pragma warning restore CS8321
 
             static Option<double> Divide()
             {
@@ -151,6 +156,7 @@ public sealed class ActionMatchMethodTests
 
             static Result<Exception, string> DoWork() => new Result<Exception, string>.{{resultRecord}};
 
+            #pragma warning disable CS8321 // Called by the test.
             static string GetActualMessage()
             {
                 var value = "";
@@ -160,6 +166,7 @@ public sealed class ActionMatchMethodTests
                 );
                 return value;
             }
+            #pragma warning restore CS8321
 
             [Union]
             partial record Result<TFailure, TSuccess>
@@ -175,6 +182,7 @@ public sealed class ActionMatchMethodTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualMessage.Should().Be(expectedMessage);
     }
 }

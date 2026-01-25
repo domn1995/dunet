@@ -286,6 +286,7 @@ public sealed class MultipleGenericUnionsExtensionsTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 
     [Fact]
@@ -329,5 +330,6 @@ public sealed class MultipleGenericUnionsExtensionsTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
     }
 }

@@ -40,12 +40,14 @@ public sealed class MatchSpecificUnionValueAsyncTests
                 return {{shapeDeclaration}};
             };
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<double> GetAreaAsync() =>
                 await GetShapeAsync()
                     .MatchCircleAsync(
                         circle => 3.14 * circle.Radius * circle.Radius,
                         () => -1d
                     );
+            #pragma warning restore CS8321
             """;
 
         // Act.
@@ -55,6 +57,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 
@@ -96,6 +99,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
                 return {{shapeDeclaration}};
             };
 
+            #pragma warning disable CS8321 // Called by the test.
             async static Task<double> GetAreaAsync()
             {
                 var value = 0d;
@@ -106,6 +110,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
                     );
                 return value;
             }
+            #pragma warning restore CS8321
             """;
 
         // Act.
@@ -115,6 +120,7 @@ public sealed class MatchSpecificUnionValueAsyncTests
         // Assert.
         using var scope = new AssertionScope();
         result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
         actualArea.Should().Be(expectedArea);
     }
 }
