@@ -18,12 +18,13 @@ var result = Evaluate(environment, expression);
 Console.WriteLine(result); // 5
 
 static int Evaluate(Dictionary<string, int> env, Expression exp) =>
-    exp.Match(
-        static number => number.Value,
-        add => Evaluate(env, add.Left) + Evaluate(env, add.Right),
-        multiply => Evaluate(env, multiply.Left) * Evaluate(env, multiply.Right),
-        variable => env[variable.Value]
-    );
+    exp switch
+    {
+        Number(var value) => value,
+        Add(var left, var right) => Evaluate(env, left) + Evaluate(env, right),
+        Multiply(var left, var right) => Evaluate(env, left) * Evaluate(env, right),
+        Variable(var value) => env[value],
+    };
 
 [Union]
 public partial record Expression

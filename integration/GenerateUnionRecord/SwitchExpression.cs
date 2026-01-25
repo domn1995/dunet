@@ -1,4 +1,5 @@
 ﻿using Dunet.Integration.GenerateUnionRecord.Unions;
+using static Dunet.Integration.GenerateUnionRecord.Unions.Shape;
 
 namespace Dunet.Integration.GenerateUnionRecord;
 
@@ -7,7 +8,7 @@ public class SwitchExpression
     [Fact]
     public void Rectangle()
     {
-        var shape = new Shape.Rectangle(3, 4);
+        var shape = new Rectangle(3, 4);
         var area = GetArea(shape);
         area.Should().Be(12);
     }
@@ -15,7 +16,7 @@ public class SwitchExpression
     [Fact]
     public void Circle()
     {
-        var shape = new Shape.Circle(2);
+        var shape = new Circle(2);
         var area = GetArea(shape);
         area.Should().Be(12.56);
     }
@@ -23,7 +24,7 @@ public class SwitchExpression
     [Fact]
     public void Triangle()
     {
-        var shape = new Shape.Triangle(6, 3);
+        var shape = new Triangle(6, 3);
         var area = GetArea(shape);
         area.Should().Be(9);
     }
@@ -31,9 +32,8 @@ public class SwitchExpression
     private static double GetArea(Shape shape) =>
         shape switch
         {
-            Shape.Rectangle rectangle => rectangle.Length * rectangle.Width,
-            Shape.Circle circle => 3.14 * circle.Radius * circle.Radius,
-            Shape.Triangle triangle => triangle.Base * triangle.Height / 2,
-            _ => 0,
+            Rectangle(var length, var width) => length * width,
+            Circle(var radius) => 3.14 * radius * radius,
+            Triangle(var @base, var height) => @base * height / 2,
         };
 }

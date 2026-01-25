@@ -10,11 +10,12 @@ Console.WriteLine($"Rectangle area: {GetArea(rectangle)}");
 Console.WriteLine($"Triangle area: {GetArea(triangle)}");
 
 static double GetArea(Shape shape) =>
-    shape.Match(
-        static circle => Math.PI * circle.Radius * circle.Radius,
-        static rectangle => rectangle.Length * rectangle.Width,
-        static triangle => triangle.Base * triangle.Height / 2
-    );
+    shape switch
+    {
+        Circle(var radius) => Math.PI * radius * radius,
+        Rectangle(var length, var width) => length * width,
+        Triangle(var @base, var height) => @base * height / 2,
+    };
 
 [Union]
 partial record Shape
