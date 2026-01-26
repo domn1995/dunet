@@ -156,10 +156,11 @@ Result Divide(double numerator, double denominator)
 }
 
 var result = Divide(42, 0);
-var output = result.Match(
-    success => success.Value.ToString(),
-    failure => failure.Error.Message
-);
+var output = result switch
+{
+    Result.Success(var value) => value.ToString(),
+    Result.Failure(var error) => error.Message,
+};
 
 Console.WriteLine(output); // "Cannot divide by zero!"
 ```
@@ -317,11 +318,12 @@ public partial record QueryResult<T>
     public partial record Unauthorized;
 
     public sealed override string ToString() =>
-        Match(
-            ok => ok.Value.ToString(),
-            notFound => "Not found.",
-            unauthorized => "Unauthorized access."
-        );
+        this switch
+        {
+            Ok(var value) => value.ToString(),
+            NotFound => "Not found.",
+            Unauthorized => "Unauthorized access.",
+        };
 }
 ```
 
