@@ -304,6 +304,37 @@ public sealed class SwitchExpressionExhaustivenessTests
     }
 
     [Fact]
+    public async Task NoWarningWhenExplicitlyHandlingNullCase()
+    {
+        // Arrange.
+        var source = $$"""
+            using System;
+            using Dunet;
+            using static Shape;
+
+            Shape? circle = null;
+
+            var sides = circle switch
+            {
+                Rectangle => 4,
+                Circle => 0,
+                Triangle t => 3,
+                null => 0,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task DoesNotWarnOnVarPattern()
     {
         // Arrange.
