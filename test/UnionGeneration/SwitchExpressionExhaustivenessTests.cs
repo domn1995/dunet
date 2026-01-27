@@ -20,9 +20,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle r => r.Length * r.Width,
                 Circle c => 3.14 * c.Radius * c.Radius,
@@ -49,16 +49,16 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle r => r.Length * r.Width,
                 Circle c => 3.14 * c.Radius * c.Radius,
                 Triangle t => t.Base * t.Height / 2,
             };
 
-            var area2 = circle switch
+            var area2 = shape switch
             {
                 Rectangle r => r.Length * r.Width,
                 Circle c => 3.14 * c.Radius * c.Radius,
@@ -84,9 +84,9 @@ public sealed class SwitchExpressionExhaustivenessTests
         var source = $$"""
             using Dunet;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 _ => 0,
             };
@@ -108,12 +108,12 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Circle c => 3.14 * c.Radius * c.Radius,
                 Rectangle r => r.Length * r.Width,
@@ -133,7 +133,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
             );
     }
 
@@ -142,12 +142,12 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Circle c => 3.14 * c.Radius * c.Radius,
                 // Missing Rectangle and Triangle cases.
@@ -166,7 +166,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
             );
     }
 
@@ -175,12 +175,12 @@ public sealed class SwitchExpressionExhaustivenessTests
     {
         // Arrange.
         var source = $$"""
-            using Dunet;            
+            using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle r => r.Length * r.Width,
                 Circle { Radius: > 0 } c => 3.14 * c.Radius * c.Radius,
@@ -200,7 +200,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Circle{ Radius: 0D }' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Circle{ Radius: 0D }' is not covered."
             );
     }
 
@@ -212,9 +212,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle(var length, var width) => length * width,
                 Circle(var radius) => 3.14 * radius * radius,
@@ -241,9 +241,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 // Does not handle Rectangle with Length != 5.
                 Rectangle(5, var width) => 5 * width,
@@ -264,7 +264,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(0D, _)' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(0D, _)' is not covered."
             );
     }
 
@@ -277,13 +277,13 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape? circle = null;
+            Shape? shape = null;
 
-            var sides = circle switch
+            var sides = shape switch
             {
                 Rectangle => 4,
                 Circle => 0,
-                Triangle t => 3,
+                Triangle => 3,
             };
 
             {{unionDeclaration}}
@@ -299,7 +299,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(7,20): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+                == "(7,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
             );
     }
 
@@ -312,9 +312,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape? circle = null;
+            Shape? shape = null;
 
-            var sides = circle switch
+            var sides = shape switch
             {
                 Rectangle => 4,
                 Circle => 0,
@@ -343,12 +343,12 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var sides = circle switch
+            var sides = shape switch
             {
                 Rectangle => 4,
-                var shape => 0,
+                var s => 0,
             };
 
             {{unionDeclaration}}
@@ -372,13 +372,13 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape? circle = null;
+            Shape? shape = null;
 
-            var sides = circle switch
+            var sides = shape switch
             {
                 Rectangle => 4,
                 Circle => 0,
-                var shape => -1,
+                var s => -1,
             };
 
             {{unionDeclaration}}
@@ -401,9 +401,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle { Length: > 0, Width: > 0 } r => r.Length * r.Width,
                 Circle c => 3.14 * c.Radius * c.Radius,
@@ -423,7 +423,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle{ Length: 0D }' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle{ Length: 0D }' is not covered."
             );
     }
 
@@ -435,9 +435,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle r when r.Length > 0 => r.Length * r.Width,
                 Circle c => 3.14 * c.Radius * c.Radius,
@@ -457,7 +457,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
             );
     }
 
@@ -469,9 +469,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle(var length, var width) { Length: > 0 } r => length * width,
                 Circle c => 3.14 * c.Radius * c.Radius,
@@ -491,7 +491,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(_, _) { Length: 0D }' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(_, _) { Length: 0D }' is not covered."
             );
     }
 
@@ -503,9 +503,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle(var length, var width) => length * width,
                 Circle => 0,
@@ -532,9 +532,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle(var length, var width) => length * width,
                 Circle(var radius) => 3.14 * radius * radius,
@@ -561,9 +561,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle(5, 10) => 50,
                 Circle(var radius) => 3.14 * radius * radius,
@@ -583,7 +583,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(0D, _)' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(0D, _)' is not covered."
             );
     }
 
@@ -595,9 +595,9 @@ public sealed class SwitchExpressionExhaustivenessTests
             using Dunet;
             using static Shape;
 
-            Shape circle = new Shape.Circle(3.14);
+            Shape shape = new Shape.Circle(3.14);
 
-            var area = circle switch
+            var area = shape switch
             {
                 Rectangle(var length, 0) => 0,
                 Circle c => 3.14 * c.Radius * c.Radius,
@@ -617,7 +617,7 @@ public sealed class SwitchExpressionExhaustivenessTests
             .Warnings.Should()
             .OnlyContain(static diagnostic =>
                 diagnostic.ToString()
-                == "(6,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(_, 5E-324D)' is not covered."
+                == "(6,18): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern 'Shape.Rectangle(_, 5E-324D)' is not covered."
             );
     }
 }
