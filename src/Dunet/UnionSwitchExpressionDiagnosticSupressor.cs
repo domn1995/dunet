@@ -157,7 +157,7 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                     {
                         Type: TypeSyntax propertyPatternTypeSyntax,
                         PropertyPatternClause: { } propertyPatternClause
-                    } propertyPattern
+                    }
                 )
                 {
                     // If all property subpatterns use var or discard patterns,
