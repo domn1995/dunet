@@ -144,7 +144,7 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
 
                     if (
                         symbol is INamedTypeSymbol patternType
-                        && IsHandledByPositionalPattern(subpatterns, patternType, model)
+                        && IsExhaustivePositionalPattern(subpatterns, patternType, model)
                     )
                     {
                         unsatisfiedVariants.Remove(patternType);
@@ -152,17 +152,26 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                     }
                 }
 
-                // Property patterns without positional patterns are too complex to determine
-                // exhaustiveness, so we do not suppress warnings for them. This errs on the
-                // side of caution to avoid false negatives.
                 if (
                     arm.Pattern is RecursivePatternSyntax
                     {
-                        Type: TypeSyntax,
-                        PropertyPatternClause: not null
-                    }
+                        Type: TypeSyntax propertyPatternTypeSyntax,
+                        PropertyPatternClause: { } propertyPatternClause
+                    } propertyPattern
                 )
                 {
+                    // If all property subpatterns use var or discard patterns,
+                    // the pattern is exhaustive for that variant.
+                    var symbol = model.GetSymbolInfo(propertyPatternTypeSyntax).Symbol;
+
+                    if (
+                        symbol is INamedTypeSymbol propertyPatternType
+                        && IsExhaustivePropertyPattern(propertyPatternClause)
+                    )
+                    {
+                        unsatisfiedVariants.Remove(propertyPatternType);
+                    }
+
                     continue;
                 }
             }
@@ -184,7 +193,7 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
         }
     }
 
-    private static bool IsHandledByPositionalPattern(
+    private static bool IsExhaustivePositionalPattern(
         SeparatedSyntaxList<SubpatternSyntax> subpatterns,
         INamedTypeSymbol patternType,
         SemanticModel model
@@ -246,4 +255,11 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
 
         return false;
     }
+
+    // A property pattern is exhaustive if all its subpatterns use var or discard patterns,
+    // which means they match any value without further constraints.
+    private static bool IsExhaustivePropertyPattern(PropertyPatternClauseSyntax propertyPattern) =>
+        propertyPattern.Subpatterns.All(static subpattern =>
+            subpattern.Pattern is DiscardPatternSyntax or VarPatternSyntax
+        );
 }
