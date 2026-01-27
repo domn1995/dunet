@@ -2,7 +2,7 @@
   <Sdk Name="ViHo.PackAsAnalyzer" Version="1.0.1" />
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <Version>1.13.1</Version>
+    <Version>1.14.0</Version>
     <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Label="Package Attributes">
