@@ -7,6 +7,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Dunet" Version="1.13.1" />
+    <PackageReference Include="Dunet" Version="1.14.0" />
   </ItemGroup>
 </Project>
