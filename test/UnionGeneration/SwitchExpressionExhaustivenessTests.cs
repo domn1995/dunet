@@ -1011,4 +1011,34 @@ public sealed class SwitchExpressionExhaustivenessTests
                 == "(7,19): warning CS8509: The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '_' is not covered."
             );
     }
+
+    [Fact]
+    public async Task DoesNotWarnOnOrPatternWithUnionVariantAndNull()
+    {
+        // Arrange.
+        var source = $$"""
+            using System;
+            using Dunet;
+            using static Shape;
+
+            Shape? shape = null;
+
+            var sides = shape switch
+            {
+                Circle or null => 0,
+                Rectangle => 1,
+                Triangle => 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
 }
