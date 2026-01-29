@@ -83,97 +83,8 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
                     continue;
                 }
 
-                // Check for the `null` constant pattern.
-                if (
-                    arm.Pattern is ConstantPatternSyntax
-                    {
-                        Expression: LiteralExpressionSyntax
-                        {
-                            RawKind: (int)SyntaxKind.NullLiteralExpression
-                        }
-                    }
-                )
-                {
-                    isNullHandled = true;
-                    continue;
-                }
-
-                // Check for the discard/var pattern which handles everything, including null.
-                if (arm.Pattern is DiscardPatternSyntax or VarPatternSyntax)
-                {
-                    isNullHandled = true;
-                }
-
-                if (arm.Pattern is ConstantPatternSyntax typePattern)
-                {
-                    var symbol = model.GetSymbolInfo(typePattern.Expression).Symbol;
-
-                    if (symbol is INamedTypeSymbol namedType)
-                    {
-                        unsatisfiedVariants.Remove(namedType);
-                        continue;
-                    }
-                }
-
-                if (arm.Pattern is DeclarationPatternSyntax { Type: TypeSyntax patternSyntax })
-                {
-                    var symbol = model.GetSymbolInfo(patternSyntax).Symbol;
-
-                    if (symbol is INamedTypeSymbol namedType)
-                    {
-                        unsatisfiedVariants.Remove(namedType);
-                        continue;
-                    }
-                }
-
-                if (
-                    arm.Pattern is RecursivePatternSyntax
-                    {
-                        Type: TypeSyntax patternTypeSyntax,
-                        PositionalPatternClause: PositionalPatternClauseSyntax
-                        {
-                            Subpatterns: SeparatedSyntaxList<SubpatternSyntax> subpatterns
-                        },
-                        // If there's a property pattern as well, we cannot check for
-                        // check for exhaustiveness.
-                        PropertyPatternClause: null
-                    }
-                )
-                {
-                    var symbol = model.GetSymbolInfo(patternTypeSyntax).Symbol;
-
-                    if (
-                        symbol is INamedTypeSymbol patternType
-                        && IsExhaustivePositionalPattern(subpatterns, patternType, model)
-                    )
-                    {
-                        unsatisfiedVariants.Remove(patternType);
-                        continue;
-                    }
-                }
-
-                if (
-                    arm.Pattern is RecursivePatternSyntax
-                    {
-                        Type: TypeSyntax propertyPatternTypeSyntax,
-                        PropertyPatternClause: { } propertyPatternClause
-                    }
-                )
-                {
-                    // If all property subpatterns use var or discard patterns,
-                    // the pattern is exhaustive for that variant.
-                    var symbol = model.GetSymbolInfo(propertyPatternTypeSyntax).Symbol;
-
-                    if (
-                        symbol is INamedTypeSymbol propertyPatternType
-                        && IsExhaustivePropertyPattern(propertyPatternClause)
-                    )
-                    {
-                        unsatisfiedVariants.Remove(propertyPatternType);
-                    }
-
-                    continue;
-                }
+                // Process the pattern and remove satisfied variants.
+                ProcessPattern(arm.Pattern, model, unsatisfiedVariants, ref isNullHandled);
             }
 
             // If the type was nullable but the `null` case was not handled, we bail early so we
@@ -189,6 +100,119 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
             {
                 context.ReportSuppression(Suppression.Create(descriptor, diagnostic));
                 continue;
+            }
+        }
+    }
+
+    private static void ProcessPattern(
+        PatternSyntax pattern,
+        SemanticModel model,
+        HashSet<INamedTypeSymbol> unsatisfiedVariants,
+        ref bool isNullHandled
+    )
+    {
+        // Handle or patterns by recursively processing both sides.
+        if (
+            pattern is BinaryPatternSyntax
+            {
+                RawKind: (int)SyntaxKind.OrPattern,
+                Left: var leftPattern,
+                Right: var rightPattern
+            }
+        )
+        {
+            ProcessPattern(leftPattern, model, unsatisfiedVariants, ref isNullHandled);
+            ProcessPattern(rightPattern, model, unsatisfiedVariants, ref isNullHandled);
+            return;
+        }
+
+        // Check for the `null` constant pattern.
+        if (
+            pattern is ConstantPatternSyntax
+            {
+                Expression: LiteralExpressionSyntax
+                {
+                    RawKind: (int)SyntaxKind.NullLiteralExpression
+                }
+            }
+        )
+        {
+            isNullHandled = true;
+            return;
+        }
+
+        // Check for the discard/var pattern which handles everything, including null.
+        if (pattern is DiscardPatternSyntax or VarPatternSyntax)
+        {
+            isNullHandled = true;
+        }
+
+        if (pattern is ConstantPatternSyntax typePattern)
+        {
+            var symbol = model.GetSymbolInfo(typePattern.Expression).Symbol;
+
+            if (symbol is INamedTypeSymbol namedType)
+            {
+                unsatisfiedVariants.Remove(namedType);
+                return;
+            }
+        }
+
+        if (pattern is DeclarationPatternSyntax { Type: TypeSyntax patternSyntax })
+        {
+            var symbol = model.GetSymbolInfo(patternSyntax).Symbol;
+
+            if (symbol is INamedTypeSymbol namedType)
+            {
+                unsatisfiedVariants.Remove(namedType);
+                return;
+            }
+        }
+
+        if (
+            pattern is RecursivePatternSyntax
+            {
+                Type: TypeSyntax patternTypeSyntax,
+                PositionalPatternClause: PositionalPatternClauseSyntax
+                {
+                    Subpatterns: SeparatedSyntaxList<SubpatternSyntax> subpatterns
+                },
+                // If there's a property pattern as well, we cannot check for
+                // check for exhaustiveness.
+                PropertyPatternClause: null
+            }
+        )
+        {
+            var symbol = model.GetSymbolInfo(patternTypeSyntax).Symbol;
+
+            if (
+                symbol is INamedTypeSymbol patternType
+                && IsExhaustivePositionalPattern(subpatterns, patternType, model)
+            )
+            {
+                unsatisfiedVariants.Remove(patternType);
+                return;
+            }
+        }
+
+        if (
+            pattern is RecursivePatternSyntax
+            {
+                Type: TypeSyntax propertyPatternTypeSyntax,
+                PropertyPatternClause: { } propertyPatternClause
+            }
+        )
+        {
+            // If all property subpatterns use var or discard patterns,
+            // the pattern is exhaustive for that variant.
+            var symbol = model.GetSymbolInfo(propertyPatternTypeSyntax).Symbol;
+
+            if (
+                symbol is INamedTypeSymbol propertyPatternType
+                && IsExhaustivePropertyPattern(propertyPatternClause)
+            )
+            {
+                unsatisfiedVariants.Remove(propertyPatternType);
             }
         }
     }
