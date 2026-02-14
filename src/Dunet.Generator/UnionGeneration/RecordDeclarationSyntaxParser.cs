@@ -129,6 +129,46 @@ internal static class RecordDeclarationSyntaxParser
             RecursivelyAddParentTypes(semanticModel, self, parentTypes);
             return parentTypes;
         }
+
+        /// <summary>
+        /// Determines whether implicit conversions are enabled for this union.
+        /// </summary>
+        /// <param name="record">This record declaration.</param>
+        /// <param name="semanticModel">The semantic model associated with this record declaration.</param>
+        /// <returns>
+        /// A boolean indicating whether implicit conversions are enabled.
+        /// Returns <see langword="true"/> by default if not explicitly set.
+        /// </returns>
+        public bool IsImplicitConversionsEnabled(SemanticModel semanticModel)
+        {
+            var getUnionAttribute = (AttributeSyntax attributeSyntax) =>
+                semanticModel.GetSymbolInfo(attributeSyntax).Symbol?.ContainingType?.ToDisplayString() is "Dunet.UnionAttribute";
+
+            var unionAttribute = self
+                .AttributeLists.SelectMany(static attributeListSyntax =>
+                    attributeListSyntax.Attributes
+                )
+                .FirstOrDefault(getUnionAttribute);
+
+            if (unionAttribute?.ArgumentList is null)
+            {
+                return true;
+            }
+
+            var enableImplicitConversionsArgument = unionAttribute
+                .ArgumentList
+                .Arguments
+                .FirstOrDefault(static arg =>
+                    arg.NameEquals?.Name.Identifier.Text is "EnableImplicitConversions"
+                );
+
+            if (enableImplicitConversionsArgument?.Expression is LiteralExpressionSyntax literalExpression)
+            {
+                return literalExpression.IsKind(SyntaxKind.TrueLiteralExpression);
+            }
+
+            return true;
+        }
     }
 
     private static void RecursivelyAddParentTypes(

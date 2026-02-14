@@ -170,4 +170,191 @@ public sealed class ImplicitConversionTests
         result.Errors.Should().BeEmpty();
         result.Warnings.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task UnionWithEnableImplicitConversionsTrueGeneratesOperators()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result success = 42;
+            Result error = "error";
+
+            [Union(EnableImplicitConversions = true)]
+            partial record Result
+            {
+                partial record Success(int Value);
+                partial record Failure(string Error);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task UnionWithEnableImplicitConversionsFalseSkipsOperators()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result success = new Result.Success(42);
+            Result error = new Result.Failure("error");
+
+            [Union(EnableImplicitConversions = false)]
+            partial record Result
+            {
+                partial record Success(int Value);
+                partial record Failure(string Error);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task UnionWithEnableImplicitConversionsFalseCannotUseImplicitOperators()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result success = 42;
+
+            [Union(EnableImplicitConversions = false)]
+            partial record Result
+            {
+                partial record Success(int Value);
+                partial record Failure(string Error);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task UnionWithEnableImplicitConversionsFalseRequiresExplicitConstruction()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result success = new Result.Success(42);
+            Result error = new Result.Failure("error");
+
+            [Union(EnableImplicitConversions = false)]
+            partial record Result
+            {
+                partial record Success(int Value);
+                partial record Failure(string Error);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GenericUnionWithEnableImplicitConversionsFalseSkipsOperators()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result<int> success = new Result<int>.Success(42);
+            Result<string> error = new Result<string>.Failure("error");
+
+            [Union(EnableImplicitConversions = false)]
+            partial record Result<T>
+            {
+                partial record Success(T Value);
+                partial record Failure(string Error);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task UnionWithEnableImplicitConversionsFalseAndEmptyVariantSkipsOperators()
+    {
+        var programCs = """
+            using Dunet;
+
+            Option<int> some = new Option<int>.Some(42);
+            Option<int> none = new Option<int>.None();
+
+            [Union(EnableImplicitConversions = false)]
+            partial record Option<T>
+            {
+                partial record Some(T Value);
+                partial record None();
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task MultipleUnionsSomeWithImplicitConversionsDisabled()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result<int> success = 42;
+            Response<int> response = new Response<int>.Ok(100);
+
+            [Union]
+            partial record Result<T>
+            {
+                partial record Success(T Value);
+                partial record Failure(string Error);
+            }
+
+            [Union(EnableImplicitConversions = false)]
+            partial record Response<T>
+            {
+                partial record Ok(T Value);
+                partial record Error(string Message);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
 }

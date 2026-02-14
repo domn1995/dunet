@@ -94,6 +94,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
             var variants = declaration.GetNestedRecordDeclarations(semanticModel);
             var parentTypes = declaration.GetParentTypes(semanticModel);
             var properties = declaration.GetProperties(semanticModel);
+            var isImplicitConversionsEnabled = declaration.IsImplicitConversionsEnabled(semanticModel);
 
             yield return new UnionDeclaration(
                 Imports: imports.ToImmutableEquatableArray(),
@@ -104,7 +105,8 @@ public sealed class UnionGenerator : IIncrementalGenerator
                 TypeParameterConstraints: typeParameterConstraints.ToImmutableEquatableArray(),
                 Variants: variants.ToImmutableEquatableArray(),
                 ParentTypes: parentTypes.ToImmutableEquatableArray(),
-                Properties: properties.ToImmutableEquatableArray()
+                Properties: properties.ToImmutableEquatableArray(),
+                IsImplicitConversionsEnabled: isImplicitConversionsEnabled
             );
         }
     }

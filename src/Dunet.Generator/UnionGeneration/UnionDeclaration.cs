@@ -11,7 +11,8 @@ internal sealed record UnionDeclaration(
     ImmutableEquatableArray<TypeParameterConstraint> TypeParameterConstraints,
     ImmutableEquatableArray<VariantDeclaration> Variants,
     ImmutableEquatableArray<ParentType> ParentTypes,
-    ImmutableEquatableArray<Property> Properties
+    ImmutableEquatableArray<Property> Properties,
+    bool IsImplicitConversionsEnabled = true
 )
 {
     // Extension methods cannot be generated for a union declared in a top level program (no namespace).
@@ -20,6 +21,11 @@ internal sealed record UnionDeclaration(
 
     public List<VariantDeclaration> VariantsWithImplicitConversionSupport()
     {
+        if (!IsImplicitConversionsEnabled)
+        {
+            return [];
+        }
+
         var hasRequiredProperties = Properties.Any(static property => property.IsRequired);
 
         // We cannot generate implicit conversions for unions with required properties because
