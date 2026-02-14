@@ -167,6 +167,19 @@ Console.WriteLine(output); // "Cannot divide by zero!"
 
 > Note: Empty variants are ignored when generating implicit conversions.
 
+### Disable Implicit Conversions
+
+If your union meets the requirements to generate implicit conversions but you wish not to generate them,
+pass `EnableImplicitConversions = false` to the `Union` attribute:
+
+```cs
+[Union(EnableImplicitConversions = false)]
+partial record MyUnion
+{
+    // ...
+}
+```
+
 ## Async Match
 
 Dunet generates a `MatchAsync()` extension method for all `Task<T>` and `ValueTask<T>` where `T` is a union type. For example:
