@@ -8,8 +8,8 @@ public sealed class UnionAttribute : Attribute
 {
     /// <summary>
     /// <para>
-    /// Gets or initializes whether the union should support the direct assignment of each
-    /// variant's underlying type directly to the union type.
+    /// Gets or sets whether the union should support the direct assignment of each variant's
+    /// underlying type directly to the union type.
     /// </para>
     /// <para>Defaults to <c>true</c>.</para>
     /// <para>
@@ -17,5 +17,5 @@ public sealed class UnionAttribute : Attribute
     /// exactly zero or one parameter and the parameter type is not an interface.
     /// </para>
     /// </summary>
-    public bool EnableImplicitConversions { get; init; } = true;
+    public bool EnableImplicitConversions { get; set; } = true;
 }
