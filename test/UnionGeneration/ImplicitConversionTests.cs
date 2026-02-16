@@ -357,4 +357,59 @@ public sealed class ImplicitConversionTests
         result.Errors.Should().BeEmpty();
         result.Warnings.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task UnionWithNullableAndNonNullableGenericVariantsCannotUseImplicitOperators()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result<string> result = "Hello";
+
+            [Union]
+            partial record Result<T>
+            {
+                partial record Some(T Value);
+                partial record SomeNullable(T? Value);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().ContainSingle();
+        result
+            .Errors[0]
+            .ToString()
+            .Should()
+            .EndWith("error CS0029: Cannot implicitly convert type 'string' to 'Result<string>'");
+    }
+
+    [Fact]
+    public async Task UnionWithNullableAndNonNullableGenericVariantsRequiresExplicitConstruction()
+    {
+        var programCs = """
+            using Dunet;
+
+            Result<string> some = new Result<string>.Some("Hello");
+            Result<string> nullable = new Result<string>.SomeNullable(null);
+
+            [Union]
+            partial record Result<T>
+            {
+                partial record Some(T Value);
+                partial record SomeNullable(T? Value);
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
 }
