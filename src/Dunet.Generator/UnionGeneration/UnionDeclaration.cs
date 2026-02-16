@@ -41,7 +41,9 @@ internal sealed record UnionDeclaration(
                 // Ignore variants with no parameters since they don't impact uniqueness.
                 .Where(static variant => variant.Parameters.Count > 0)
                 .SelectMany(static variant => variant.Parameters)
-                .Select(static parameter => parameter.Type.Identifier)
+                // Strip nullable annotation (?) to compare base types for uniqueness
+                // since C# doesn't allow separate implicit conversions for `T` and `T?`.
+                .Select(static parameter => parameter.Type.Identifier.TrimEnd('?'))
                 .ToList();
             var numAllParameterTypes = allParameterTypes.Count;
             var numUniqueParameterTypes = allParameterTypes.Distinct().Count();
