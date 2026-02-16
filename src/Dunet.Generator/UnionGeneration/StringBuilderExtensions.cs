@@ -59,6 +59,9 @@ internal static class StringBuilderExtensions
         public StringBuilder AppendPragmaWarningRestoreCs1591Line() =>
             self.AppendLine("// Disable CS1591 - Missing XML comment on public member")
                 .AppendLine("#pragma warning restore 1591");
+
+        public StringBuilder AppendNullableEnableDirectiveLine() =>
+            self.AppendLine("#nullable enable");
     }
 
     private static string? GeneratorVersion { get; } = GetGeneratorVersion();
