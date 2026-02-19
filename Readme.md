@@ -166,6 +166,7 @@ Console.WriteLine(output); // "Cannot divide by zero!"
 ```
 
 > Note: Empty variants are ignored when generating implicit conversions.
+
 > Note: `T` and `T?` are not considered unique.
 
 ### Disable Implicit Conversions
