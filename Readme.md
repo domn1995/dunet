@@ -31,7 +31,7 @@ partial record Shape
 using static Shape;
 
 // 4. Use the union variants.
-var shape = new Rectangle(3, 4);
+Shape shape = new Rectangle(3, 4);
 // Switch expression is checked for exhaustiveness.
 var area = shape switch 
 {
@@ -63,7 +63,7 @@ partial record Shape
 
 ```cs
 // 4. Use the union variants.
-var shape = new Shape.Rectangle(3, 4);
+Shape shape = new Shape.Rectangle(3, 4);
 var area = shape.Match(
     circle => 3.14 * circle.Radius * circle.Radius,
     rectangle => rectangle.Length * rectangle.Width,
