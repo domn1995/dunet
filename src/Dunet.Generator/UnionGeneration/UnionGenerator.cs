@@ -43,8 +43,14 @@ public sealed class UnionGenerator : IIncrementalGenerator
         }
 
         var union = UnionSourceBuilder.Build(unionRecord);
+
+        var unionNameWithParents = string.Join(
+            ".",
+            unionRecord.ParentTypes.Select(x => x.Identifier).Append(unionRecord.Name)
+        );
+
         context.AddSource(
-            $"{unionRecord.Namespace}.{unionRecord.Name}{unionRecord.TypeParameters.Count}.g.cs",
+            $"{unionRecord.Namespace}.{unionNameWithParents}{unionRecord.TypeParameters.Count}.g.cs",
             SourceText.From(union, Encoding.UTF8)
         );
 
@@ -57,7 +63,7 @@ public sealed class UnionGenerator : IIncrementalGenerator
         {
             var matchExtensions = UnionExtensionsSourceBuilder.GenerateExtensions(unionRecord);
             context.AddSource(
-                $"{unionRecord.Namespace}.{unionRecord.Name}{unionRecord.TypeParameters.Count}MatchExtensions.g.cs",
+                $"{unionRecord.Namespace}.{unionNameWithParents}{unionRecord.TypeParameters.Count}MatchExtensions.g.cs",
                 SourceText.From(matchExtensions, Encoding.UTF8)
             );
         }

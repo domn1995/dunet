@@ -195,4 +195,69 @@ public sealed class NestedGenerationTests
         result.Errors.Should().BeEmpty();
         result.Warnings.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task CanReturnMultipleNestedVariantsWithSameName()
+    {
+        // Arrange.
+        var programCs =
+            //lang=cs
+            """
+            using Dunet;
+
+            var foo1 = Parent1.Foo();
+            var bar1 = Parent1.Bar();
+            
+            var foo2 = Parent2.Foo();
+            var bar2 = Parent2.Bar();
+
+            public partial class Parent1
+            {
+                [Union]
+                public partial record Nested
+                {
+                    public partial record Variant1;
+                    public partial record Variant2;
+                }
+
+                public static Nested Foo()
+                {
+                    return new Nested.Variant1();
+                }
+
+                public static Nested Bar()
+                {
+                    return new Nested.Variant2();
+                }
+            }
+            
+            public partial class Parent2
+            {
+                [Union]
+                public partial record Nested
+                {
+                    public partial record Variant1;
+                    public partial record Variant2;
+                }
+            
+                public static Nested Foo()
+                {
+                    return new Nested.Variant1();
+                }
+            
+                public static Nested Bar()
+                {
+                    return new Nested.Variant2();
+                }
+            }
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(programCs);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().BeEmpty();
+    }
 }
