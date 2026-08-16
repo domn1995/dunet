@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32519.379
+# Visual Studio Version 18
+VisualStudioVersion = 18.10.12106.202 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dunet", "src\Dunet.csproj", "{13C0B629-4C48-4C73-AECB-06A476871C5B}"
 EndProject

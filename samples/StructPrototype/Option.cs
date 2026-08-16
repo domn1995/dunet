@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace StructPrototype;
 
@@ -9,7 +10,8 @@ public partial record struct Option<T>
     public record struct None;
 }
 
-public partial record struct Option<T>
+[System.Runtime.CompilerServices.Union]
+public readonly partial record struct Option<T> : IUnion
 {
     private enum OptionType : byte
     {
@@ -17,29 +19,47 @@ public partial record struct Option<T>
         Some,
     };
 
-    private OptionType type;
-    private Some some;
+    private readonly OptionType? type;
+    private readonly Some? some;
+    private readonly None? none;
 
-    public TOut Match<TOut>(Func<Some, TOut> some, Func<TOut> none) =>
-        type switch
-        {
-            OptionType.Some => some(this.some),
-            OptionType.None => none(),
-            var invalid
-                => throw new UnreachableException($"Matched an unreachable union type: {invalid}"),
-        };
+    public Option(Some value)
+    {
+        this.type = OptionType.Some;
+        this.some = value;
+    }
 
-    public static implicit operator Option<T>(T value) => OfSome(value);
+    public Option(None value)
+    {
+        this.type = OptionType.None;
+        this.none = value;
+    }
 
-    public static Option<T> OfSome(T value) =>
-        new() { type = OptionType.Some, some = new Some(value) };
+    public bool HasValue => type is not null;
 
-    public static Option<T> OfNone() => new() { type = OptionType.None };
+    public object? Value => type switch
+    {
+        OptionType.Some => some,
+        OptionType.None => none,
+        _ => null,
+    };
+
+    public bool TryGetValue(out Some? value)
+    {
+        value = this.some;
+        return type is OptionType.Some;
+    }
+
+    public bool TryGetValue(out None? value)
+    {
+        value = this.none;
+        return type is OptionType.None;
+    }
 }
 
 public static class Option
 {
-    public static Option<T> OfSome<T>(T value) => Option<T>.OfSome(value);
+    public static Option<T> Some<T>(T value) => new Option<T>.Some(value);
 
-    public static Option<T> OfNone<T>() => Option<T>.OfNone();
+    public static Option<T> None<T>() => new Option<T>.None();
 }

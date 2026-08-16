@@ -1,6 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Runtime.CompilerServices;
 
 namespace StructPrototype;
+
 
 public partial record struct Shape
 {
@@ -11,7 +12,8 @@ public partial record struct Shape
     public record struct Triangle(double Base, double Height);
 }
 
-public partial record struct Shape
+[System.Runtime.CompilerServices.Union]
+public readonly partial record struct Shape : IUnion
 {
     private enum ShapeType : byte
     {
@@ -20,32 +22,55 @@ public partial record struct Shape
         Triangle,
     };
 
-    private ShapeType type;
+    private readonly ShapeType? type;
 
-    private Circle circle;
-    private Rectangle rectangle;
-    private Triangle triangle;
+    private readonly Circle? circle;
+    private readonly Rectangle? rectangle;
+    private readonly Triangle? triangle;
 
-    public TOut Match<TOut>(
-        Func<Circle, TOut> circle,
-        Func<Rectangle, TOut> rectangle,
-        Func<Triangle, TOut> triangle
-    ) =>
-        type switch
-        {
-            ShapeType.Circle => circle(this.circle),
-            ShapeType.Rectangle => rectangle(this.rectangle),
-            ShapeType.Triangle => triangle(this.triangle),
-            var invalid
-                => throw new UnreachableException($"Matched an unreachable union type: {invalid}"),
-        };
+    public Shape(Circle circle)
+    {
+        this.type = ShapeType.Circle;
+        this.circle = circle;
+    }
 
-    public static Shape OfCircle(double radius) =>
-        new() { circle = new Circle(radius), type = ShapeType.Circle, };
+    public Shape(Rectangle rectangle)
+    {
+        this.type = ShapeType.Rectangle;
+        this.rectangle = rectangle;
+    }
 
-    public static Shape OfRectangle(double height, double width) =>
-        new() { rectangle = new Rectangle(height, width), type = ShapeType.Rectangle, };
+    public Shape(Triangle triangle)
+    {
+        this.type = ShapeType.Triangle;
+        this.triangle = triangle;
+    }
 
-    public static Shape OfTriangle(double @base, double height) =>
-        new() { triangle = new Triangle(@base, height), type = ShapeType.Triangle, };
+    public bool HasValue => type is not null;
+
+    public object? Value => type switch
+    {
+        ShapeType.Circle => circle,
+        ShapeType.Rectangle => rectangle,
+        ShapeType.Triangle => triangle,
+        _ => null,
+    };
+
+    public bool TryGetValue(out Circle? value)
+    {
+        value = this.circle;
+        return type is ShapeType.Circle;
+    }
+
+    public bool TryGetValue(out Rectangle? value)
+    {
+        value = this.rectangle;
+        return type is ShapeType.Rectangle;
+    }
+
+    public bool TryGetValue(out Triangle? value)
+    {
+        value = this.triangle;
+        return type is ShapeType.Triangle;
+    }
 }

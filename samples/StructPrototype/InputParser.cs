@@ -8,10 +8,10 @@ public static class InputParser
     public static Option<Shape> ParseShape(string? input) =>
         input switch
         {
-            "c" => Shape.OfCircle(1),
-            "r" => Shape.OfRectangle(1, 1),
-            "t" => Shape.OfTriangle(1, 1),
-            _ => Option.OfNone<Shape>(),
+            "c" => Option.Some<Shape>(new Shape.Circle(1)),
+            "r" => Option.Some<Shape>(new Shape.Rectangle(1, 1)),
+            "t" => Option.Some<Shape>(new Shape.Triangle(1, 1)),
+            _ => Option.None<Shape>(),
         };
 
     public static Result<FormatException, T> ParseNumber<T>(string? input) where T : INumber<T> =>
