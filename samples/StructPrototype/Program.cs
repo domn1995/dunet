@@ -7,7 +7,7 @@ while (true)
     var shape = InputParser.ParseShape(shapeInput);
     var area = shape switch
     {
-        Option<Shape>.Some some => Calculator.Area(some.Value),
+        Shape s => Calculator.Area(s),
         Option<Shape>.None => 0
     };
     Console.WriteLine($"Area = {area}");

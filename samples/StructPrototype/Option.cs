@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace StructPrototype;
 
@@ -20,10 +19,10 @@ public readonly partial record struct Option<T> : IUnion
     };
 
     private readonly OptionType? type;
-    private readonly Some? some;
+    private readonly T? some;
     private readonly None? none;
 
-    public Option(Some value)
+    public Option(T value)
     {
         this.type = OptionType.Some;
         this.some = value;
@@ -44,7 +43,7 @@ public readonly partial record struct Option<T> : IUnion
         _ => null,
     };
 
-    public bool TryGetValue(out Some? value)
+    public bool TryGetValue(out T? value)
     {
         value = this.some;
         return type is OptionType.Some;
@@ -59,7 +58,7 @@ public readonly partial record struct Option<T> : IUnion
 
 public static class Option
 {
-    public static Option<T> Some<T>(T value) => new Option<T>.Some(value);
+    public static Option<T> Some<T>(T value) => new(value);
 
     public static Option<T> None<T>() => new Option<T>.None();
 }
