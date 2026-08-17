@@ -18,9 +18,9 @@ public readonly partial record struct Option<T> : IUnion
         Some,
     };
 
+    private static readonly None none;
     private readonly OptionType? type;
     private readonly T? some;
-    private readonly None? none;
 
     public Option(T value)
     {
@@ -28,10 +28,9 @@ public readonly partial record struct Option<T> : IUnion
         this.some = value;
     }
 
-    public Option(None value)
+    public Option(None _)
     {
         this.type = OptionType.None;
-        this.none = value;
     }
 
     public bool HasValue => type is not null;
@@ -51,7 +50,7 @@ public readonly partial record struct Option<T> : IUnion
 
     public bool TryGetValue(out None? value)
     {
-        value = this.none;
+        value = none;
         return type is OptionType.None;
     }
 }
