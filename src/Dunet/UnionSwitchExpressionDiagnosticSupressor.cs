@@ -199,6 +199,7 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
             pattern is RecursivePatternSyntax
             {
                 Type: TypeSyntax propertyPatternTypeSyntax,
+                PositionalPatternClause: var positionalPatternClause,
                 PropertyPatternClause: { } propertyPatternClause
             }
         )
@@ -210,6 +211,14 @@ public sealed class UnionSwitchExpressionDiagnosticSupressor : DiagnosticSuppres
             if (
                 symbol is INamedTypeSymbol propertyPatternType
                 && IsExhaustivePropertyPattern(propertyPatternClause)
+                && (
+                    positionalPatternClause is null
+                    || IsExhaustivePositionalPattern(
+                        positionalPatternClause.Subpatterns,
+                        propertyPatternType,
+                        model
+                    )
+                )
             )
             {
                 unsatisfiedVariants.Remove(propertyPatternType);
