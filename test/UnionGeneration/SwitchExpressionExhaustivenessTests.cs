@@ -709,6 +709,35 @@ public sealed class SwitchExpressionExhaustivenessTests
     }
 
     [Fact]
+    public async Task WarnsOnPropertyPatternWhenPositionalPatternIsConstrained()
+    {
+        // Arrange.
+        var source = $$"""
+            using Dunet;
+            using static Shape;
+
+            Shape shape = new Shape.Circle(3.14);
+
+            var area = shape switch
+            {
+                Circle(0) {} => 0,
+                Rectangle => 1,
+                Triangle => 2,
+            };
+
+            {{unionDeclaration}}
+            """;
+
+        // Act.
+        var result = await Compiler.CompileAsync(source);
+
+        // Assert.
+        using var scope = new AssertionScope();
+        result.Errors.Should().BeEmpty();
+        result.Warnings.Should().ContainSingle(static diagnostic => diagnostic.Id == "CS8509");
+    }
+
+    [Fact]
     public async Task WarnsOnPropertyPatternWithConstrainedValue()
     {
         // Arrange.
